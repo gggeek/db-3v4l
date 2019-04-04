@@ -7,13 +7,13 @@ networks:
                 - subnet: "${COMPOSE_SUBNET}.0/24"
 
 services:
-    web:
-        build:
-        hostname:
-        container_name:
-        volumes:
-        environment:
-        env_file:
+    #web:
+    #    build:
+    #    hostname:
+    #    container_name:
+    #    volumes:
+    #    environment:
+    #    env_file:
     worker:
         build:
             context: images/worker
@@ -24,10 +24,49 @@ services:
                 container_user: "${COMPOSE_CONTAINER_USER}"
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
+        #volumes:
+        #    - ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+        #    - ./data/mysql/5.6:/var/lib/mysql
+        #    - ./logs/mysql/5.6:/var/log/mysql
+        #environment:
+        env_file:
+            - ./containers.env
+            - "$COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE"
+
+    mysql_5_5:
+        build:
+            context: images/mysql/5.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_6
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_5"
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./config/mysql/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/5.5:/var/lib/mysql
+            - ./logs/mysql/5.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        #environment:
+        env_file:
+            - ./containers.env
+            - "$COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE"
+
+    mysql_5_6:
+        build:
+            context: images/mysql/5.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_6
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_6"
         ports:
             - "3307:3306"
         volumes:
-            - ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/mysql/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/5.6:/var/lib/mysql
             - ./logs/mysql/5.6:/var/log/mysql
         tmpfs:
@@ -37,14 +76,56 @@ services:
         env_file:
             - ./containers.env
             - "$COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE"
-    mysql_5_6:
+
     mysql_5_7:
+        build:
+            context: images/mysql/5.7
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_7
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_7"
+        ports:
+            - "3308:3306"
+        volumes:
+            - ./config/mysql/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/5.7:/var/lib/mysql
+            - ./logs/mysql/5.7:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        #environment:
+        env_file:
+            - ./containers.env
+            - "$COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE"
+
     mysql_8_0:
-    mariadb_10_0:
-    mariadb_10_1:
-    mariadb_10_2:
-    postgres_9_4:
-    postgres_9_5:
-    postgres_9_6:
-    postgres_10_7:
-    postgres_11_2:
+        build:
+            context: images/mysql/8.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_8_0
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
+        ports:
+            - "3308:3306"
+        volumes:
+            - ./config/mysql/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/8.0:/var/lib/mysql
+            - ./logs/mysql/8.0:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        #environment:
+        env_file:
+            - ./containers.env
+            - "$COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE"
+
+    #mariadb_10_0:
+    #mariadb_10_1:
+    #mariadb_10_2:
+    #postgres_9_4:
+    #postgres_9_5:
+    #postgres_9_6:
+    #postgres_10_7:
+    #postgres_11_2:

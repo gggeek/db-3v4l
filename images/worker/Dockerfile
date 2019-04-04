@@ -18,23 +18,24 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Base packages
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    mysql-client \
+    #mysql-client \
     php-cli \
     php-mbstring \
     php-mysql \
     php-pgsql \
-    postgresql-client
+    postgresql-client \
+    sudo
 
 # Helper tools
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     procps \
-    wget
-RUN wget http://mysqltuner.pl/ -O /usr/local/bin/mysqltuner.pl
+    curl
+RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
 RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 #RUN wget https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -O basic_passwords.txt
 #RUN wget https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -O vulnerabilities.csv
-RUN wget https://launchpadlibrarian.net/78745738/tuning-primer.sh -O /usr/local/bin/tuning-primer.sh
+RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
 
 # Local user
@@ -52,7 +53,7 @@ RUN adduser ${container_user} sudo && \
 
 COPY profile /tmp/profile
 
-RUN curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
+RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
     curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;
     #cp /tmp/profile/.bash_profile /home/${container_user}/; \
     #cat /tmp/profile/.bashrc_append >> /home/${container_user}/.bashrc; \
