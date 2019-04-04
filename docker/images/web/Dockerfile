@@ -1,4 +1,5 @@
-FROM debian:buster-slim
+# @todo move to buster image as soon as it is released
+FROM debian:stretch-slim
 MAINTAINER gggeek
 
 ARG debian_mirror=none

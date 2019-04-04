@@ -1,4 +1,5 @@
-FROM debian:stretch-slim
+# @todo move to buster image as soon as it is released
+FROM debian:stretch
 MAINTAINER gggeek
 
 ARG debian_mirror=none
@@ -18,7 +19,8 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Base packages
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    #mysql-client \
+    mariadb-client \
+    mysql-client \
     php-cli \
     php-mbstring \
     php-mysql \
