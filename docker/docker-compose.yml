@@ -17,14 +17,16 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: web
         container_name: "${COMPOSE_PROJECT_NAME}_web"
+        ports:
+            - "80:80"
         volumes:
-        #    - ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-        #    - ./data/mysql/5.6:/var/lib/mysql
+            - ../src:/var/www/db-3v4l
             - ./logs/web/:/var/log/nginx
         #environment:
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
     worker:
         build:
             context: images/worker
@@ -35,10 +37,8 @@ services:
                 container_user: "${COMPOSE_CONTAINER_USER}"
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
-        #volumes:
-        #    - ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-        #    - ./data/mysql/5.6:/var/lib/mysql
-        #    - ./logs/mysql/5.6:/var/log/mysql
+        volumes:
+            - "../src:/home/${COMPOSE_CONTAINER_USER}/3v4l"
         #environment:
         env_file:
             - ./containers.env
