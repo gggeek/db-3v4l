@@ -19,7 +19,8 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 #RUN echo 'while true; do :; done' >> /entrypoint.sh
 
 # -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
+# as of 2019/4/4, this breaks. We should probably fix apt config first...
+#RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
 
 # Clear archives in apt cache folder to slim down the image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

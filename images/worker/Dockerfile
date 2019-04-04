@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:stretch-slim
 MAINTAINER gggeek
 
 ARG debian_mirror=none
@@ -9,7 +9,7 @@ ARG container_user=user
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
 # -----------------------------------------------------------------------------
-RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buster main\n" > /etc/apt/sources.list; fi
+RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} stretch main\n" > /etc/apt/sources.list; fi
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -33,8 +33,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     curl
 RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
 RUN chmod 0755 /usr/local/bin/mysqltuner.pl
-#RUN wget https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -O basic_passwords.txt
-#RUN wget https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -O vulnerabilities.csv
+#RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -o basic_passwords.txt
+#RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -o vulnerabilities.csv
 RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
 
@@ -51,7 +51,7 @@ RUN addgroup --gid 1013 ${container_user} && \
 RUN adduser ${container_user} sudo && \
     sed -i '$ a ${container_user}   ALL=\(ALL:ALL\) NOPASSWD: ALL' /etc/sudoers
 
-COPY profile /tmp/profile
+#COPY profile /tmp/profile
 
 RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
     curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;

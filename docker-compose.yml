@@ -108,7 +108,7 @@ services:
         hostname: mysql_8_0
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
         ports:
-            - "3308:3306"
+            - "3309:3306"
         volumes:
             - ./config/mysql/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/8.0:/var/lib/mysql
