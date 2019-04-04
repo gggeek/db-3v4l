@@ -24,6 +24,7 @@
 /docker/logs/mysql/5.6/*
 /docker/logs/mysql/5.7/*
 /docker/logs/mysql/8.0/*
+/docker/logs/web/*
 !/docker/docker/logs/mariadb/10.0/.gitkeep
 !/docker/logs/mariadb/10.1/.gitkeep
 !/docker/logs/mariadb/10.2/.gitkeep
@@ -31,3 +32,4 @@
 !/docker/logs/mysql/5.6/.gitkeep
 !/docker/logs/mysql/5.7/.gitkeep
 !/docker/logs/mysql/8.0/.gitkeep
+!/docker/logs/web/.gitkeep

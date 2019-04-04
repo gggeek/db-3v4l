@@ -22,7 +22,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-fpm \
     php-mbstring \
     php-mysql \
-    php-pgsql \
+    php-pgsql
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

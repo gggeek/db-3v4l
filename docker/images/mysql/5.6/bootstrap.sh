@@ -16,20 +16,20 @@ fi
 
 # Fix UID & GID for user 'mysql'
 
-echo [`date`] Fixing filesystem permissions...
+echo [`date`] Fixing mysl permissions...
 
 ORIGPASSWD=$(cat /etc/passwd | grep mysql)
-ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
-ORIG_GID=$(echo $ORIGPASSWD | cut -f4 -d:)
-ORIG_HOME=$(echo "$ORIGPASSWD" | cut -f6 -d:)
+ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
+ORIG_GID=$(echo "${ORIGPASSWD}" | cut -f4 -d:)
+ORIG_HOME=$(echo "${ORIGPASSWD}" | cut -f6 -d:)
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
-if [ "$DOCKER_USER_UID" -ne "$ORIG_UID" ] || [ "$DOCKER_USER_GID" -ne "$ORIG_GID" ]; then
+if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
 
     # note: we allow non-unique user and group ids...
-    groupmod -o -g "$DOCKER_USER_GID" mysql
-    usermod -o -u "$DOCKER_USER_UID" -g "$DOCKER_USER_GID" mysql
+    groupmod -o -g "${CONTAINER_USER_GID}" mysql
+    usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" mysql
 
     # does mysql user have a root dir created by default ?
     #chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
@@ -45,7 +45,7 @@ fi
 
 echo [`date`] Handing over control to /entrypoint.sh...
 
-trap clean_up SIGTERM
+trap clean_up TERM
 
 /entrypoint.sh $@
 

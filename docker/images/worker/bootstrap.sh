@@ -17,16 +17,16 @@ fi
 
 echo [`date`] Fixing filesystem permissions...
 
-ORIGPASSWD=$(cat /etc/passwd | grep mysql)
+ORIGPASSWD=$(cat /etc/passwd | grep ${CONTAINER_USER})
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
 ORIG_GID=$(echo $ORIGPASSWD | cut -f4 -d:)
-ORIG_HOME=$(echo "$ORIGPASSWD" | cut -f6 -d:)
+ORIG_HOME=$(echo $ORIGPASSWD | cut -f6 -d:)
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
-if [ "${CONTAINER_USER_UID}" -ne "${ORIG_UID}" ] || [ "${CONTAINER_USER_GID}" -ne "${ORIG_GID}" ]; then
+if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
 
-    groupmod -g "${CONTAINER_USER_UID}" ${CONTAINER_USER}
+    groupmod -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
 
     chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
@@ -41,7 +41,7 @@ fi
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 
-trap clean_up SIGTERM
+trap clean_up TERM
 
 tail -f /dev/null &
 child=$!

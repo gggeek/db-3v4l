@@ -67,7 +67,7 @@ echo [`date`] Modifying Nginx configuration...
 
 echo [`date`] Starting the service...
 
-trap clean_up SIGTERM
+trap clean_up TERM
 
 service nginx restart
 
