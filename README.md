@@ -1,6 +1,8 @@
 DB-3v4l
 =======
 
+*** Work In Progress ***
+
 A platform dedicated to ease comparison of databases:
 
 a) allow testing SQL snipptes across many db versions
@@ -23,5 +25,9 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 
 ## Installation
+
+...
+
+## Usage
 
 ...
