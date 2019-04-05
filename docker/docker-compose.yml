@@ -22,7 +22,8 @@ services:
         volumes:
             - ../src:/var/www/db-3v4l
             - ./logs/web/:/var/log/nginx
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
@@ -39,7 +40,8 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
             - "../src:/home/${COMPOSE_CONTAINER_USER}/3v4l"
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
@@ -61,7 +63,8 @@ services:
         tmpfs:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
@@ -83,7 +86,8 @@ services:
         tmpfs:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
@@ -105,7 +109,8 @@ services:
         tmpfs:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
@@ -127,7 +132,8 @@ services:
         tmpfs:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
-        #environment:
+        environment:
+            - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
