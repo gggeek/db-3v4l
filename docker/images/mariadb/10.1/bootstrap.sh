@@ -48,7 +48,7 @@ echo [`date`] Handing over control to /entrypoint.sh...
 
 trap clean_up TERM
 
-/entrypoint.sh $@
+/docker-entrypoint.sh $@
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 

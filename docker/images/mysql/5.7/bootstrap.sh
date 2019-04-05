@@ -5,7 +5,8 @@ echo [`date`] Bootstrapping MySQL...
 clean_up() {
     # Perform program exit housekeeping
     echo [`date`] Stopping the service...
-    service mysql stop
+    #service mysql stop
+    pkill --signal term mysqld
     exit
 }
 

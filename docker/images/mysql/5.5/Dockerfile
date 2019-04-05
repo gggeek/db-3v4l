@@ -9,14 +9,10 @@ ARG do_update_os=true
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
-# Make the entrypoint a bit more friendly to debugging: keep it alive even if mysql fails starting
-# NB: the container will still fail and suicide if there is an error in the part of entrypoint.sh which deals with
-#     creation of the db
-# NNB: doing this is BAD, as when docker stops the container, the db is shut down uncleanly and there is risk of
-#      data corruption! This is why our bootstrap.sh is nice and traps signals for a clean shutdown
-### disabled as it does not work any more... to be fixed
-###RUN sed -i 's/exec "$@"/\/etc\/init.d\/mysql start/g' /entrypoint.sh
-#RUN echo 'while true; do :; done' >> /entrypoint.sh
+# Base packages
+# -----------------------------------------------------------------------------
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    procps
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

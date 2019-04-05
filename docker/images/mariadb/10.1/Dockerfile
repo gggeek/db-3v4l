@@ -1,6 +1,6 @@
-FROM mysql:8.0
+FROM mariadb:10.1
 MAINTAINER gggeek
-LABEL mysql.version=8.0
+LABEL mysql.version=10.1
 
 ARG timezone=none
 ARG do_update_os=true
@@ -11,8 +11,8 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 
 # Base packages
 # -----------------------------------------------------------------------------
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    procps
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#    procps
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

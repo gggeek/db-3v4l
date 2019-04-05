@@ -26,8 +26,7 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 ## Installation
 
-
-    cd docker && docker-compose up
+    touch docker/containers.override.env && cd docker && docker-compose up
 
 ## Usage
 

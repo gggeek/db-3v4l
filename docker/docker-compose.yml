@@ -138,9 +138,121 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    #mariadb_10_0:
-    #mariadb_10_1:
-    #mariadb_10_2:
+    mariadb_5_5:
+        build:
+            context: images/mariadb/5.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_5_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_5_5"
+        ports:
+            - "3310:3306"
+        volumes:
+            - ./config/mariadb/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/5.5:/var/lib/mysql
+            - ./logs/mariadb/5.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mariadb_10_0:
+        build:
+            context: images/mariadb/10.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_10_0
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_0"
+        ports:
+            - "3311:3306"
+        volumes:
+            - ./config/mariadb/10.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.0:/var/lib/mysql
+            - ./logs/mariadb/10.0:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mariadb_10_1:
+        build:
+            context: images/mariadb/10.1
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_10_1
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_1"
+        ports:
+            - "3312:3306"
+        volumes:
+            - ./config/mariadb/10.1/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.1:/var/lib/mysql
+            - ./logs/mariadb/10.1:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mariadb_10_2:
+        build:
+            context: images/mariadb/10.2
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_10_2
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_2"
+        ports:
+            - "3313:3306"
+        volumes:
+            - ./config/mariadb/10.2/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.2:/var/lib/mysql
+            - ./logs/mariadb/10.2:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mariadb_10_3:
+        build:
+            context: images/mariadb/10.3
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_10_3
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_3"
+        ports:
+            - "3314:3306"
+        volumes:
+            - ./config/mariadb/10.3/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.3:/var/lib/mysql
+            - ./logs/mariadb/10.3:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
     #postgres_9_4:
     #postgres_9_5:
     #postgres_9_6:
