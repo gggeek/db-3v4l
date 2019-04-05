@@ -35,11 +35,11 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-                container_user: "${COMPOSE_CONTAINER_USER}"
+                container_user: "${CONTAINER_USER}"
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
-            - "../src:/home/${COMPOSE_CONTAINER_USER}/3v4l"
+            - "../src:/home/${CONTAINER_USER}/3v4l"
         environment:
             - CONTAINER_USER
         env_file:
@@ -253,8 +253,102 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    #postgres_9_4:
-    #postgres_9_5:
-    #postgres_9_6:
-    #postgres_10_7:
-    #postgres_11_2:
+    postgres_9_4:
+        build:
+            context: images/postgresql/9.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgres_9_4
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_4"
+        ports:
+            - "5432:5432"
+        volumes:
+            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/postgresql/9.4:/var/lib/postgresql/data
+            - ./logs/postgresql/9.4:/var/log/postgresql
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    postgres_9_5:
+        build:
+            context: images/postgresql/9.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgres_9_5
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_5"
+        ports:
+            - "5433:5432"
+        volumes:
+            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/postgresql/9.5:/var/lib/postgresql/data
+            - ./logs/postgresql/9.5:/var/log/postgresql
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    postgres_10_6:
+        build:
+            context: images/postgresql/10.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgres_10_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_10_6"
+        ports:
+            - "5434:5432"
+        volumes:
+            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/postgresql/10.6:/var/lib/postgresql/data
+            - ./logs/postgresql/10.6:/var/log/postgresql
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    postgres_10_7:
+        build:
+            context: images/postgresql/10.7
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgres_10_7
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_10_7"
+        ports:
+            - "5435:5432"
+        volumes:
+            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/postgresql/10.7:/var/lib/postgresql/data
+            - ./logs/postgresql/10.7:/var/log/postgresql
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    postgres_11_2:
+        build:
+            context: images/postgresql/11.2
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgres_11_2
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_11_2"
+        ports:
+            - "5436:5432"
+        volumes:
+            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/postgresql/11.2:/var/lib/postgresql/data
+            - ./logs/postgresql/11.2:/var/log/postgresql
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"

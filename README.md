@@ -1,14 +1,16 @@
 DB-3v4l
 =======
 
-*** Work In Progress ***
-
 A platform dedicated to ease comparison of databases:
 
 a) allow testing SQL snippets across many db versions
 
 b) allow doing full-fledged load testing, comparing results across many db versions
 
+
+*** Work In Progress ***
+
+[See the TODO for a broad overview of advancement status](./TODO.md)
 
 ## Supported Databases:
 
@@ -26,8 +28,15 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 ## Installation
 
-    touch docker/containers.override.env && cd docker && docker-compose up
+    touch docker/containers.override.env && cd docker && docker-compose build
+
+*NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
+the file  docker/containers.override.env _before_ running the `build` command, and add in there correct values for
+the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
+ 
 
 ## Usage
 
-...
+    cd docker && docker-compose start
+    docker exec -ti db3v4l_worker su - user 
+    ...
