@@ -17,7 +17,7 @@ fi
 
 # Fix UID & GID for user 'mysql'
 
-echo [`date`] Fixing mysl permissions...
+echo [`date`] Fixing mysql permissions...
 
 ORIGPASSWD=$(cat /etc/passwd | grep mysql)
 ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
@@ -48,7 +48,7 @@ echo [`date`] Handing over control to /entrypoint.sh...
 
 trap clean_up TERM
 
-/entrypoint.sh $@
+/entrypoint.sh $@ &
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 

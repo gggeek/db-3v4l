@@ -5,8 +5,8 @@ echo [`date`] Bootstrapping MySQL...
 clean_up() {
     # Perform program exit housekeeping
     echo [`date`] Stopping the service...
-    #service mysql stop
-    pkill --signal term mysqld
+    #service postgres stop
+    pkill -x --signal term postgres
     exit
 }
 
@@ -15,11 +15,11 @@ if [ -f /var/run/bootstrap_ok ]; then
     rm /var/run/bootstrap_ok
 fi
 
-# Fix UID & GID for user 'mysql'
+# Fix UID & GID for user 'postgres'
 
-echo [`date`] Fixing mysql permissions...
+echo [`date`] Fixing postgresql permissions...
 
-ORIGPASSWD=$(cat /etc/passwd | grep mysql)
+ORIGPASSWD=$(cat /etc/passwd | grep postgres)
 ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
 ORIG_GID=$(echo "${ORIGPASSWD}" | cut -f4 -d:)
 ORIG_HOME=$(echo "${ORIGPASSWD}" | cut -f6 -d:)
@@ -29,16 +29,16 @@ CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
 
     # note: we allow non-unique user and group ids...
-    groupmod -o -g "${CONTAINER_USER_GID}" mysql
-    usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" mysql
+    groupmod -o -g "${CONTAINER_USER_GID}" postgres
+    usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" postgres
 
-    # does mysql user have a root dir created by default ?
+    # does postgres user have a root dir created by default ?
     #chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
     #chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.*
 
 fi
 
-chown -R mysql:mysql /var/run/mysqld
+chown -R postgres:postgres /var/run/postgresql
 
 if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
@@ -48,7 +48,7 @@ echo [`date`] Handing over control to /entrypoint.sh...
 
 trap clean_up TERM
 
-/entrypoint.sh $@ &
+/docker-entrypoint.sh $@ &
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 
