@@ -19,6 +19,8 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Base packages
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    curl \
+    git \
     mariadb-client \
     mysql-client \
     php-cli \
@@ -26,13 +28,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-mysql \
     php-pgsql \
     postgresql-client \
+    procps \
     sudo
 
 # Helper tools
 # -----------------------------------------------------------------------------
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    procps \
-    curl
 RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
 RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 #RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -o basic_passwords.txt
@@ -70,6 +70,15 @@ RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/
 #    chown -R ${container_user}:${container_user} /home/${container_user}/.ssh
 
 RUN chown -R ${container_user}:${container_user} /home/${container_user}
+
+# Composer global install
+# @todo a github oauth token should be saved in containers.env...
+# -----------------------------------------------------------------------------
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
+    mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
+    chmod 755 /usr/local/bin/composer; \
+    mkdir -p /home/${container_user}/.composer && \
+    chown -R ${container_user}:${container_user} /home/${container_user}/.composer
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

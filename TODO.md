@@ -12,6 +12,8 @@
 
 - web/cli: allow auto db-schema create+teardown
 
+- improve profile of 'user' account in worker
+
 - cli: test: can we add mysql-client alongside mariadb-client?
 
 - cli script that resets logs files
@@ -27,3 +29,7 @@
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
 - add oracle container (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
+
+- add clustered mysql/postgresql containers
+
+- update web and worker containers: rebase from stretch to buster
