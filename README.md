@@ -37,6 +37,6 @@ the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More detail
 
 ## Usage
 
-    cd docker && docker-compose start
+    cd docker && docker-compose up -d
     docker exec -ti db3v4l_worker su - user 
     ...

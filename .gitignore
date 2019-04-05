@@ -61,3 +61,6 @@
 !/docker/logs/postgresql/10.7/.gitkeep
 !/docker/logs/postgresql/11.2/.gitkeep
 !/docker/logs/web/.gitkeep
+
+/src/var/cache/*
+/src/var/log/*
