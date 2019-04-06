@@ -39,6 +39,12 @@ fi
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost ]; then cat /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost > /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys ]; then chown ${CONTAINER_USER}:${CONTAINER_USER} /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
 
+# Set up the application
+
+echo [`date`] Setting up the application...
+
+su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db-3v4l && composer install"
+
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 
 trap clean_up TERM

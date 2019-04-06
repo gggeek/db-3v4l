@@ -1,6 +1,10 @@
 /.idea
 
-/docker/containers.override.env
+
+/app/.env.local
+/app/var/cache/*
+/app/var/log/*
+/app/vendor/*
 
 /docker/data/mariadb/5.5/*
 /docker/data/mariadb/10.0/*
@@ -31,6 +35,8 @@
 !/docker/data/postgresql/10.7/.gitkeep
 !/docker/data/postgresql/11.2/.gitkeep
 
+/docker/containers.env.local
+
 /docker/logs/mariadb/5.5/*
 /docker/logs/mariadb/10.0/*
 /docker/logs/mariadb/10.1/*
@@ -46,6 +52,7 @@
 /docker/logs/postgresql/10.7/*
 /docker/logs/postgresql/11.2/*
 /docker/logs/web/*
+/docker/logs/worker/*
 !/docker/logs/mariadb/5.5/.gitkeep
 !/docker/logs/mariadb/10.0/.gitkeep
 !/docker/logs/mariadb/10.1/.gitkeep
@@ -61,6 +68,4 @@
 !/docker/logs/postgresql/10.7/.gitkeep
 !/docker/logs/postgresql/11.2/.gitkeep
 !/docker/logs/web/.gitkeep
-
-/src/var/cache/*
-/src/var/log/*
+!/docker/logs/worker/.gitkeep

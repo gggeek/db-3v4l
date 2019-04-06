@@ -12,7 +12,9 @@
 
 - web/cli: allow auto db-schema create+teardown
 
-- improve profile of 'user' account in worker
+- worker: improve profile of 'user' account
+
+- worker: move sf logs to a mounted volume
 
 - cli: test: can we add mysql-client alongside mariadb-client?
 
