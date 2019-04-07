@@ -43,13 +43,14 @@ fi
 
 echo "[`date`] Setting up the application..."
 
-if [ ! -f "${ORIG_HOME}/db-3v4l/vendor/autoload.php" ]; then
-    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db-3v4l && composer install"
+if [ ! -f "${ORIG_HOME}/db3v4l/vendor/autoload.php" ]; then
+    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db3v4l && composer install"
 fi
 
-if [ ! -f "${ORIG_HOME}/db-3v4l/.env.local" ]; then
-    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/db-3v4l/.env.local
-    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/db-3v4l/.env.local
+if [ ! -f "${ORIG_HOME}/db3v4l/.env.local" ]; then
+    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/db3v4l/.env.local
+    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/db3v4l/.env.local
+    chown  "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/db3v4l/.env.local
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok

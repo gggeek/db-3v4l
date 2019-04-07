@@ -21,7 +21,7 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - ../app:/var/www/db-3v4l
+            - ../app:/var/www/db3v4l
             - ./logs/web/nginx:/var/log/nginx
             - ./logs/web/php:/var/log/php
         environment:
@@ -41,7 +41,7 @@ services:
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
-            - "../app:/home/${CONTAINER_USER}/db-3v4l"
+            - "../app:/home/${CONTAINER_USER}/db3v4l"
         environment:
             - CONTAINER_USER
         env_file:

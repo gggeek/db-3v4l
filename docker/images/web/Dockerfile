@@ -30,7 +30,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # -----------------------------------------------------------------------------
 COPY nginx/sites-enabled/* /etc/nginx/sites-enabled/
 RUN rm /etc/nginx/sites-enabled/default
-COPY php/7.0/fpm/pool.d/db-3v4l.conf /etc/php/7.0/fpm/pool.d/db-3v4l.conf
+COPY php/7.0/fpm/pool.d/db3v4l.conf /etc/php/7.0/fpm/pool.d/db3v4l.conf
 RUN rm /etc/php/7.0/fpm/pool.d/www.conf
 
 # -----------------------------------------------------------------------------
