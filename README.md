@@ -46,4 +46,13 @@ the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More detail
 
 ### Maintenance
 
-- 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control 
+- 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
+
+## Thanks
+
+Many thanks to
+- https://3v4l.org/ for providing the inspiration
+- Docker, for providing the core technology used to manage all the different database installations
+- Symfony and Doctrine, for providing the building bricks for the application
+- eZPublish for instigating my itch to build this tool
+
