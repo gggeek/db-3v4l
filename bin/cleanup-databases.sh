@@ -33,3 +33,4 @@ PROJECT_WWWROOT=
 cd $(dirname ${BASH_SOURCE[0]})/..
 
 find ./docker/data/ -type f ! -name .gitkeep -delete
+find ./docker/data/ -type d -empty -delete
