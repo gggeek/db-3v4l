@@ -267,7 +267,7 @@ services:
             - "5432:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/9.4:/var/lib/postgresql/data
+            - ./data/postgresql/9.4:/var/lib/postgresql
             - ./logs/postgresql/9.4:/var/log/postgresql
         environment:
             - CONTAINER_USER
@@ -287,7 +287,7 @@ services:
             - "5433:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/9.5:/var/lib/postgresql/data
+            - ./data/postgresql/9.5:/var/lib/postgresql
             - ./logs/postgresql/9.5:/var/log/postgresql
         environment:
             - CONTAINER_USER
@@ -307,7 +307,7 @@ services:
             - "5434:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/9.6:/var/lib/postgresql/data
+            - ./data/postgresql/9.6:/var/lib/postgresql
             - ./logs/postgresql/9.6:/var/log/postgresql
         environment:
             - CONTAINER_USER
@@ -327,7 +327,7 @@ services:
             - "5435:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/10.7:/var/lib/postgresql/data
+            - ./data/postgresql/10.7:/var/lib/postgresql
             - ./logs/postgresql/10.7:/var/log/postgresql
         environment:
             - CONTAINER_USER
@@ -347,7 +347,7 @@ services:
             - "5436:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/11.2:/var/lib/postgresql/data
+            - ./data/postgresql/11.2:/var/lib/postgresql
             - ./logs/postgresql/11.2:/var/log/postgresql
         environment:
             - CONTAINER_USER
