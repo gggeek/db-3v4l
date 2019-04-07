@@ -40,6 +40,8 @@
   - size-limit http requests
   - add caching in nginx of static assets
   - add firewall rules to the web containers to block access to outside world at bootstrap
+  - make php code non-writeable by www-data user
+  - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
 
 - worker: test: can we add mysql-client alongside mariadb-client?
@@ -51,3 +53,5 @@
 - add sqlite, Firebird and MSSQL containers 
 
 - add clustered mysql/postgresql containers
+
+- app: move to Symfony 4 as soon as there is an LTS version out

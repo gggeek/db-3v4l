@@ -1,0 +1,3 @@
+doctrine:
+    dbal:
+        connections: '%db3v4l.databases%'
