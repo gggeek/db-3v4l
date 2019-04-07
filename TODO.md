@@ -16,6 +16,8 @@
 
 - worker: improve profile of 'user' account
 
+- web/worker: set up a cronjob to remove SF profiler data
+
 - web/worker: move sf logs to a mounted volume
 
 - worker: add phpbench as dependency
@@ -33,6 +35,7 @@
   - prevent usage of custom db schemas, allow only temp ones
   - rate-limit requests
   - size-limit requests
+  - add caching in nginx of static assets
 
 - worker: test: can we add mysql-client alongside mariadb-client?
 

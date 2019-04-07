@@ -41,3 +41,9 @@ the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More detail
     docker exec -ti db3v4l_worker su - user
     php bin/console 
     ...
+
+## Details
+
+### Maintenance
+
+- 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control 
