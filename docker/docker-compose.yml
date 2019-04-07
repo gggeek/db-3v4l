@@ -19,9 +19,11 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_web"
         ports:
             - "80:80"
+            - "443:443"
         volumes:
-            - ../src:/var/www/db-3v4l
-            - ./logs/web/:/var/log/nginx
+            - ../app:/var/www/db-3v4l
+            - ./logs/web/nginx:/var/log/nginx
+            - ./logs/web/php:/var/log/php
         environment:
             - CONTAINER_USER
         env_file:
@@ -39,7 +41,7 @@ services:
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
-            - "../src:/home/${CONTAINER_USER}/3v4l"
+            - "../app:/home/${CONTAINER_USER}/db-3v4l"
         environment:
             - CONTAINER_USER
         env_file:
@@ -293,20 +295,20 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_10_6:
+    postgres_9_6:
         build:
-            context: images/postgresql/10.6
+            context: images/postgresql/9.6
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_10_6
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_10_6"
+        hostname: postgres_9_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_6"
         ports:
             - "5434:5432"
         volumes:
             #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/postgresql/10.6:/var/lib/postgresql/data
-            - ./logs/postgresql/10.6:/var/log/postgresql
+            - ./data/postgresql/9.6:/var/lib/postgresql/data
+            - ./logs/postgresql/9.6:/var/log/postgresql
         environment:
             - CONTAINER_USER
         env_file:

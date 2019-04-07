@@ -5,6 +5,20 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
 
+    db3v4l.databases:
+        mariadb:
+            -
+                version:
+                host: mariadb_5_5
+        mysql:
+            -
+                version: 5.5
+                host: mysql_5_5
+        postgresql:
+            -
+                version: 9.4
+                host: postgresql_9_4
+
 services:
     # default configuration for services in *this* file
     _defaults:

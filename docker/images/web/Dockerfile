@@ -22,7 +22,16 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-fpm \
     php-mbstring \
     php-mysql \
-    php-pgsql
+    php-pgsql \
+    php-xml \
+    php-zip
+
+# Set up Nginx+PHP
+# -----------------------------------------------------------------------------
+COPY nginx/sites-enabled/* /etc/nginx/sites-enabled/
+RUN rm /etc/nginx/sites-enabled/default
+COPY php/7.0/fpm/pool.d/db-3v4l.conf /etc/php/7.0/fpm/pool.d/db-3v4l.conf
+RUN rm /etc/php/7.0/fpm/pool.d/www.conf
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

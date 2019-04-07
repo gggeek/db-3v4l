@@ -4,8 +4,9 @@ echo [`date`] Bootstrapping the Web server...
 
 clean_up() {
     # Perform program exit housekeeping
-    echo [`date`] Stopping the service...
+    echo [`date`] Stopping the services...
     service nginx stop
+    service php7.0-fpm stop
     exit
 }
 
@@ -14,26 +15,26 @@ if [ -f /var/run/bootstrap_ok ]; then
     rm /var/run/bootstrap_ok
 fi
 
-# Fix UID & GID for user
-#echo [`date`] Fixing filesystem permissions...
+# Fix UID & GID for user www-data
 
-#ORIGPASSWD=$(cat /etc/passwd | grep site)
-#ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
-#ORIG_GID=$(echo $ORIGPASSWD | cut -f4 -d:)
-#ORIG_HOME=$(echo "$ORIGPASSWD" | cut -f6 -d:)
-#DEV_UID=${DEV_UID:=$ORIG_UID}
-#DEV_GID=${DEV_GID:=$ORIG_GID}
+echo [`date`] Fixing filesystem permissions...
 
-#if [ "$DEV_UID" -ne "$ORIG_UID" ] || [ "$DEV_GID" -ne "$ORIG_GID" ]; then
-#
-#    # note: we allow non-unique user and group ids...
-#    groupmod -o -g "$DEV_GID" site
-#    usermod -o -u "$DEV_UID" -g "$DEV_GID" site
-#
-#    chown "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"
-#    chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
-#
-#fi
+ORIGPASSWD=$(cat /etc/passwd | grep www-data)
+ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
+ORIG_GID=$(echo $ORIGPASSWD | cut -f4 -d:)
+ORIG_HOME=$(echo $ORIGPASSWD | cut -f6 -d:)
+CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
+CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
+
+if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
+
+    groupmod -g "${CONTAINER_USER_GID}" www-data
+    usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" www-data
+
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}/html"
+fi
+
 
 #chown -R site:site /var/lock/apache2
 
@@ -65,10 +66,11 @@ echo [`date`] Modifying Nginx configuration...
 
 ###a2dissite 000-default
 
-echo [`date`] Starting the service...
+echo [`date`] Starting the services...
 
 trap clean_up TERM
 
+service php7.0-fpm start
 service nginx restart
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok

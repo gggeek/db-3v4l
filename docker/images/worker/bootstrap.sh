@@ -43,7 +43,9 @@ fi
 
 echo [`date`] Setting up the application...
 
-su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db-3v4l && composer install"
+if [ ! -f "${ORIG_HOME}/db-3v4l/vendor/autoload.php" ]; then
+    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db-3v4l && composer install"
+fi
 
 echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
 

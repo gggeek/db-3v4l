@@ -91,6 +91,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
-WORKDIR /home/${container_user}
+WORKDIR /home/${container_user}/db3v4l
 
 ENTRYPOINT ["/root/bootstrap.sh"]
