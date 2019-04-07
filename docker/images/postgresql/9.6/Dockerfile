@@ -1,6 +1,6 @@
-FROM postgres:9.4
+FROM postgres:9.6
 MAINTAINER gggeek
-LABEL postgresql.version=10.6
+LABEL postgresql.version=9.6
 
 ARG timezone=none
 ARG do_update_os=true
@@ -23,7 +23,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
-EXPOSE 3306
+EXPOSE 5432
 
 # q: why are we not using just ENTRYPOINT?
 ENTRYPOINT []

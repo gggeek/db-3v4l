@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo [`date`] Bootstrapping MySQL...
+echo "[`date`] Bootstrapping MySQL..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo [`date`] Stopping the service...
+    echo "[`date`] Stopping the service..."
     #service mysql stop
     pkill --signal term mysqld
     exit
@@ -17,7 +17,8 @@ fi
 
 # Fix UID & GID for user 'mysql'
 
-echo [`date`] Fixing mysql permissions...
+echo "[`date`] Fixing mysql permissions..."
+
 
 ORIGPASSWD=$(cat /etc/passwd | grep mysql)
 ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
@@ -32,10 +33,8 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -o -g "${CONTAINER_USER_GID}" mysql
     usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" mysql
 
-    # does mysql user have a root dir created by default ?
-    #chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
-    #chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.*
-
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/mysql"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/mysql/.*"
 fi
 
 chown -R mysql:mysql /var/run/mysqld
@@ -44,13 +43,13 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo [`date`] Handing over control to /entrypoint.sh...
+echo "[`date`] Handing over control to /entrypoint.sh..."
 
 trap clean_up TERM
 
 /docker-entrypoint.sh $@ &
 
-echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
+echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &
 child=$!

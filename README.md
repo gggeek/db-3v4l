@@ -54,5 +54,5 @@ Many thanks to
 - https://3v4l.org/ for providing the inspiration
 - Docker, for providing the core technology used to manage all the different database installations
 - Symfony and Doctrine, for providing the building bricks for the application
-- eZPublish for instigating my itch to build this tool
-
+- eZPublish for giving me the itch to build this tool
+- JetBrains for kindly providing me with a PHPStorm license that I use daily in my open source endeavours 

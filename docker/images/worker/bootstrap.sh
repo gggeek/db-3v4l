@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo [`date`] Bootstrapping the Worker...
+echo "[`date`] Bootstrapping the Worker..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo [`date`] Stopping the Wworker...
+    echo "[`date`] Stopping the container..."
     exit
 }
 
@@ -15,7 +15,7 @@ fi
 
 # Fix UID & GID for user '${CONTAINER_USER}'
 
-echo [`date`] Fixing filesystem permissions...
+echo "[`date`] Fixing filesystem permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep ${CONTAINER_USER})
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
@@ -41,13 +41,18 @@ fi
 
 # Set up the application
 
-echo [`date`] Setting up the application...
+echo "[`date`] Setting up the application..."
 
 if [ ! -f "${ORIG_HOME}/db-3v4l/vendor/autoload.php" ]; then
     su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db-3v4l && composer install"
 fi
 
-echo [`date`] Bootstrap finished | tee /var/run/bootstrap_ok
+if [ ! -f "${ORIG_HOME}/db-3v4l/.env.local" ]; then
+    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/db-3v4l/.env.local
+    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/db-3v4l/.env.local
+fi
+
+echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 trap clean_up TERM
 

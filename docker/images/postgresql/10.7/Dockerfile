@@ -1,4 +1,4 @@
-FROM postgres:9.4
+FROM postgres:10.7
 MAINTAINER gggeek
 LABEL postgresql.version=10.7
 
@@ -23,7 +23,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
-EXPOSE 3306
+EXPOSE 5432
 
 # q: why are we not using just ENTRYPOINT?
 ENTRYPOINT []
