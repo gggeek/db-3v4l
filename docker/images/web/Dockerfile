@@ -15,6 +15,10 @@ RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buste
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
+# Update preinstalled packages
+# -----------------------------------------------------------------------------
+RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
+
 # Base packages - nginx, php-fpm, ...
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -33,15 +37,16 @@ RUN rm /etc/nginx/sites-enabled/default
 COPY php/7.0/fpm/pool.d/db3v4l.conf /etc/php/7.0/fpm/pool.d/db3v4l.conf
 RUN rm /etc/php/7.0/fpm/pool.d/www.conf
 
-# -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
-
 # Clear archives in apt cache folder
+# -----------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Set up entrypoint
+# -----------------------------------------------------------------------------
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
-#WORKDIR /home/${container_user}
+EXPOSE 80
+EXPOSE 443
 
 ENTRYPOINT ["/root/bootstrap.sh"]

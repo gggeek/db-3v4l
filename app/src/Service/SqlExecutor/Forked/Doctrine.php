@@ -1,13 +1,11 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor;
+namespace Db3v4l\Service\SqlExecutor\Forked;
 
 use Symfony\Component\Process\Process;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Configuration;
-use Db3v4l\API\Interfaces\SqlExecutor;
+use Db3v4l\API\Interfaces\ForkedSqlExecutor;
 
-class Doctrine extends BaseExecutor implements SqlExecutor
+class Doctrine extends ForkedExecutor implements ForkedSqlExecutor
 {
     /**
      * @param string $sql

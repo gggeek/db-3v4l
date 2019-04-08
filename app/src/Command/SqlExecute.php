@@ -70,12 +70,12 @@ class SqlExecute extends BaseCommand
         $processes = [];
         foreach ($dbList as $dbName) {
             $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
-            $processes[$dbName] = $this->executorFactory->createExecutor($dbConnectionSpec)->getProcess($sql);
+            $processes[$dbName] = $this->executorFactory->createForkedExecutor($dbConnectionSpec)->getProcess($sql);
         }
 
         $this->writeln("Starting parallel execution...");
 
-        $this->processManager->runParallel($processes, $maxParallel, $timeout, 500, array($this, 'onSubProcessOutput'));
+        $this->processManager->runParallel($processes, $maxParallel, $timeout, 100, array($this, 'onSubProcessOutput'));
 
         $failed = 0;
         $succeeded = 0;

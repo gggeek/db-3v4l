@@ -4,7 +4,7 @@ namespace Db3v4l\API\Interfaces;
 
 use Symfony\Component\Process\Process;
 
-interface SqlExecutor
+interface ForkedSqlExecutor
 {
     /**
      * @param string $sql

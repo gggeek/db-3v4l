@@ -255,14 +255,14 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_9_4:
+    postgresql_9_4:
         build:
             context: images/postgresql/9.4
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_9_4
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_4"
+        hostname: postgresql_9_4
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_4"
         #ports:
         #    - "5432:5432"
         volumes:
@@ -275,14 +275,14 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_9_5:
+    postgresql_9_5:
         build:
             context: images/postgresql/9.5
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_9_5
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_5"
+        hostname: postgresql_9_5
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_5"
         #ports:
         #    - "5433:5432"
         volumes:
@@ -295,14 +295,14 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_9_6:
+    postgresql_9_6:
         build:
             context: images/postgresql/9.6
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_9_6
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_6"
+        hostname: postgresql_9_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_6"
         #ports:
         #    - "5434:5432"
         volumes:
@@ -315,14 +315,14 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_10_7:
+    postgresql_10_7:
         build:
             context: images/postgresql/10.7
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_10_7
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_10_7"
+        hostname: postgresql_10_7
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10_7"
         #ports:
         #    - "5435:5432"
         volumes:
@@ -335,14 +335,14 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    postgres_11_2:
+    postgresql_11_2:
         build:
             context: images/postgresql/11.2
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgres_11_2
-        container_name: "${COMPOSE_PROJECT_NAME}_postgres_11_2"
+        hostname: postgresql_11_2
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11_2"
         #ports:
         #    - "5436:5432"
         volumes:

@@ -1,16 +1,11 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor;
+namespace Db3v4l\Service\SqlExecutor\Forked;
 
-abstract class BaseExecutor
+use Db3v4l\Service\SqlExecutor\BaseExecutor;
+
+abstract class ForkedExecutor extends BaseExecutor
 {
-    protected $databaseConfiguration;
-
-    public function __construct(array $databaseConfiguration)
-    {
-        $this->databaseConfiguration = $databaseConfiguration;
-    }
-
     public function buildCommandLine($command, array $arguments = array())
     {
         $arguments = array_map('escapeshellarg', $arguments);

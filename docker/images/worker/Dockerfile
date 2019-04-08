@@ -82,15 +82,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     mkdir -p /home/${container_user}/.composer && \
     chown -R ${container_user}:${container_user} /home/${container_user}/.composer
 
-# -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
-
 # Clear archives in apt cache folder
+# -----------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Set up entrypoint
+# -----------------------------------------------------------------------------
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
-
-WORKDIR /home/${container_user}/db3v4l
 
 ENTRYPOINT ["/root/bootstrap.sh"]
