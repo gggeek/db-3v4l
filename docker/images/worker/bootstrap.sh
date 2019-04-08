@@ -29,7 +29,7 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
 
-    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
     # Altered as we mount volumes inside here
     #chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*

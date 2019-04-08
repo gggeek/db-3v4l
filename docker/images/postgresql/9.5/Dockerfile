@@ -14,6 +14,12 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 #RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 #    procps
 
+# PG config
+# -----------------------------------------------------------------------------
+RUN mkdir /etc/postgresql/conf.d
+COPY initdb.sh /docker-entrypoint-initdb.d/initdb.sh
+RUN chmod 755 /docker-entrypoint-initdb.d/initdb.sh
+
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
 
@@ -26,5 +32,5 @@ RUN chmod 755 /root/bootstrap.sh
 EXPOSE 5432
 
 # q: why are we not using just ENTRYPOINT?
-ENTRYPOINT []
-CMD ["/root/bootstrap.sh", "postgres"]
+#ENTRYPOINT []
+ENTRYPOINT ["/root/bootstrap.sh", "postgres", "-c listen_addresses=*"]

@@ -31,7 +31,7 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -g "${CONTAINER_USER_GID}" www-data
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" www-data
 
-    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}/html"
 fi
 

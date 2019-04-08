@@ -33,8 +33,8 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -o -g "${CONTAINER_USER_GID}" mysql
     usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" mysql
 
-    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/mysql"
-    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/mysql/.*"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/mysql"
+    #chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/log/mysql"
 fi
 
 chown -R mysql:mysql /var/run/mysqld

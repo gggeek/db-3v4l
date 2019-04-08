@@ -18,8 +18,8 @@ services:
         hostname: web
         container_name: "${COMPOSE_PROJECT_NAME}_web"
         ports:
-            - "80:80"
-            - "443:443"
+            - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTP}:80"
+            - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTPS}:443"
         volumes:
             - ../app:/var/www/db3v4l
             - ./logs/web/nginx:/var/log/nginx
@@ -79,8 +79,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mysql_5_6
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_6"
-        ports:
-            - "3307:3306"
+        #ports:
+        #    - "3307:3306"
         volumes:
             - ./config/mysql/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/5.6:/var/lib/mysql
@@ -102,8 +102,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mysql_5_7
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_7"
-        ports:
-            - "3308:3306"
+        #ports:
+        #    - "3308:3306"
         volumes:
             - ./config/mysql/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/5.7:/var/lib/mysql
@@ -125,8 +125,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mysql_8_0
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
-        ports:
-            - "3309:3306"
+        #ports:
+        #    - "3309:3306"
         volumes:
             - ./config/mysql/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/8.0:/var/lib/mysql
@@ -148,8 +148,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_5_5
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_5_5"
-        ports:
-            - "3310:3306"
+        #ports:
+        #    - "3310:3306"
         volumes:
             - ./config/mariadb/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/5.5:/var/lib/mysql
@@ -171,8 +171,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_10_0
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_0"
-        ports:
-            - "3311:3306"
+        #ports:
+        #    - "3311:3306"
         volumes:
             - ./config/mariadb/10.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.0:/var/lib/mysql
@@ -194,8 +194,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_10_1
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_1"
-        ports:
-            - "3312:3306"
+        #ports:
+        #    - "3312:3306"
         volumes:
             - ./config/mariadb/10.1/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.1:/var/lib/mysql
@@ -217,8 +217,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_10_2
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_2"
-        ports:
-            - "3313:3306"
+        #ports:
+        #    - "3313:3306"
         volumes:
             - ./config/mariadb/10.2/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.2:/var/lib/mysql
@@ -240,8 +240,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_10_3
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_3"
-        ports:
-            - "3314:3306"
+        #ports:
+        #    - "3314:3306"
         volumes:
             - ./config/mariadb/10.3/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.3:/var/lib/mysql
@@ -263,10 +263,10 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: postgres_9_4
         container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_4"
-        ports:
-            - "5432:5432"
+        #ports:
+        #    - "5432:5432"
         volumes:
-            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/9.4:/var/lib/postgresql
             - ./logs/postgresql/9.4:/var/log/postgresql
         environment:
@@ -283,10 +283,10 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: postgres_9_5
         container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_5"
-        ports:
-            - "5433:5432"
+        #ports:
+        #    - "5433:5432"
         volumes:
-            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/postgresql/9.5/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/9.5:/var/lib/postgresql
             - ./logs/postgresql/9.5:/var/log/postgresql
         environment:
@@ -303,10 +303,10 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: postgres_9_6
         container_name: "${COMPOSE_PROJECT_NAME}_postgres_9_6"
-        ports:
-            - "5434:5432"
+        #ports:
+        #    - "5434:5432"
         volumes:
-            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/postgresql/9.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/9.6:/var/lib/postgresql
             - ./logs/postgresql/9.6:/var/log/postgresql
         environment:
@@ -323,10 +323,10 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: postgres_10_7
         container_name: "${COMPOSE_PROJECT_NAME}_postgres_10_7"
-        ports:
-            - "5435:5432"
+        #ports:
+        #    - "5435:5432"
         volumes:
-            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/postgresql/10.7/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/10.7:/var/lib/postgresql
             - ./logs/postgresql/10.7:/var/log/postgresql
         environment:
@@ -343,10 +343,10 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: postgres_11_2
         container_name: "${COMPOSE_PROJECT_NAME}_postgres_11_2"
-        ports:
-            - "5436:5432"
+        #ports:
+        #    - "5436:5432"
         volumes:
-            #- ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./config/postgresql/11.2/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/11.2:/var/lib/postgresql
             - ./logs/postgresql/11.2:/var/log/postgresql
         environment:

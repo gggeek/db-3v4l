@@ -33,8 +33,8 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" postgres
 
     # home dir == data dir
-    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
-    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.*
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
+    #chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/log/postgresql"
 fi
 
 chown -R postgres:postgres /var/run/postgresql

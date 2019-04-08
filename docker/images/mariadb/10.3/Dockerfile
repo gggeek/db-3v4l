@@ -26,5 +26,5 @@ RUN chmod 755 /root/bootstrap.sh
 EXPOSE 3306
 
 # q: why are we not using just ENTRYPOINT?
-ENTRYPOINT []
-CMD ["/root/bootstrap.sh", "mysqld"]
+#ENTRYPOINT []
+ENTRYPOINT ["/root/bootstrap.sh", "mysqld"]
