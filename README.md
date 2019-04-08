@@ -21,12 +21,16 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 ## Requirements
 
-* Docker X.Y or later.
+* Docker: 1.13 or later.
 
-* Docker-compose 1.13 or later
+* Docker-compose: version 1.10 or later
+
+* minimum RAM, CPU, Disk space: these have not been measured, but you probably want something better than a raspberry pi...
 
 
-## Installation
+## Quick Start
+
+### Installation
 
     cd docker && touch containers.env.local && docker-compose build
 
@@ -34,19 +38,40 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 the file  docker/containers.env.local _before_ running the `build` command, and add in there correct values for
 the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
 
+*NB*: the containers by default expose a web application on ports 80 and 443. If any of those ports are in use on
+the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMPOSE_WEB_LISTEN_PORT_HTTPS in file .env 
 
-## Usage
+### Usage
 
     cd docker && docker-compose up -d
     docker exec -ti db3v4l_worker su - user
-    php bin/console 
+        cd db3v4l
+        php bin/console db3v4l:sql:execute --sql='select current_date'
+        mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
+        psql -h postgresql_9_4 -U postgres -c 'select current_date'
     ...
 
+The default password for the last 2 commands is '3v4l'
+
+Once the containers are upp and running, you can access a database administration console at: http://localhost/adminer.php
+(if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
+your browser is executing).
+
 ## Details
+
+### Troubleshooting
+
+After starting the containers via `docker-compose up -d`, you can:
+
+- check if they are all running: `docker-compose ps`
+- check if they all bootstrapped correctly: `docker-compose logs`
+- check if they one container bootstrapped correctly, eg: `docker-compose logs db3v4l_postgresql_9_4`
+- check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
 
 ### Maintenance
 
 - 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
+
 
 ## Thanks
 

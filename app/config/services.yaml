@@ -15,6 +15,38 @@ parameters:
             driver: pdo_mysql
             charset: UTF8
             server_version: mariadb-5.5
+        mariadb_10_0:
+            host: mariadb_10_0
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: mariadb-10.0
+        mariadb_10_1:
+            host: mariadb_10_1
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: mariadb-10.1
+        mariadb_10_2:
+            host: mariadb_10_2
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: mariadb-10.2
+        mariadb_10_3:
+            host: mariadb_10_3
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: mariadb-10.3
         mysql_5_5:
             host: mysql_5_5
             port: 3306
@@ -23,6 +55,30 @@ parameters:
             driver: pdo_mysql
             charset: UTF8
             server_version: '5.5'
+        mysql_5_6:
+            host: mysql_5_6
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: '5.6'
+        mysql_5_7:
+            host: mysql_5_7
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: '5.7'
+        mysql_8_0:
+            host: mysql_8_0
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: '8.0'
         postgresql_9_4:
             host: postgresql_9_4
             port: 5432
@@ -31,7 +87,38 @@ parameters:
             driver: pdo_pgsql
             charset: UTF8
             server_version: '9.4'
-
+        postgresql_9_5:
+            host: postgresql_9_5
+            port: 5432
+            user: postgres
+            password: 3v4l
+            driver: pdo_pgsql
+            charset: UTF8
+            server_version: '9.5'
+        postgresql_9_6:
+            host: postgresql_9_6
+            port: 5432
+            user: postgres
+            password: 3v4l
+            driver: pdo_pgsql
+            charset: UTF8
+            server_version: '9.6'
+        postgresql_10_7:
+            host: postgresql_10_7
+            port: 5432
+            user: postgres
+            password: 3v4l
+            driver: pdo_pgsql
+            charset: UTF8
+            server_version: '10.7'
+        postgresql_11_2:
+            host: postgresql_11_2
+            port: 5432
+            user: postgres
+            password: 3v4l
+            driver: pdo_pgsql
+            charset: UTF8
+            server_version: '11.2'
 services:
     # default configuration for services in *this* file
     _defaults:

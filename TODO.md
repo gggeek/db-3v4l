@@ -1,6 +1,12 @@
-- worker: allow to take sql snippet file, pick the desired servers, run it and show results + time taken
+- fix auth problems with mysql 8.0
 
-- verify usage of custom config files for both mysql and posgres (look at readme on dockerhub)
+- worker: improve sql execution cmd:
+  + fix: why does mariadb cli command does return  -1 as exit code ?
+  + allow it to take sql snippet from file
+  + allow it to pick a set of desired servers
+  + at end show results + time & mem taken for each db
+
+- worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
 
 - web: allow to insert sql snippet, pick the desired servers, run it and show results
 
@@ -10,30 +16,37 @@
 
 - pick up a library which allows to load db-agnostic schema defs and data
 
-- web: add rest API
-
-- worker: improve profile of 'user' account
+- symfony config: get pwd for db root accounts injected from docker-compose
 
 - web/worker: set up a cronjob to remove SF profiler data
 
 - web/worker: move sf logs to a mounted volume
 
-- worker: add phpbench as dependency
+- web: improve Adminer gui by providing a pre-filled list of databases 
 
-- web gui: store previous snippets in a dedicated db, list them
+- web: add rest API
+
+- improve cli scripts:
+  + add a script that removes images+logs+data
+  + make the script which removes data ask 4 confirmation
 
 - web/worker: allow easy loading of 'standard' testing data sets
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
+- web gui: store previous snippets in a dedicated db, list them
+
 - mariadb/mysql: allow to define in docker parameters the size of the ramdisk for 
   also in default configs, do use /tmpfs? At least add it commented out
-  
+ 
 - postgresql: move stats_temp_directory to /tmpfs
+
+- worker: add phpbench as dependency
 
 - allow to easily set up either prod/public or dev/private stacks via a parameter in .env
 
 - "public server" configuration:
+  - disable access to adminer
   - add mod_security 3
   - prevent usage of custom db schemas, allow only temp ones
   - rate-limit http requests
@@ -50,7 +63,7 @@
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
-- add sqlite, Firebird and MSSQL containers 
+- add sqlite, Firebird, MSSQL and Elastic containers 
 
 - add clustered mysql/postgresql containers
 
