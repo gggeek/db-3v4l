@@ -81,3 +81,7 @@ Many thanks to
 - Symfony and Doctrine, for providing the building bricks for the application
 - eZPublish for giving me the itch to build this tool
 - JetBrains for kindly providing me with a PHPStorm license that I use daily in my open source endeavours 
+
+[![Latest version](https://img.shields.io/github/tag/gggeek/db-3v4l.svg?style=flat-square)](https://github.com/gggeek/db-3v4l/releases)
+[![License](https://img.shields.io/github/license/gggeek/db-3v4l.svg?style=flat-square)](LICENSE)
+![Downloads](https://img.shields.io/github/downloads/gggeek/db-3v4l/total.svg?style=flat-square)
