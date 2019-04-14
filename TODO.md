@@ -3,9 +3,14 @@
   + allow it to pick a set of desired servers
   + at end show results + time & mem taken for each db
 
-- add travis testing
-
 - worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
+
+- improve cli scripts:
+  + add a script that removes images+logs+data
+  + make the script which removes data ask 4 confirmation
+  + add a 'stack' script that simplifies building the stack and logging into it
+
+- add travis testing
 
 - web: allow to insert sql snippet, pick the desired servers, run it and show results
 
@@ -24,19 +29,15 @@
 - web: improve Adminer gui by providing a pre-filled list of databases 
 
 - web: add rest API
-
-- improve cli scripts:
-  + add a script that removes images+logs+data
-  + make the script which removes data ask 4 confirmation
-
+  
 - web/worker: allow easy loading of 'standard' testing data sets
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
 - web gui: store previous snippets in a dedicated db, list them
 
-- mariadb/mysql: allow to define in docker parameters the size of the ramdisk for 
-  also in default configs, do use /tmpfs? At least add it commented out
+- mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs; 
+  also in default configs, do use /tmpfs for temp tables? At least add it commented out
  
 - postgresql: move stats_temp_directory to /tmpfs
 

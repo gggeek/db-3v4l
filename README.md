@@ -65,7 +65,7 @@ After starting the containers via `docker-compose up -d`, you can:
 
 - check if they are all running: `docker-compose ps`
 - check if they all bootstrapped correctly: `docker-compose logs`
-- check if they one container bootstrapped correctly, eg: `docker-compose logs db3v4l_postgresql_9_4`
+- check if one container bootstrapped correctly, eg: `docker-compose logs db3v4l_postgresql_9_4`
 - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
 
 ### Maintenance
