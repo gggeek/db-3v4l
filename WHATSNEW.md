@@ -1,5 +1,5 @@
-Version 0.2 (unreleased)
-------------------------
+Version 0.2
+-----------
 
 - Fixed: sql commands executed against mariadb would be reported as failed 
 
