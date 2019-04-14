@@ -3,6 +3,8 @@ Version 0.2 (unreleased)
 
 - Fixed: sql commands executed against mariadb would be reported as failed 
 
+- Fixed: auth problems with mysql 8.0
+
 
 Version 0.1
 -----------

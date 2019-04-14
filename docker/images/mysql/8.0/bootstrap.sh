@@ -49,6 +49,12 @@ trap clean_up TERM
 
 /entrypoint.sh $@ &
 
+# Fix the auth method for the 2 users which we create by default, to make it easier to connect for older clients
+# @todo is there a better method than sleeping for a while to find out when mysql is fully functional and listening on network?
+sleep 5
+mysql -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD} -e "ALTER USER '${MYSQL_USER}'@'%' IDENTIFIED WITH mysql_native_password BY '${MYSQL_PASSWORD}';"
+mysql -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD} -e "ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '${MYSQL_ROOT_PASSWORD}';"
+
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &

@@ -1,9 +1,9 @@
-- fix auth problems with mysql 8.0
-
 - worker: improve sql execution cmd:
   + allow it to take sql snippet from file
   + allow it to pick a set of desired servers
   + at end show results + time & mem taken for each db
+
+- add travis testing
 
 - worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
 
