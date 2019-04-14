@@ -5,7 +5,7 @@ namespace Db3v4l\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Process\Process;
+use Db3v4l\Util\Process;
 use Symfony\Component\Yaml\Yaml;
 use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Service\SqlExecutorFactory;
@@ -41,6 +41,7 @@ class SqlExecute extends BaseCommand
             //->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: text, json or yml', 'text')
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for execution (secs)', 600)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of processes to run in parallel', 16)
+            ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate php process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
         ;
     }
 
@@ -54,6 +55,10 @@ class SqlExecute extends BaseCommand
     {
         $start = microtime(true);
 
+        // as per https://www.php.net/manual/en/function.ignore-user-abort.php: for cli scripts, it is probably a good idea
+        // to use ignore_user_abort
+        ignore_user_abort(true);
+
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
@@ -61,21 +66,34 @@ class SqlExecute extends BaseCommand
         $sql = $input->getOption('sql');
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
+        $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
 
         if ($sql === '') {
             throw new \Exception("Please provide an sql command/snippted to be executed");
+        }
+
+        // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
+        // We thus force it, but give end users an option to disable this
+        // For more details, see comment 12 at https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
+        if (!$dontForceSigchildEnabled) {
+
+            Process::forceSigchildEnabled(true);
         }
 
         /** @var Process[] $processes */
         $processes = [];
         foreach ($dbList as $dbName) {
             $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
-            $processes[$dbName] = $this->executorFactory->createForkedExecutor($dbConnectionSpec)->getProcess($sql);
+            $process = $this->executorFactory->createForkedExecutor($dbConnectionSpec)->getProcess($sql);
+
+            $process->setTimeout($timeout);
+
+            $processes[$dbName] = $process;
         }
 
         $this->writeln("Starting parallel execution...");
 
-        $this->processManager->runParallel($processes, $maxParallel, $timeout, 100, array($this, 'onSubProcessOutput'));
+        $this->processManager->runParallel($processes, $maxParallel, 100, array($this, 'onSubProcessOutput'));
 
         $failed = 0;
         $succeeded = 0;

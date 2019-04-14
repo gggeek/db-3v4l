@@ -1,7 +1,6 @@
 - fix auth problems with mysql 8.0
 
 - worker: improve sql execution cmd:
-  + fix: why does mariadb cli command does return  -1 as exit code ?
   + allow it to take sql snippet from file
   + allow it to pick a set of desired servers
   + at end show results + time & mem taken for each db
@@ -40,6 +39,9 @@
   also in default configs, do use /tmpfs? At least add it commented out
  
 - postgresql: move stats_temp_directory to /tmpfs
+
+- worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
+  This would allow to find out if any code construct has _scalability_ problems on a given db version
 
 - worker: add phpbench as dependency
 

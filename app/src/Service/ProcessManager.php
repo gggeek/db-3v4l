@@ -13,11 +13,10 @@ class ProcessManager
     /**
      * @param Process[] $processes
      * @param int $maxParallel
-     * @param int $timeout secs
      * @param int $poll microseconds
      * @param Callable $callback takes 4 args: $type, $buffer, $processIndex, $process
      */
-    public function runParallel(array $processes, $maxParallel, $timeout = 86400, $poll = 1000, $callback = null)
+    public function runParallel(array $processes, $maxParallel, $poll = 1000, $callback = null)
     {
         $this->validateProcesses($processes);
         // do not modify the object pointers in the argument, copy to local working variable
@@ -29,7 +28,6 @@ class ProcessManager
         $currentProcesses = array_splice($processesQueue, 0, $maxParallel);
         // start the initial stack of processes
         foreach ($currentProcesses as $idx => $process) {
-            $process->setTimeout($timeout);
             $process->start(function ($type, $buffer) use ($callback, $idx, $process) {
                 if ($callback) {
                     $callback($type, $buffer, $idx, $process);

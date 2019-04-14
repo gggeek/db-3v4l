@@ -2,8 +2,8 @@
 
 namespace Db3v4l\Service\SqlExecutor\Forked;
 
-use Symfony\Component\Process\Process;
 use Db3v4l\API\Interfaces\ForkedSqlExecutor;
+use Db3v4l\Util\Process;
 
 class Doctrine extends ForkedExecutor implements ForkedSqlExecutor
 {
