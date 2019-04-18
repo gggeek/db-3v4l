@@ -1,13 +1,13 @@
 - worker: improve sql execution cmd:
   + allow it to take sql snippet from file
   + allow it to pick a set of desired servers
-  + at end show results + time & mem taken for each db
 
 - worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
 
 - improve cli scripts:
   + add a script that removes images+logs+data
   + add a 'stack' script that simplifies building the stack and logging into it
+  + move from bash to sh
 
 - add travis testing
 

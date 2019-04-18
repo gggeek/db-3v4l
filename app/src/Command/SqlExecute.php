@@ -38,7 +38,7 @@ class SqlExecute extends BaseCommand
         $this
             ->setDescription('Executes an SQL command in parallel on all configured database servers')
             ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The command to execute')
-            //->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: text, json or yml', 'text')
+            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for execution (secs)', 600)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of processes to run in parallel', 16)
             ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate php process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
@@ -67,6 +67,7 @@ class SqlExecute extends BaseCommand
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
         $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
+        $format = $input->getOption('output-type');
 
         if ($sql === '') {
             throw new \Exception("Please provide an sql command/snippted to be executed");
@@ -82,16 +83,26 @@ class SqlExecute extends BaseCommand
 
         /** @var Process[] $processes */
         $processes = [];
+        $timingFiles = [];
         foreach ($dbList as $dbName) {
             $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
             $process = $this->executorFactory->createForkedExecutor($dbConnectionSpec)->getProcess($sql);
 
+            // wrap in a `time` call
+            $timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
+            $process->setCommandLine(
+                'time ' . escapeshellarg('--output=' . $timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
+                . $process->getCommandLine());
+
             $process->setTimeout($timeout);
 
             $processes[$dbName] = $process;
+            $timingFiles[$dbName] = $timingFile;
         }
 
-        $this->writeln("Starting parallel execution...");
+        if ($format === 'text') {
+            $this->writeln('<info>Starting parallel execution...</info>');
+        }
 
         $this->processManager->runParallel($processes, $maxParallel, 100, array($this, 'onSubProcessOutput'));
 
@@ -100,21 +111,30 @@ class SqlExecute extends BaseCommand
         $results = array();
         foreach ($processes as $dbName => $process) {
             $results[$dbName] = array(
-                'stdout' => $process->getOutput(),
-                'stderr' => $process->getErrorOutput(),
+                'stdout' => rtrim($process->getOutput()),
+                'stderr' => trim($process->getErrorOutput()),
                 'exitcode' => $process->getExitCode()
             );
+
+            $timingData = file_get_contents($timingFiles[$dbName]);
+            if ($timingData != '') {
+                $timingData = explode(' ', $timingData, 2);
+                $results[$dbName]['time'] = $timingData[1];
+                $results[$dbName]['memory'] = $timingData[0];
+            }
+            unlink($timingFiles[$dbName]);
+
             if ($process->isSuccessful()) {
                 $succeeded++;
             } else {
-                $output->writeln("\n<error>Execution on database '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n");
+                $this->writeErrorln("\n<error>Execution on database '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 $failed++;
             }
         }
 
         $time = microtime(true) - $start;
 
-        $this->writeResults($results, $succeeded, $failed, $time);
+        $this->writeResults($results, $succeeded, $failed, $time, $format);
 
     }
 
@@ -123,49 +143,64 @@ class SqlExecute extends BaseCommand
      * @param int $succeeded
      * @param int $failed
      * @param float $time
-     *
-     * @todo
+     * @param string $format
      */
-    protected function writeResults(array $results, $succeeded, $failed, $time)
+    protected function writeResults(array $results, $succeeded, $failed, $time, $format = 'text')
     {
-        $this->writeln('<info>' . $succeeded . ' succeeded, ' . $failed . ' failed</info>');
+        if ($format === 'text') {
+            $this->writeln($succeeded . ' succeeded, ' . $failed . ' failed');
 
-        // since we use subprocesses, we can not measure max memory used
-        $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
+            // since we use subprocesses, we can not measure max memory used
+            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+        }
 
-        var_dump($results);
+        switch ($format) {
+            case 'json':
+                $results = json_encode($results, JSON_PRETTY_PRINT);
+                break;
+            case 'php':
+                $results = var_export($results, true);
+                break;
+            case 'text':
+            case 'yml':
+            case 'yaml':
+                $results = Yaml::dump($results, 2, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+                break;
+            default:
+                throw new \Exception("Unsupported output format: '$format'");
+                break;
+        }
+
+        $this->writeln($results, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
     }
 
     /**
-     * @param $type
+     * @param string $type
      * @param string $buffer
      * @param string $processIndex;
      * @param Process $process
-     *
-     * @todo add support for verbosity level
      */
     public function onSubProcessOutput($type, $buffer, $processIndex, $process=null)
     {
         $lines = explode("\n", trim($buffer));
 
         foreach ($lines as $line) {
-            /*if (preg_match('/Migrations executed: ([0-9]+), failed: ([0-9]+), skipped: ([0-9]+)/', $line, $matches)) {
-                $this->migrationsDone[0] += $matches[1];
-                $this->migrationsDone[1] += $matches[2];
-                $this->migrationsDone[2] += $matches[3];
-
-                // swallow these lines unless we are in verbose mode
-                if ($this->verbosity <= Output::VERBOSITY_NORMAL) {
-                    return;
-                }
-            }*/
-
             // we tag the output from the different processes
             if (trim($line) !== '') {
-                echo '[' . $processIndex . '][' . ($process ? $process->getPid() : '') . '] ' . trim($line) . "\n";
+                if ($type === 'err') {
+                    $this->writeErrorln(
+                        '[' . $processIndex . '][' . ($process ? $process->getPid() : '') . '] ' . trim($line),
+                        OutputInterface::VERBOSITY_VERBOSE,
+                        OutputInterface::OUTPUT_RAW
+                    );
+                } else {
+                    $this->writeln(
+                        '[' . $processIndex . '][' . ($process ? $process->getPid() : '') . '] ' . trim($line),
+                        OutputInterface::VERBOSITY_VERBOSE,
+                        OutputInterface::OUTPUT_RAW
+                    );
+                }
             }
-
-            //$this->results[$p]
         }
     }
 }

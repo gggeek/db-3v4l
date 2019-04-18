@@ -119,6 +119,7 @@ parameters:
             driver: pdo_pgsql
             charset: UTF8
             server_version: '11.2'
+
 services:
     # default configuration for services in *this* file
     _defaults:

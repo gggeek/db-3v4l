@@ -46,7 +46,11 @@ the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMP
     cd docker && docker-compose up -d
     docker exec -ti db3v4l_worker su - user
         cd db3v4l
+        
+        php bin/console db3v4l:database:list
+        
         php bin/console db3v4l:sql:execute --sql='select current_date'
+        
         mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
         psql -h postgresql_9_4 -U postgres -c 'select current_date'
     ...

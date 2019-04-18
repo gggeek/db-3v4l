@@ -23,24 +23,29 @@ class NativeClient extends ForkedExecutor implements ForkedSqlExecutor
                     '--host=' . $this->databaseConfiguration['host'],
                     '--port=' . $this->databaseConfiguration['port'] ?? '3306',
                     '--user=' . $this->databaseConfiguration['user'],
+                    '-p' . $this->databaseConfiguration['password'],
                     '--execute=' . $sql,
                     // $dbname
                 ];
                 $env = [
-                    'MYSQL_PWD' => $this->databaseConfiguration['password'],
+                    // problematic when wrapping the process in a call to `time`...
+                    //'MYSQL_PWD' => $this->databaseConfiguration['password'],
                 ];
                 break;
             case 'pgsql':
                 $command = 'psql';
                 $options = [
-                    '--host=' . $this->databaseConfiguration['host'],
-                    '--port=' . $this->databaseConfiguration['port'] ?? '5432',
-                    '--username=' . $this->databaseConfiguration['user'],
+                    "postgresql://".$this->databaseConfiguration['user'].":".$this->databaseConfiguration['password'].
+                    "@{$this->databaseConfiguration['host']}:".($this->databaseConfiguration['port'] ?? '5432').'/',
+                    //'--host=' . $this->databaseConfiguration['host'],
+                    //'--port=' . $this->databaseConfiguration['port'] ?? '5432',
+                    //'--username=' . $this->databaseConfiguration['user'],
                     '--command=' . $sql,
                     //'--dbname=' . $dbname
                 ];
                 $env = [
-                    'PGPASSWORD' => $this->databaseConfiguration['password'],
+                    // problematic when wrapping the process in a call to `time`...
+                    //'PGPASSWORD' => $this->databaseConfiguration['password'],
                 ];
                 break;
             default:

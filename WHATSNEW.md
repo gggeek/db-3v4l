@@ -1,3 +1,13 @@
+Version 0.3 (unreleased)
+------------------------
+
+- Improved: add confirmation question to the cli command which deletes all database data
+
+- Improved the `sql:execute` command:
+    - measure time and memory taken for each db
+    - allow to print output in json/yaml/php format
+ 
+ 
 Version 0.2
 -----------
 

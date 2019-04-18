@@ -26,7 +26,7 @@ class DatabaseList extends BaseCommand
     {
         $this
             ->setDescription('Lists all configured database servers')
-            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: text, json or yml', 'text')
+            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
         ;
     }
 
@@ -44,16 +44,21 @@ class DatabaseList extends BaseCommand
 
         $list = $this->dbManager->listDatabases();
 
-        switch ($input->getOption('output-type')) {
+        $format = $input->getOption('output-type');
+        switch ($format) {
             case 'json':
                 $result = json_encode($list, JSON_PRETTY_PRINT);
                 break;
+            case 'php':
+                $result = var_export($list, true);
+                break;
+            case 'text':
             case 'yml':
             case 'yaml':
                 $result = Yaml::dump($list);
                 break;
             default:
-                throw new \Exception('to be implemented...');
+                throw new \Exception("Unsupported output format: '$format'");
                 break;
         }
 
