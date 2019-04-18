@@ -7,7 +7,6 @@
 
 - improve cli scripts:
   + add a script that removes images+logs+data
-  + make the script which removes data ask 4 confirmation
   + add a 'stack' script that simplifies building the stack and logging into it
 
 - add travis testing
