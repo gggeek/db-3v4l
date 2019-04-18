@@ -1,3 +1,5 @@
-doctrine:
-    dbal:
-        connections: '%db3v4l.databases%'
+# no need to configure all db connections for doctrine usage for the moment
+
+#doctrine:
+#    dbal:
+#        connections: '%db3v4l.databases%'
