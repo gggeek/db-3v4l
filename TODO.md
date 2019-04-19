@@ -1,6 +1,7 @@
 - worker: improve sql execution cmd:
   + allow it to take sql snippet from file
   + allow it to pick a set of desired servers
+  + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
 
 - worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
 

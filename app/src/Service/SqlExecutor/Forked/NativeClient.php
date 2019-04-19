@@ -24,6 +24,7 @@ class NativeClient extends ForkedExecutor implements ForkedSqlExecutor
                     '--port=' . $this->databaseConfiguration['port'] ?? '3306',
                     '--user=' . $this->databaseConfiguration['user'],
                     '-p' . $this->databaseConfiguration['password'],
+                    '--binary-mode', // 'It also disables all mysql commands except charset and delimiter in non-interactive mode (for input piped to mysql or loaded using the source command)'
                     '--execute=' . $sql,
                     // $dbname
                 ];

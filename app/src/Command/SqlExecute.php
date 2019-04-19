@@ -5,11 +5,12 @@ namespace Db3v4l\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Db3v4l\Util\Process;
 use Symfony\Component\Yaml\Yaml;
+use Db3v4l\API\Interfaces\TimedExecutor;
 use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Service\SqlExecutorFactory;
 use Db3v4l\Service\ProcessManager;
+use Db3v4l\Util\Process;
 
 class SqlExecute extends BaseCommand
 {
@@ -83,21 +84,17 @@ class SqlExecute extends BaseCommand
 
         /** @var Process[] $processes */
         $processes = [];
-        $timingFiles = [];
+        $executors = [];
         foreach ($dbList as $dbName) {
             $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
-            $process = $this->executorFactory->createForkedExecutor($dbConnectionSpec)->getProcess($sql);
 
-            // wrap in a `time` call
-            $timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
-            $process->setCommandLine(
-                'time ' . escapeshellarg('--output=' . $timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
-                . $process->getCommandLine());
+            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
+            $process = $executor->getProcess($sql);
 
             $process->setTimeout($timeout);
 
+            $executors[$dbName] = $executor;
             $processes[$dbName] = $process;
-            $timingFiles[$dbName] = $timingFile;
         }
 
         if ($format === 'text') {
@@ -116,13 +113,10 @@ class SqlExecute extends BaseCommand
                 'exitcode' => $process->getExitCode()
             );
 
-            $timingData = file_get_contents($timingFiles[$dbName]);
-            if ($timingData != '') {
-                $timingData = explode(' ', $timingData, 2);
-                $results[$dbName]['time'] = $timingData[1];
-                $results[$dbName]['memory'] = $timingData[0];
+            if ($executors[$dbName] instanceof TimedExecutor) {
+                $timingData = $executors[$dbName]->getTimingData();
+                $results[$dbName] = array_merge($results[$dbName], $timingData);
             }
-            unlink($timingFiles[$dbName]);
 
             if ($process->isSuccessful()) {
                 $succeeded++;
@@ -135,7 +129,6 @@ class SqlExecute extends BaseCommand
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $succeeded, $failed, $time, $format);
-
     }
 
     /**
@@ -147,13 +140,6 @@ class SqlExecute extends BaseCommand
      */
     protected function writeResults(array $results, $succeeded, $failed, $time, $format = 'text')
     {
-        if ($format === 'text') {
-            $this->writeln($succeeded . ' succeeded, ' . $failed . ' failed');
-
-            // since we use subprocesses, we can not measure max memory used
-            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
-        }
-
         switch ($format) {
             case 'json':
                 $results = json_encode($results, JSON_PRETTY_PRINT);
@@ -170,8 +156,14 @@ class SqlExecute extends BaseCommand
                 throw new \Exception("Unsupported output format: '$format'");
                 break;
         }
-
         $this->writeln($results, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+
+        if ($format === 'text') {
+            $this->writeln($succeeded . ' succeeded, ' . $failed . ' failed');
+
+            // since we use subprocesses, we can not measure max memory used
+            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+        }
     }
 
     /**
