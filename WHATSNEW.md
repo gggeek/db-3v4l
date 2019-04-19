@@ -6,8 +6,9 @@ Version 0.3 (unreleased)
 - Improved the `sql:execute` command:
     - measure time and memory taken for each db
     - allow to print output in json/yaml/php format
- 
- 
+    - allow to execute sql commands stored in a file besides specifying them as cli option
+
+
 Version 0.2
 -----------
 

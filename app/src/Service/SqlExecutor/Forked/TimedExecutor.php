@@ -2,28 +2,44 @@
 
 namespace Db3v4l\Service\SqlExecutor\Forked;
 
-use Db3v4l\API\Interfaces\ForkedSqlExecutor;
+use Db3v4l\API\Interfaces\ForkedCommandExecutor;
+use Db3v4l\API\Interfaces\ForkedFileExecutor;
 use Db3v4l\API\Interfaces\TimedExecutor as TimedExecutorInterface;
 
-class TimedExecutor implements ForkedSqlExecutor, TimedExecutorInterface
+class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedExecutorInterface
 {
-    /** @var ForkedSqlExecutor */
+    /** @var ForkedCommandExecutor */
     protected $wrappedExecutor;
     protected $timingFile;
 
-    public function __construct(ForkedSqlExecutor $wrappedExecutor)
+    protected $timeCmd = '/usr/bin/time';
+
+    public function __construct(ForkedCommandExecutor $wrappedExecutor)
     {
         $this->wrappedExecutor = $wrappedExecutor;
     }
 
-    public function getProcess($sql)
+    public function getExecuteCommandProcess($sql)
     {
-        $process = $this->wrappedExecutor->getProcess($sql);
+        $process = $this->wrappedExecutor->getExecuteCommandProcess($sql);
 
         // wrap in a `time` call
         $this->timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
         $process->setCommandLine(
-            'time ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
+            $this->timeCmd . ' ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
+            . $process->getCommandLine());
+
+        return $process;
+    }
+
+    public function getExecuteFileProcess($sql)
+    {
+        $process = $this->wrappedExecutor->getExecuteFileProcess($sql);
+
+        // wrap in a `time` call
+        $this->timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
+        $process->setCommandLine(
+            $this->timeCmd . ' ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
             . $process->getCommandLine());
 
         return $process;

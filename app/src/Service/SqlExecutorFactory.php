@@ -2,7 +2,8 @@
 
 namespace Db3v4l\Service;
 
-use Db3v4l\API\Interfaces\ForkedSqlExecutor;
+use Db3v4l\API\Interfaces\ForkedCommandExecutor;
+use Db3v4l\API\Interfaces\ForkedFileExecutor;
 use Db3v4l\Service\SqlExecutor\Forked\NativeClient;
 use Db3v4l\Service\SqlExecutor\Forked\Doctrine;
 use Db3v4l\Service\SqlExecutor\Forked\TimedExecutor;
@@ -12,8 +13,8 @@ class SqlExecutorFactory
     /**
      * @param array $databaseConnectionConfiguration
      * @param string $executionStrategy
-     * @bool $timed
-     * @return ForkedSqlExecutor
+     * @param bool $timed
+     * @return ForkedCommandExecutor|ForkedFileExecutor
      * @throws \OutOfBoundsException
      */
     public function createForkedExecutor($databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)

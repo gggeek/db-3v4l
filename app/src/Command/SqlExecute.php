@@ -38,7 +38,8 @@ class SqlExecute extends BaseCommand
     {
         $this
             ->setDescription('Executes an SQL command in parallel on all configured database servers')
-            ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The command to execute')
+            ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
+            ->addOption('file', null, InputOption::VALUE_REQUIRED, 'A file with sql commands to execute')
             ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for execution (secs)', 600)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of processes to run in parallel', 16)
@@ -65,13 +66,17 @@ class SqlExecute extends BaseCommand
 
         $dbList = $this->dbManager->listDatabases();
         $sql = $input->getOption('sql');
+        $file = $input->getOption('file');
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
         $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
         $format = $input->getOption('output-type');
 
-        if ($sql === '') {
-            throw new \Exception("Please provide an sql command/snippted to be executed");
+        if ($sql == null && $file == null) {
+            throw new \Exception("Please provide an sql command/file to be executed");
+        }
+        if ($sql != null && $file != null) {
+            throw new \Exception("Please provide either an sql command or file to be executed, not both");
         }
 
         // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
@@ -82,6 +87,10 @@ class SqlExecute extends BaseCommand
             Process::forceSigchildEnabled(true);
         }
 
+        if ($format === 'text') {
+            $this->writeln('<info>Preparing commands...</info>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+
         /** @var Process[] $processes */
         $processes = [];
         $executors = [];
@@ -89,7 +98,16 @@ class SqlExecute extends BaseCommand
             $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
 
             $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
-            $process = $executor->getProcess($sql);
+
+            if ($sql != null) {
+                $process = $executor->getExecuteCommandProcess($sql);
+            } else {
+                $process = $executor->getExecuteFileProcess($file);
+            }
+
+            if ($format === 'text') {
+                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
+            }
 
             $process->setTimeout($timeout);
 

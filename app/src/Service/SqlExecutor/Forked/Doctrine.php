@@ -2,16 +2,16 @@
 
 namespace Db3v4l\Service\SqlExecutor\Forked;
 
-use Db3v4l\API\Interfaces\ForkedSqlExecutor;
+use Db3v4l\API\Interfaces\ForkedCommandExecutor;
 use Db3v4l\Util\Process;
 
-class Doctrine extends ForkedExecutor implements ForkedSqlExecutor
+class Doctrine extends ForkedExecutor implements ForkedCommandExecutor
 {
     /**
      * @param string $sql
      * @return Process
      */
-    public function getProcess($sql)
+    public function getExecuteCommandProcess($sql)
     {
         throw new \RuntimeException('TO BE IMPLEMENTED');
     }
