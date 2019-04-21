@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Yaml\Yaml;
 use Db3v4l\API\Interfaces\TimedExecutor;
 use Db3v4l\Service\DatabaseConfigurationManager;
+use Db3v4l\Service\DatabaseSchemaManager;
 use Db3v4l\Service\SqlExecutorFactory;
 use Db3v4l\Service\ProcessManager;
 use Db3v4l\Util\Process;
@@ -37,7 +38,7 @@ class SqlExecute extends BaseCommand
     protected function configure()
     {
         $this
-            ->setDescription('Executes an SQL command in parallel on all configured database servers')
+            ->setDescription('Executes an SQL command in parallel on all configured database servers, creating a dedicated database schema (and user)')
             ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
             ->addOption('file', null, InputOption::VALUE_REQUIRED, 'A file with sql commands to execute')
             ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
@@ -83,9 +84,14 @@ class SqlExecute extends BaseCommand
         // We thus force it, but give end users an option to disable this
         // For more details, see comment 12 at https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
         if (!$dontForceSigchildEnabled) {
-
             Process::forceSigchildEnabled(true);
         }
+
+        if ($format === 'text') {
+            $this->writeln('<info>Creating temporary schemas...</info>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+
+        $dbConnectionSpecs = $this->createSchemas($dbList, $maxParallel);
 
         if ($format === 'text') {
             $this->writeln('<info>Preparing commands...</info>', OutputInterface::VERBOSITY_VERBOSE);
@@ -94,8 +100,7 @@ class SqlExecute extends BaseCommand
         /** @var Process[] $processes */
         $processes = [];
         $executors = [];
-        foreach ($dbList as $dbName) {
-            $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+        foreach ($dbConnectionSpecs as $dbName => $dbConnectionSpec) {
 
             $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
 
@@ -144,9 +149,107 @@ class SqlExecute extends BaseCommand
             }
         }
 
+        if ($format === 'text') {
+            $this->writeln('<info>Dropping temporary schemas...</info>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+        $this->dropSchemas($dbConnectionSpecs, $maxParallel);
+
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $succeeded, $failed, $time, $format);
+    }
+
+    /**
+     * @param string[] $dbList
+     * @param int $maxParallel
+     * @return array same format as dbManager::getDatabaseConnectionSpecification
+     */
+    protected function createSchemas($dbList, $maxParallel)
+    {
+        $processes = [];
+        $connectionSpecs = [];
+        $tempSQLFileNames = [];
+
+        /// @todo inject more randomness in the username, by allowing more chars than bin2hex produces
+        $userName = bin2hex(random_bytes(8)); // old mysql versions have a limitation of 16 chars for usernames
+        $password = bin2hex(random_bytes(16));
+        //$schemaName = bin2hex(random_bytes(31));
+        $schemaName = null; // $userName will be used as schema name
+
+        foreach ($dbList as $dbName) {
+            $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+
+            $schemaManager = new DatabaseSchemaManager($dbConnectionSpec);
+            $sql = $schemaManager->getCreateSchemaSQL($userName, $password, $schemaName);
+            // sadly, psql does not allow to create a db and a user using a multiple-sql-commands string,
+            // and we have to resort to using temp files
+            /// @todo can we make this safer? Ideally the new userv name and pwd should neither hit disk nor the process list...
+            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3val_');
+            file_put_contents($tempSQLFileName, $sql);
+            $tempSQLFileNames[] = $tempSQLFileName;
+
+            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+            $process = $executor->getExecuteFileProcess($tempSQLFileName);
+            $processes[$dbName] = $process;
+            $connectionSpecs[$dbName] = $dbConnectionSpec;
+        }
+
+        $this->processManager->runParallel($processes, $maxParallel, 100);
+
+        $results = array();
+        foreach ($processes as $dbName => $process) {
+            if ($process->isSuccessful()) {
+                $results[$dbName] = array_merge($connectionSpecs[$dbName], array(
+                    'user' => $userName,
+                    'password' => $password,
+                    'dbname' => $userName
+                ));
+            } else {
+                $this->writeErrorln("\n<error>Creation of new schema & user on database '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+            }
+        }
+
+        foreach($tempSQLFileNames as $tempSQLFileName) {
+            unlink($tempSQLFileName);
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param array $dbSpecList
+     * @param int $maxParallel
+     */
+    protected function dropSchemas($dbSpecList, $maxParallel)
+    {
+        $processes = [];
+        $tempSQLFileNames = [];
+
+        foreach ($dbSpecList as $dbName => $dbConnectionSpec) {
+            $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+
+            $schemaManager = new DatabaseSchemaManager($dbConnectionSpec);
+            $sql= $schemaManager->getDropSchemaSQL($dbConnectionSpec['user'], isset($dbConnectionSpec['dbname']) ? $dbConnectionSpec['dbname'] : null );
+            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3val_');
+            file_put_contents($tempSQLFileName, $sql);
+            $tempSQLFileNames[] = $tempSQLFileName;
+
+            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+            $process = $executor->getExecuteFileProcess($tempSQLFileName);
+            $processes[$dbName] = $process;
+        }
+
+        $this->processManager->runParallel($processes, $maxParallel, 100);
+
+        foreach ($processes as $dbName => $process) {
+            if (!$process->isSuccessful()) {
+                $this->writeErrorln("\n<error>Drop of new schema & user on database '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+            }
+        }
+
+        foreach($tempSQLFileNames as $tempSQLFileName) {
+            unlink($tempSQLFileName);
+        }
     }
 
     /**

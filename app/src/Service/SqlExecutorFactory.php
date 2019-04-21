@@ -17,7 +17,7 @@ class SqlExecutorFactory
      * @return ForkedCommandExecutor|ForkedFileExecutor
      * @throws \OutOfBoundsException
      */
-    public function createForkedExecutor($databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)
+    public function createForkedExecutor(array $databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)
     {
         switch ($executionStrategy) {
             case 'Doctrine':

@@ -7,6 +7,8 @@ Version 0.3 (unreleased)
     - measure time and memory taken for each db
     - allow to print output in json/yaml/php format
     - allow to execute sql commands stored in a file besides specifying them as cli option
+    - all sql commands are now executed in a temporary db schema, by a corresponding temp. db user, instead of being
+      executed with the database 'root' account 
 
 
 Version 0.2

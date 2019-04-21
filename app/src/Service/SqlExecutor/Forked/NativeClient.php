@@ -34,7 +34,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
      */
     public function getProcess($sqlOrFilename, $isFile = false)
     {
-        $clientType = $this->getDbClientFromDriver($this->databaseConfiguration['driver']);
+        $clientType = $this->getDbClientTypeFromDriver($this->databaseConfiguration['driver']);
 
         switch ($clientType) {
             case 'mysql':
@@ -45,8 +45,10 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     '--user=' . $this->databaseConfiguration['user'],
                     '-p' . $this->databaseConfiguration['password'],
                     '--binary-mode', // 'It also disables all mysql commands except charset and delimiter in non-interactive mode (for input piped to mysql or loaded using the source command)'
-                    // $dbname
                 ];
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    $options[] = $this->databaseConfiguration['dbname'];
+                }
                 if (!$isFile) {
                     $options[] = '--execute=' . $sqlOrFilename;
                 }
@@ -57,14 +59,16 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                 break;
             case 'pgsql':
                 $command = 'psql';
+                $connectString = "postgresql://".$this->databaseConfiguration['user'].":".$this->databaseConfiguration['password'].
+                    "@{$this->databaseConfiguration['host']}:".($this->databaseConfiguration['port'] ?? '5432').'/';
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    $connectString .= $this->databaseConfiguration['dbname'];
+                }
                 $options = [
-                    "postgresql://".$this->databaseConfiguration['user'].":".$this->databaseConfiguration['password'].
-                    "@{$this->databaseConfiguration['host']}:".($this->databaseConfiguration['port'] ?? '5432').'/',
-                    //'--host=' . $this->databaseConfiguration['host'],
-                    //'--port=' . $this->databaseConfiguration['port'] ?? '5432',
-                    //'--username=' . $this->databaseConfiguration['user'],
-                    //'--dbname=' . $dbname
+                    $connectString
                 ];
+                // NB: this triggers a different behaviour that piping multiple commands to stdin, namely
+                // it wraps all of the commands in a transaction and allows either sql commands or a single meta-command
                 if (!$isFile) {
                     $options[] = '--command=' . $sqlOrFilename;
                 }
@@ -91,7 +95,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
      * @param string $driver
      * @return string
      */
-    protected function getDbClientFromDriver($driver)
+    protected function getDbClientTypeFromDriver($driver)
     {
         return str_replace('pdo_', '', $driver);
     }

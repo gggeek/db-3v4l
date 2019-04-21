@@ -1,8 +1,14 @@
 - worker: improve sql execution cmd:
   + allow it to pick a set of desired servers
+  + allow it to pick an existing db schema & user
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
-    - ok for mysql? (to be tested), missing for psql
-  + examine in detail the differences between running a command vs a file (eg. transaction usage)
+    - ok for mysql? (to be tested)
+    - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
+      driver... it might be in fact already happening when NOT using input via files...)
+  + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
+
+- improve cli scripts:
+  + add scripts to create and drop a schema on all servers
 
 - worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
 
@@ -15,9 +21,9 @@
 
 - web: allow to insert sql snippet, pick the desired servers, run it and show results
 
-- web/worker: allow auto db-schema create+teardown (w. user-defined charset)
+- web/worker: allow user-defined charset for auto db-schema create
 
-- web/worker: allow custom db init scripts (load data and set session vars)
+- web/worker: allow custom db init scripts (to load data and set session vars)
 
 - pick up a library which allows to load db-agnostic schema defs and data
 
@@ -35,7 +41,7 @@
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
-- web gui: store previous snippets in a dedicated db, list them
+- web gui: store previous snippets in a dedicated db, list them (private to each user session)
 
 - mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs; 
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
@@ -56,7 +62,7 @@
   - rate-limit http requests
   - size-limit http requests
   - add caching in nginx of static assets
-  - add firewall rules to the web containers to block access to outside world at bootstrap
+  - add firewall rules to the all containers to block access to outside world at bootstrap
   - make php code non-writeable by www-data user
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload

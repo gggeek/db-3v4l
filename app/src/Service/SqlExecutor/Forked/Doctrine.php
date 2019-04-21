@@ -8,7 +8,7 @@ use Db3v4l\Util\Process;
 class Doctrine extends ForkedExecutor implements ForkedCommandExecutor
 {
     /**
-     * @param string $sql
+     * @param string|string[] $sql
      * @return Process
      */
     public function getExecuteCommandProcess($sql)
