@@ -1,6 +1,6 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor\Forked;
+namespace Db3v4l\Core\SqlExecutor\Forked;
 
 use Db3v4l\API\Interfaces\ForkedCommandExecutor;
 use Db3v4l\API\Interfaces\ForkedFileExecutor;
@@ -98,5 +98,10 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
     protected function getDbClientTypeFromDriver($driver)
     {
         return str_replace('pdo_', '', $driver);
+    }
+
+    protected function getEnv()
+    {
+        return array();
     }
 }

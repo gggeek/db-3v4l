@@ -1,5 +1,11 @@
-Version 0.3 (unreleased)
-------------------------
+Version 0.3.1
+-------------
+
+- Fixed: temporary db schemas would not be dropped, at least for mariadb/mysql databases
+
+
+Version 0.3
+-----------
 
 - Improved: add confirmation question to the cli command which deletes all database data
 
@@ -8,7 +14,7 @@ Version 0.3 (unreleased)
     - allow to print output in json/yaml/php format
     - allow to execute sql commands stored in a file besides specifying them as cli option
     - all sql commands are now executed in a temporary db schema, by a corresponding temp. db user, instead of being
-      executed with the database 'root' account 
+      executed with the database 'root' account
 
 
 Version 0.2

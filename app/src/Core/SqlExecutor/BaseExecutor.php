@@ -1,6 +1,6 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor;
+namespace Db3v4l\Core\SqlExecutor;
 
 abstract class BaseExecutor
 {

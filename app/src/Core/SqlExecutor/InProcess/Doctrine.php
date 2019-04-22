@@ -1,6 +1,6 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor\InProcess;
+namespace Db3v4l\Core\SqlExecutor\InProcess;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Configuration;

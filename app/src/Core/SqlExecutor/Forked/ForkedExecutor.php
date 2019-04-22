@@ -1,8 +1,8 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor\Forked;
+namespace Db3v4l\Core\SqlExecutor\Forked;
 
-use Db3v4l\Service\SqlExecutor\BaseExecutor;
+use Db3v4l\Core\SqlExecutor\BaseExecutor;
 
 abstract class ForkedExecutor extends BaseExecutor
 {

@@ -4,9 +4,9 @@ namespace Db3v4l\Service;
 
 use Db3v4l\API\Interfaces\ForkedCommandExecutor;
 use Db3v4l\API\Interfaces\ForkedFileExecutor;
-use Db3v4l\Service\SqlExecutor\Forked\NativeClient;
-use Db3v4l\Service\SqlExecutor\Forked\Doctrine;
-use Db3v4l\Service\SqlExecutor\Forked\TimedExecutor;
+use Db3v4l\Core\SqlExecutor\Forked\NativeClient;
+use Db3v4l\Core\SqlExecutor\Forked\Doctrine;
+use Db3v4l\Core\SqlExecutor\Forked\TimedExecutor;
 
 class SqlExecutorFactory
 {

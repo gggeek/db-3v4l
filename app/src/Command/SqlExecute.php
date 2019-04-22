@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Yaml\Yaml;
 use Db3v4l\API\Interfaces\TimedExecutor;
 use Db3v4l\Service\DatabaseConfigurationManager;
-use Db3v4l\Service\DatabaseSchemaManager;
+use Db3v4l\Core\DatabaseSchemaManager;
 use Db3v4l\Service\SqlExecutorFactory;
 use Db3v4l\Service\ProcessManager;
 use Db3v4l\Util\Process;
@@ -177,9 +177,9 @@ class SqlExecute extends BaseCommand
         $schemaName = null; // $userName will be used as schema name
 
         foreach ($dbList as $dbName) {
-            $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
 
-            $schemaManager = new DatabaseSchemaManager($dbConnectionSpec);
+            $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getCreateSchemaSQL($userName, $password, $schemaName);
             // sadly, psql does not allow to create a db and a user using a multiple-sql-commands string,
             // and we have to resort to using temp files
@@ -188,10 +188,10 @@ class SqlExecute extends BaseCommand
             file_put_contents($tempSQLFileName, $sql);
             $tempSQLFileNames[] = $tempSQLFileName;
 
-            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+            $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteFileProcess($tempSQLFileName);
             $processes[$dbName] = $process;
-            $connectionSpecs[$dbName] = $dbConnectionSpec;
+            $connectionSpecs[$dbName] = $rootDbConnectionSpec;
         }
 
         $this->processManager->runParallel($processes, $maxParallel, 100);
@@ -226,15 +226,15 @@ class SqlExecute extends BaseCommand
         $tempSQLFileNames = [];
 
         foreach ($dbSpecList as $dbName => $dbConnectionSpec) {
-            $dbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
 
-            $schemaManager = new DatabaseSchemaManager($dbConnectionSpec);
+            $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql= $schemaManager->getDropSchemaSQL($dbConnectionSpec['user'], isset($dbConnectionSpec['dbname']) ? $dbConnectionSpec['dbname'] : null );
             $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3val_');
             file_put_contents($tempSQLFileName, $sql);
             $tempSQLFileNames[] = $tempSQLFileName;
 
-            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+            $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteFileProcess($tempSQLFileName);
             $processes[$dbName] = $process;
         }

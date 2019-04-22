@@ -6,6 +6,7 @@
     - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
       driver... it might be in fact already happening when NOT using input via files...)
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
+  + check: can the temp user drop&creates schemas for postgresql?
 
 - improve cli scripts:
   + add scripts to create and drop a schema on all servers

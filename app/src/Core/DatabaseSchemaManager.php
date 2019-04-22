@@ -1,6 +1,6 @@
 <?php
 
-namespace Db3v4l\Service;
+namespace Db3v4l\Core;
 
 class DatabaseSchemaManager
 {
@@ -62,7 +62,7 @@ class DatabaseSchemaManager
         switch ($dbType) {
             case 'mysql':
                 return
-                    "DROP DATABASE IF EXISTS `$schemaName`; DROP USER '$userName'@'%';";
+                    "DROP USER '$userName'@'%'; DROP DATABASE IF EXISTS `$schemaName`;";
             case 'pgsql':
                 return
                     "DROP DATABASE IF EXISTS \"$schemaName\"; DROP USER IF EXISTS \"$userName\";";

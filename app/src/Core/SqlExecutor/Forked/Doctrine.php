@@ -1,6 +1,6 @@
 <?php
 
-namespace Db3v4l\Service\SqlExecutor\Forked;
+namespace Db3v4l\Core\SqlExecutor\Forked;
 
 use Db3v4l\API\Interfaces\ForkedCommandExecutor;
 use Db3v4l\Util\Process;
