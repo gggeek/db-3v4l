@@ -10,7 +10,7 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 *** Work In Progress ***
 
-[See the TODO for a broad overview of advancement status](./TODO.md)
+See the [TODO](./TODO.md) and [CHANGELOG](./WHATSNEW.md) files for a broad overview of advancement status
 
 ## Supported Databases:
 
