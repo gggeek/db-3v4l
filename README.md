@@ -57,7 +57,7 @@ the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMP
 
 The default password for the last 2 commands is '3v4l'
 
-Once the containers are upp and running, you can access a database administration console at: http://localhost/adminer.php
+Once the containers are up and running, you can access a database administration console at: http://localhost/adminer.php
 (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
 your browser is executing).
 
@@ -77,6 +77,24 @@ After starting the containers via `docker-compose up -d`, you can:
 - 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
 
 
+## FAQ
+
+- Q: why Can I see only a 'symfony welcome' web page? A: the app is being developed with a command-line interface at 1st,
+  the web version will come later
+ 
+- Q: can I customize the configuration of the databases? A: Yes, there is one config file for each db that you can edit,
+  in docker/config. If you change them, you need to restart the docker containers for the settings to take effect, but
+  there is no need to rebuild them
+
+- Q: what is the level of security offered by this tool? Can I allow untrusted users use it to run _any_ query they want?
+  A: this is the end goal, but at the moment there is close to zero security enforced. Please only allow trusted developers
+  to access the platform and run queries on it
+
+- Q: does the platform store/log anywhere the executed SQL commands? A: no. But those might be stored in the databases log
+  files, which are stored on disk. So it's not a good idea to copy-paste sql snippets which contain sensitive information
+  such as passwords
+
+
 ## Thanks
 
 Many thanks to
@@ -84,7 +102,7 @@ Many thanks to
 - Docker, for providing the core technology used to manage all the different database installations
 - Symfony and Doctrine, for providing the building bricks for the application
 - eZPublish for giving me the itch to build this tool
-- JetBrains for kindly providing me with a PHPStorm license that I use daily in my open source endeavours 
+- JetBrains for kindly providing me with a license for PHPStorm that I use daily in my open source endeavours 
 
 [![Latest version](https://img.shields.io/github/tag/gggeek/db-3v4l.svg?style=flat-square)](https://github.com/gggeek/db-3v4l/releases)
 [![License](https://img.shields.io/github/license/gggeek/db-3v4l.svg?style=flat-square)](LICENSE)
