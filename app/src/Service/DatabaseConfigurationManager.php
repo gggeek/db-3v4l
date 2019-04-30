@@ -4,32 +4,32 @@ namespace Db3v4l\Service;
 
 class DatabaseConfigurationManager
 {
-    protected $dbList = [];
+    protected $instanceList = [];
 
-    public function __construct(array $dbList)
+    public function __construct(array $instanceList)
     {
-        $this->dbList = $dbList;
+        $this->instanceList = $instanceList;
     }
 
     /**
      * @return string[]
      */
-    public function listDatabases()
+    public function listInstances()
     {
-        return array_keys($this->dbList);
+        return array_keys($this->instanceList);
     }
 
     /**
-     * @param string $dbName
+     * @param string $instanceName
      * @return string[]
      * @throws \OutOfBoundsException
      */
-    public function getDatabaseConnectionSpecification($dbName)
+    public function getDatabaseConnectionSpecification($instanceName)
     {
-        if (isset($this->dbList[$dbName])) {
-            return $this->dbList[$dbName];
+        if (isset($this->instanceList[$instanceName])) {
+            return $this->instanceList[$instanceName];
         }
 
-        throw new \OutOfBoundsException("Unknown database '$dbName'");
+        throw new \OutOfBoundsException("Unknown database instance '$instanceName'");
     }
 }

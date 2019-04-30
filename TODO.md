@@ -1,28 +1,26 @@
 - worker: improve sql execution cmd:
-  + allow it to pick a set of desired servers
-  + allow it to pick an existing db schema & user
+  + allow it to pick a set of desired instances
+  + allow it to pick an existing db/user
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
     - ok for mysql? (to be tested)
     - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
       driver... it might be in fact already happening when NOT using input via files...)
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
-  + check: can the temp user drop&creates schemas for postgresql?
+  + check: can the temp user drop&creates other databases for postgresql?
 
-- improve cli scripts:
-  + add scripts to create and drop a schema on all servers
-
-- worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars)
+- worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
 
 - improve cli scripts:
   + add a script that removes images+logs+data
   + add a 'stack' script that simplifies building the stack and logging into it
+  + also, add a 'db3v4l' script to transparently execute sf commands from the host
   + move from bash to sh
 
 - add travis testing
 
-- web: allow to insert sql snippet, pick the desired servers, run it and show results
+- web: allow to insert sql snippet, pick the desired instances, run it and show results
 
-- web/worker: allow user-defined charset for auto db-schema create
+- web/worker: allow user-defined charset for both manual and auto db-schema create
 
 - web/worker: allow custom db init scripts (to load data and set session vars)
 
@@ -54,6 +52,8 @@
 
 - worker: add phpbench as dependency
 
+- borrow ideas from https://github.com/zzzprojects/sqlfiddle3
+
 - allow to easily set up either prod/public or dev/private stacks via a parameter in .env
 
 - "public server" configuration:
@@ -74,7 +74,7 @@
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
-- add sqlite, Firebird, MSSQL and Elastic containers 
+- add sqlite (see: https://hub.docker.com/r/nouchka/sqlite3/dockerfile), Firebird, MSSQL and Elastic containers 
 
 - add clustered mysql/postgresql containers
 

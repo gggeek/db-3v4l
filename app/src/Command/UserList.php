@@ -7,14 +7,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Db3v4l\Util\Process;
 
-class DatabaseList extends DatabaseManagingCommand
+class UserList extends DatabaseManagingCommand
 {
-    protected static $defaultName = 'db3v4l:database:list';
+    protected static $defaultName = 'db3v4l:user:list';
 
     protected function configure()
     {
         $this
-            ->setDescription('Lists all existing users+databases on all configured database instances')
+            ->setDescription('Lists all existing users on all configured database instances')
             ->addCommonOptions()
         ;
     }
@@ -54,14 +54,14 @@ class DatabaseList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listInstances($dbList, $maxParallel, $timeout);
+        $results = $this->listUsers($dbList, $maxParallel, $timeout);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listInstances($dbList, $maxParallel, $timeout)
+    protected function listUsers($dbList, $maxParallel, $timeout)
     {
         $processes = [];
 
@@ -69,7 +69,7 @@ class DatabaseList extends DatabaseManagingCommand
             $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
-            $sql = $schemaManager->getListInstancesSQL();
+            $sql = $schemaManager->getlistUsersSQL();
 
             $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteCommandProcess($sql);
@@ -90,7 +90,7 @@ class DatabaseList extends DatabaseManagingCommand
                 $succeeded++;
             } else {
                 $failed++;
-                $this->writeErrorln("\n<error>Listing of databases in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
             }
         }
 

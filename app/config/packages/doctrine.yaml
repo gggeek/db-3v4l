@@ -2,4 +2,4 @@
 
 #doctrine:
 #    dbal:
-#        connections: '%db3v4l.databases%'
+#        connections: '%db3v4l.database_instances%'

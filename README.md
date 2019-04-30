@@ -10,7 +10,10 @@ b) allow doing full-fledged load testing, comparing results across many db versi
 
 *** Work In Progress ***
 
-See the [TODO](./TODO.md) and [CHANGELOG](./WHATSNEW.md) files for a broad overview of advancement status
+See the [TODO](./TODO.md) and [CHANGELOG](./WHATSNEW.md) files for a broad overview of advancement status.
+
+In the meantime, you can try out http://sqlfiddle.com/
+
 
 ## Supported Databases:
 
@@ -43,23 +46,34 @@ the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMP
 
 ### Usage
 
+Example: executing the sql snippet `select current_date` in parallel on all databases:
+
     cd docker && docker-compose up -d
     docker exec -ti db3v4l_worker su - user
         cd db3v4l
-        
-        php bin/console db3v4l:database:list
-        
+
         php bin/console db3v4l:sql:execute --sql='select current_date'
+
+If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
+to a file and then execute it in parallel on all databases: 
+
+        php bin/console db3v4l:sql:execute --file=/my_huge_script.sql
         
+From within the worker container, you can also list all available databases: 
+
+        php bin/console db3v4l:instance:list
+                
+As well as test connecting to them using the standard clients: 
+
         mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
         psql -h postgresql_9_4 -U postgres -c 'select current_date'
-    ...
 
-The default password for the last 2 commands is '3v4l'
+The default password for the last 2 commands is '3v4l'.
 
 Once the containers are up and running, you can access a database administration console at: http://localhost/adminer.php
 (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
 your browser is executing).
+
 
 ## Details
 
@@ -102,7 +116,7 @@ Many thanks to
 - Docker, for providing the core technology used to manage all the different database installations
 - Symfony and Doctrine, for providing the building bricks for the application
 - eZPublish for giving me the itch to build this tool
-- JetBrains for kindly providing me with a license for PHPStorm that I use daily in my open source endeavours 
+- JetBrains for kindly providing the lead developer with a license for PHPStorm that he uses daily in his open source endeavours 
 
 [![Latest version](https://img.shields.io/github/tag/gggeek/db-3v4l.svg?style=flat-square)](https://github.com/gggeek/db-3v4l/releases)
 [![License](https://img.shields.io/github/license/gggeek/db-3v4l.svg?style=flat-square)](LICENSE)

@@ -1,7 +1,17 @@
+Version 0.4 (unreleased)
+------------------------
+
+- New: added four new commands to manage users and schemas across all existing databases: `db3v4l:database:create`,
+  `db3v4l:database:drop`, `db3v4l:database:list` and `db3v4l:user:list`.
+  These should make it easy to run test queries within persistent (ie. non temporary) databases
+
+- Changed: renamed command `db3v4l:database:list` to `db3v4l:instance:list`
+
+
 Version 0.3.1
 -------------
 
-- Fixed: temporary db schemas would not be dropped, at least for mariadb/mysql databases
+- Fixed: temporary databases would not be dropped, at least for mariadb/mysql databases
 
 
 Version 0.3
@@ -13,7 +23,7 @@ Version 0.3
     - measure time and memory taken for each db
     - allow to print output in json/yaml/php format
     - allow to execute sql commands stored in a file besides specifying them as cli option
-    - all sql commands are now executed in a temporary db schema, by a corresponding temp. db user, instead of being
+    - all sql commands are now executed in a temporary database, by a corresponding temp. db user, instead of being
       executed with the database 'root' account
 
 
