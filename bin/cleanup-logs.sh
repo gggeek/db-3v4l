@@ -44,6 +44,9 @@ cd docker
 if [ ${CLEAN_DOCKER} = 'true' ]; then
     for CONTAINER in $(docker-compose ps -q)
     do
-        echo "" > $(docker inspect --format='{{.LogPath}}' ${CONTAINER})
+        LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
+        if [ -n "${LOGFILE}" ]; then
+            echo "" > ${LOGFILE}
+        fi
     done
 fi
