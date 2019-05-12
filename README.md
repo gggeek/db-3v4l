@@ -54,11 +54,16 @@ Example: executing the sql snippet `select current_date` in parallel on all data
 
         php bin/console db3v4l:sql:execute --sql='select current_date'
 
+        exit
+    docker-compose stop
+
 If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
 to a file and then execute it in parallel on all databases: 
 
-        php bin/console sql:execute --file=/my_huge_script.sql
-        
+        php bin/console sql:execute --file=./shared/my_huge_script.sql
+
+*NB* to share files between the host computer and the container, put them in the `shared` folder.  
+
 From within the worker container, you can also list all available databases: 
 
         php bin/console db3v4l:instance:list
