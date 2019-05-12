@@ -8,12 +8,13 @@
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
   + check: can the temp user drop&creates other databases for postgresql?
 
-- worker: improve profile of 'user' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
+- worker: improve profile of 'db3v4l' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
 
 - improve cli scripts:
+  + add a separate sf console that only registers db3v4l commands
   + add a script that removes images+logs+data
   + add a 'stack' script that simplifies building the stack and logging into it
-  + also, add a 'db3v4l' script to transparently execute sf commands from the host
+  + also, add a 'console' script to transparently execute sf commands from the host
   + move from bash to sh
 
 - add travis testing

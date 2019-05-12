@@ -49,15 +49,15 @@ the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMP
 Example: executing the sql snippet `select current_date` in parallel on all databases:
 
     cd docker && docker-compose up -d
-    docker exec -ti db3v4l_worker su - user
-        cd db3v4l
+    docker exec -ti db3v4l_worker su - db3v4l
+        cd app
 
         php bin/console db3v4l:sql:execute --sql='select current_date'
 
 If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
 to a file and then execute it in parallel on all databases: 
 
-        php bin/console db3v4l:sql:execute --file=/my_huge_script.sql
+        php bin/console sql:execute --file=/my_huge_script.sql
         
 From within the worker container, you can also list all available databases: 
 

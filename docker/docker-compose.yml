@@ -41,7 +41,8 @@ services:
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
-            - "../app:/home/${CONTAINER_USER}/db3v4l"
+            - "../app:/home/${CONTAINER_USER}/app"
+            - "../shared:/home/${CONTAINER_USER}/shared"
         environment:
             - CONTAINER_USER
         env_file:

@@ -43,8 +43,9 @@ fi
 
 echo "[`date`] Setting up the application..."
 
+# @todo allow to not deploy the app on bootstrap
 if [ ! -f "${ORIG_HOME}/db3v4l/vendor/autoload.php" ]; then
-    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/db3v4l && composer install"
+    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install"
 fi
 
 if [ ! -f "${ORIG_HOME}/db3v4l/.env.local" ]; then

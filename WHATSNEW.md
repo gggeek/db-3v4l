@@ -5,7 +5,16 @@ Version 0.4 (unreleased)
   `db3v4l:database:drop`, `db3v4l:database:list` and `db3v4l:user:list`.
   These should make it easy to run test queries within persistent (ie. non temporary) databases
 
+- New: added a top-level folder to be used for sharing data between the host computer and the cli/web containers: './shared'
+
+- New: added phpmyadmin/sql-parser as dependency, to allow linting of sql snippets
+
+- Fixed: removed one warning from `./bin/cleanup-logs.sh -d` in corner cases 
+
 - Changed: renamed command `db3v4l:database:list` to `db3v4l:instance:list`
+
+- Changed: docker configuration: the default user account is now named 'db3v4l' and not 'user' any more; the app is
+  mounted in $HOME/app instead of $HOME/db3v4l
 
 
 Version 0.3.1
