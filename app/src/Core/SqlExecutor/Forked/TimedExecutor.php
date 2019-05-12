@@ -24,7 +24,7 @@ class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedE
         $process = $this->wrappedExecutor->getExecuteCommandProcess($sql);
 
         // wrap in a `time` call
-        $this->timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
+        $this->timingFile = tempnam(sys_get_temp_dir(), 'db3v4l_');
         $process->setCommandLine(
             $this->timeCmd . ' ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
             . $process->getCommandLine());
@@ -37,7 +37,7 @@ class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedE
         $process = $this->wrappedExecutor->getExecuteFileProcess($sql);
 
         // wrap in a `time` call
-        $this->timingFile = tempnam(sys_get_temp_dir(), 'db3val_');
+        $this->timingFile = tempnam(sys_get_temp_dir(), 'db3v4l_');
         $process->setCommandLine(
             $this->timeCmd . ' ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
             . $process->getCommandLine());

@@ -67,7 +67,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
             // sadly, psql does not allow to create a db and a user using a multiple-sql-commands string,
             // and we have to resort to using temp files
             /// @todo can we make this safer? Ideally the new userv name and pwd should neither hit disk nor the process list...
-            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3val_');
+            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_');
             file_put_contents($tempSQLFileName, $sql);
             $tempSQLFileNames[] = $tempSQLFileName;
 
@@ -129,7 +129,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
                 $dbConnectionSpec['user'],
                 (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null
             );
-            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3val_');
+            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_');
             file_put_contents($tempSQLFileName, $sql);
             $tempSQLFileNames[] = $tempSQLFileName;
 
