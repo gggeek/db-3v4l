@@ -16,6 +16,8 @@ Version 0.4 (unreleased)
 - Changed: docker configuration: the default user account is now named 'db3v4l' and not 'user' any more; the app is
   mounted in $HOME/app instead of $HOME/db3v4l
 
+- Improved: keep on the host computer the composer cache, to speed up rebuilds
+
 
 Version 0.3.1
 -------------

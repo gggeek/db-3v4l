@@ -43,6 +43,7 @@ services:
         volumes:
             - "../app:/home/${CONTAINER_USER}/app"
             - "../shared:/home/${CONTAINER_USER}/shared"
+            - "./data/composer_cache/:/home/${CONTAINER_USER}/.composer"
         environment:
             - CONTAINER_USER
         env_file:

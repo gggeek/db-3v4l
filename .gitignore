@@ -6,6 +6,7 @@
 /app/var/log/*
 /app/vendor/*
 
+/docker/data/composer_cache/*
 /docker/data/mariadb/5.5/*
 /docker/data/mariadb/10.0/*
 /docker/data/mariadb/10.1/*
@@ -20,6 +21,7 @@
 /docker/data/postgresql/9.6/*
 /docker/data/postgresql/10.7/*
 /docker/data/postgresql/11.2/*
+!/docker/data/composer_cache/.gitkeep
 !/docker/data/mariadb/5.5/.gitkeep
 !/docker/data/mariadb/10.0/.gitkeep
 !/docker/data/mariadb/10.1/.gitkeep
