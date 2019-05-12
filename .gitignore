@@ -71,3 +71,6 @@
 !/docker/logs/web/nginx/.gitkeep
 !/docker/logs/web/php/.gitkeep
 !/docker/logs/worker/.gitkeep
+
+/shared/*
+!/shared/.gitkeep
