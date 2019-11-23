@@ -7,6 +7,7 @@
 /app/vendor/*
 
 /docker/data/composer_cache/*
+
 /docker/data/mariadb/5.5/*
 /docker/data/mariadb/10.0/*
 /docker/data/mariadb/10.1/*
@@ -48,6 +49,7 @@
 /docker/logs/mariadb/10.1/*
 /docker/logs/mariadb/10.2/*
 /docker/logs/mariadb/10.3/*
+/docker/logs/mariadb/10.4/*
 /docker/logs/mysql/5.5/*
 /docker/logs/mysql/5.6/*
 /docker/logs/mysql/5.7/*
@@ -55,8 +57,9 @@
 /docker/logs/postgresql/9.4/*
 /docker/logs/postgresql/9.5/*
 /docker/logs/postgresql/9.6/*
-/docker/logs/postgresql/10.7/*
-/docker/logs/postgresql/11.2/*
+/docker/logs/postgresql/10.11/*
+/docker/logs/postgresql/11.6/*
+/docker/logs/postgresql/12.1/*
 /docker/logs/web/nginx/*
 /docker/logs/web/php/*
 /docker/logs/worker/*
@@ -65,6 +68,7 @@
 !/docker/logs/mariadb/10.1/.gitkeep
 !/docker/logs/mariadb/10.2/.gitkeep
 !/docker/logs/mariadb/10.3/.gitkeep
+!/docker/logs/mariadb/10.4/.gitkeep
 !/docker/logs/mysql/5.5/.gitkeep
 !/docker/logs/mysql/5.6/.gitkeep
 !/docker/logs/mysql/5.7/.gitkeep
@@ -72,8 +76,9 @@
 !/docker/logs/postgresql/9.4/.gitkeep
 !/docker/logs/postgresql/9.5/.gitkeep
 !/docker/logs/postgresql/9.6/.gitkeep
-!/docker/logs/postgresql/10.7/.gitkeep
-!/docker/logs/postgresql/11.2/.gitkeep
+!/docker/logs/postgresql/10.11/.gitkeep
+!/docker/logs/postgresql/11.6/.gitkeep
+!/docker/logs/postgresql/12.1/.gitkeep
 !/docker/logs/web/nginx/.gitkeep
 !/docker/logs/web/php/.gitkeep
 !/docker/logs/worker/.gitkeep
