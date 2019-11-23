@@ -77,7 +77,8 @@
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
-- add sqlite (see: https://hub.docker.com/r/nouchka/sqlite3/dockerfile), Firebird, MSSQL and Elastic containers 
+- add sqlite (see: https://hub.docker.com/r/nouchka/sqlite3/dockerfile), Firebird, MSSQL, cockroachdb and Elastic containers
+  (the latter is not supported by Doctrine DBAL...)
 
 - add clustered mysql/postgresql containers
 

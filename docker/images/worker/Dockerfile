@@ -21,23 +21,40 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     default-mysql-client \
     curl \
     git \
+    gnupg \
     php-cli \
+    php-dev \
     php-mbstring \
     php-mysql \
     php-pgsql \
+    php-sqlite3 \
     php-xml \
     php-zip \
     postgresql-client \
     procps \
+    sqlite3 \
     sudo \
     time
 
 # Helper tools
 # -----------------------------------------------------------------------------
+# MS SQL server driver and php extension
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev
+RUN pecl install sqlsrv-5.7.0preview
+RUN echo 'extension=sqlsrv.so'> /etc/php/7.3/mods-available/sqlsrv.ini
+RUN ln -s /etc/php/7.3/mods-available/sqlsrv.ini /etc/php/7.3/cli/conf.d/90-sqlsrv.ini
+RUN pecl install pdo_sqlsrv-5.7.0preview
+RUN echo 'extension=pdo_sqlsrv.so'> /etc/php/7.3/mods-available/pdo_sqlsrv.ini
+RUN ln -s /etc/php/7.3/mods-available/pdo_sqlsrv.ini /etc/php/7.3/cli/conf.d/90-pdo_sqlsrv.ini
+# mysqltuner.pl
 RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
 RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 #RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -o basic_passwords.txt
 #RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -o vulnerabilities.csv
+# tuning-primer.sh
 RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
 
@@ -69,6 +86,8 @@ RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/
 # This file is later used by bootstrap.sh
 #RUN ssh-keygen -t rsa -N "" -f /home/${container_user}/.ssh/id_rsa && cat /home/${container_user}/.ssh/id_rsa.pub > /home/${container_user}/.ssh/authorized_keys_fortarget && \
 #    chown -R ${container_user}:${container_user} /home/${container_user}/.ssh
+
+RUN mkdir /home/${container_user}/data
 
 RUN chown -R ${container_user}:${container_user} /home/${container_user}
 
