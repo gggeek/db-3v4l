@@ -18,10 +18,12 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Base packages
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    alien \
     default-mysql-client \
     curl \
     git \
     gnupg \
+    locales \
     php-cli \
     php-dev \
     php-mbstring \
@@ -36,24 +38,45 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     sudo \
     time
 
-# Helper tools
+# DB connectors and helper tools
 # -----------------------------------------------------------------------------
+RUN pecl channel-update pecl.php.net
+
 # MS SQL server driver and php extension
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev
+RUN sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen
+RUN locale-gen
 RUN pecl install sqlsrv-5.7.0preview
 RUN echo 'extension=sqlsrv.so'> /etc/php/7.3/mods-available/sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/sqlsrv.ini /etc/php/7.3/cli/conf.d/90-sqlsrv.ini
 RUN pecl install pdo_sqlsrv-5.7.0preview
 RUN echo 'extension=pdo_sqlsrv.so'> /etc/php/7.3/mods-available/pdo_sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/pdo_sqlsrv.ini /etc/php/7.3/cli/conf.d/90-pdo_sqlsrv.ini
+# @todo export PATH=$PATH:/opt/mssql-tools/bin
+
+# Oracle Instant client, slpqlus and php extension
+RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm
+RUN alien -i /tmp/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm
+RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-sqlplus-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-sqlplus-19.5.0.0.0-1.x86_64.rpm
+RUN alien -i /tmp/oracle-instantclient19.5-sqlplus-19.5.0.0.0-1.x86_64.rpm
+RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-tools-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-tools-19.5.0.0.0-1.x86_64.rpm
+RUN alien -i /tmp/oracle-instantclient19.5-tools-19.5.0.0.0-1.x86_64.rpm
+RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm
+RUN alien -i /tmp/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm
+# @todo export LD_LIBRARY_PATH=/usr/lib/oracle/19.5/client64/lib/
+RUN printf 'instantclient,/usr/lib/oracle/19.5/client64/lib\n' | pecl install oci8
+RUN echo 'extension=oci8.so'> /etc/php/7.3/mods-available/oci8.ini
+RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/cli/conf.d/90-oci8.ini
+
 # mysqltuner.pl
 RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
 RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 #RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -o basic_passwords.txt
 #RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -o vulnerabilities.csv
+
 # tuning-primer.sh
 RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
@@ -103,6 +126,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Clear archives in apt cache folder
 # -----------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN  rm -rf /tmp/*
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------
