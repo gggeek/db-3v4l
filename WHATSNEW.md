@@ -1,5 +1,7 @@
-Version 0.4 (unreleased)
-------------------------
+Version 0.4
+-----------
+
+- New: added PostgreSQL 12.1 and MariaDB 10.4. Updated PostgreSQL 10 and 11 to the latest release
 
 - New: added four new commands to manage users and schemas across all existing databases: `db3v4l:database:create`,
   `db3v4l:database:drop`, `db3v4l:database:list` and `db3v4l:user:list`.
@@ -15,6 +17,13 @@ Version 0.4 (unreleased)
 
 - Changed: docker configuration: the default user account is now named 'db3v4l' and not 'user' any more; the app is
   mounted in $HOME/app instead of $HOME/db3v4l
+
+- Changed: the web and cli containers are now based on Debian 10 Buster. This includes a move from PHP 7.0 to 7.3, as
+  well as only having the mariadb client for mysql available by default as cli tool
+
+- Improved: updated all the app dependencies, including Symfony, to their latest version
+
+- Improved: upgraded the bundled Adminer version to 4.7.5
 
 - Improved: keep on the host computer the composer cache, to speed up rebuilds
 

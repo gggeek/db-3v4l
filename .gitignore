@@ -12,6 +12,7 @@
 /docker/data/mariadb/10.1/*
 /docker/data/mariadb/10.2/*
 /docker/data/mariadb/10.3/*
+/docker/data/mariadb/10.4/*
 /docker/data/mysql/5.5/*
 /docker/data/mysql/5.6/*
 /docker/data/mysql/5.7/*
@@ -19,14 +20,16 @@
 /docker/data/postgresql/9.4/*
 /docker/data/postgresql/9.5/*
 /docker/data/postgresql/9.6/*
-/docker/data/postgresql/10.7/*
-/docker/data/postgresql/11.2/*
+/docker/data/postgresql/10.11/*
+/docker/data/postgresql/11.6/*
+/docker/data/postgresql/12.1/*
 !/docker/data/composer_cache/.gitkeep
 !/docker/data/mariadb/5.5/.gitkeep
 !/docker/data/mariadb/10.0/.gitkeep
 !/docker/data/mariadb/10.1/.gitkeep
 !/docker/data/mariadb/10.2/.gitkeep
 !/docker/data/mariadb/10.3/.gitkeep
+!/docker/data/mariadb/10.4/.gitkeep
 !/docker/data/mysql/5.5/.gitkeep
 !/docker/data/mysql/5.6/.gitkeep
 !/docker/data/mysql/5.7/.gitkeep
@@ -34,8 +37,9 @@
 !/docker/data/postgresql/9.4/.gitkeep
 !/docker/data/postgresql/9.5/.gitkeep
 !/docker/data/postgresql/9.6/.gitkeep
-!/docker/data/postgresql/10.7/.gitkeep
-!/docker/data/postgresql/11.2/.gitkeep
+!/docker/data/postgresql/10.11/.gitkeep
+!/docker/data/postgresql/11.6/.gitkeep
+!/docker/data/postgresql/12.1/.gitkeep
 
 /docker/containers.env.local
 

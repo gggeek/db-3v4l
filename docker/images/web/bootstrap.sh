@@ -6,7 +6,7 @@ clean_up() {
     # Perform program exit housekeeping
     echo "[`date`] Stopping the services..."
     service nginx stop
-    service php7.0-fpm stop
+    service php7.3-fpm stop
     exit
 }
 
@@ -46,7 +46,7 @@ echo "[`date`] Starting the services..."
 
 trap clean_up TERM
 
-service php7.0-fpm start
+service php7.3-fpm start
 service nginx restart
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok

@@ -17,9 +17,9 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 ## Supported Databases:
 
-* MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3
+* MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
 * Mysql: 5.5, 5.6, 5.7, 8.0
-* PostgreSQL: 9.4, 9.5, 9.6, 10.7, 11.2
+* PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 
 
 ## Requirements

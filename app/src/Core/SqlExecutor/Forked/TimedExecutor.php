@@ -28,7 +28,6 @@ class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedE
         $process->setCommandLine(
             $this->timeCmd . ' ' . escapeshellarg('--output=' . $this->timingFile) . ' ' . escapeshellarg('--format=%M %e') . ' '
             . $process->getCommandLine());
-
         return $process;
     }
 
@@ -56,6 +55,9 @@ class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedE
             $timingData = explode(' ', $timingData, 2);
             $results['time'] = $timingData[1];
             $results['memory'] = $timingData[0];
+        } else {
+            // happens eg. if `time` command is not available
+            throw new \Exception("File with timing data empty: '{$this->timingFile}'");
         }
 
         if ($onceIsEnough) {

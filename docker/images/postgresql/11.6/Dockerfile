@@ -1,14 +1,9 @@
-FROM debian:buster-slim
+FROM postgres:11.6
 MAINTAINER gggeek
+LABEL postgresql.version=11.6
 
-ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true
-
-# Set up debian mirror
-# (use fixed debian mirrors if you have problems building on a given day)
-# -----------------------------------------------------------------------------
-RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buster main\ndeb http://security.debian.org buster/updates main\n" > /etc/apt/sources.list; fi
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -18,25 +13,18 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
 
-# Base packages - nginx, php-fpm, ...
+# Base packages
 # -----------------------------------------------------------------------------
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    nginx \
-    php-fpm \
-    php-mbstring \
-    php-mysql \
-    php-pgsql \
-    php-xml \
-    php-zip
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#    procps
 
-# Set up Nginx+PHP
+# PG config
 # -----------------------------------------------------------------------------
-COPY nginx/sites-enabled/* /etc/nginx/sites-enabled/
-RUN rm /etc/nginx/sites-enabled/default
-COPY php/7.3/fpm/pool.d/db3v4l.conf /etc/php/7.3/fpm/pool.d/db3v4l.conf
-RUN rm /etc/php/7.3/fpm/pool.d/www.conf
+RUN mkdir /etc/postgresql/conf.d
+COPY initdb.sh /docker-entrypoint-initdb.d/initdb.sh
+RUN chmod 755 /docker-entrypoint-initdb.d/initdb.sh
 
-# Clear archives in apt cache folder
+# Clear archives in apt cache folder to slim down the image
 # -----------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -45,7 +33,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
-EXPOSE 80
-EXPOSE 443
+EXPOSE 5432
 
-ENTRYPOINT ["/root/bootstrap.sh"]
+ENTRYPOINT ["/root/bootstrap.sh", "postgres", "-c listen_addresses=*"]

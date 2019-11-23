@@ -19,6 +19,8 @@
 
 - add travis testing
 
+- worker: bring back mysql client via dedicated installation
+
 - web: allow to insert sql snippet, pick the desired instances, run it and show results
 
 - web/worker: allow user-defined charset for both manual and auto db-schema create
@@ -79,4 +81,4 @@
 
 - add clustered mysql/postgresql containers
 
-- app: move to Symfony 4 as soon as there is an LTS version out
+- app: move to Symfony 4.4

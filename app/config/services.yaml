@@ -47,6 +47,14 @@ parameters:
             driver: pdo_mysql
             charset: UTF8
             server_version: mariadb-10.3
+        mariadb_10_4:
+            host: mariadb_10_4
+            port: 3306
+            user: root
+            password: 3v4l
+            driver: pdo_mysql
+            charset: UTF8
+            server_version: mariadb-10.4
         mysql_5_5:
             host: mysql_5_5
             port: 3306
@@ -103,23 +111,30 @@ parameters:
             driver: pdo_pgsql
             charset: UTF8
             server_version: '9.6'
-        postgresql_10_7:
-            host: postgresql_10_7
+        postgresql_10_11:
+            host: postgresql_10_11
             port: 5432
             user: postgres
             password: 3v4l
             driver: pdo_pgsql
             charset: UTF8
-            server_version: '10.7'
-        postgresql_11_2:
-            host: postgresql_11_2
+            server_version: '10.11'
+        postgresql_11_6:
+            host: postgresql_11_6
             port: 5432
             user: postgres
             password: 3v4l
             driver: pdo_pgsql
             charset: UTF8
-            server_version: '11.2'
-
+            server_version: '11.6'
+        postgresql_12_1:
+            host: postgresql_12_1
+            port: 5432
+            user: postgres
+            password: 3v4l
+            driver: pdo_pgsql
+            charset: UTF8
+            server_version: '12.1'
 services:
     # default configuration for services in *this* file
     _defaults:

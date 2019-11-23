@@ -1,5 +1,4 @@
-# @todo move to buster image as soon as it is released
-FROM debian:stretch
+FROM debian:buster
 MAINTAINER gggeek
 
 ARG debian_mirror=none
@@ -10,7 +9,7 @@ ARG container_user=user
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
 # -----------------------------------------------------------------------------
-RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} stretch main\n" > /etc/apt/sources.list; fi
+RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buster main\n" > /etc/apt/sources.list; fi
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -19,10 +18,9 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Base packages
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    default-mysql-client \
     curl \
     git \
-    mariadb-client \
-    mysql-client \
     php-cli \
     php-mbstring \
     php-mysql \
@@ -31,7 +29,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-zip \
     postgresql-client \
     procps \
-    sudo
+    sudo \
+    time
 
 # Helper tools
 # -----------------------------------------------------------------------------

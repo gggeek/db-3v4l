@@ -1,6 +1,6 @@
-FROM postgres:11.2
+FROM postgres:12.1
 MAINTAINER gggeek
-LABEL postgresql.version=11.2
+LABEL postgresql.version=12.1
 
 ARG timezone=none
 ARG do_update_os=true
