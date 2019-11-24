@@ -54,14 +54,14 @@ class DatabaseList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listInstances($dbList, $maxParallel, $timeout);
+        $results = $this->listInstances($dbList, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listInstances($dbList, $maxParallel, $timeout)
+    protected function listInstances($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
 
@@ -74,9 +74,17 @@ class DatabaseList extends DatabaseManagingCommand
             $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteCommandProcess($sql);
 
+            if ($format === 'text') {
+                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+
             $process->setTimeout($timeout);
 
             $processes[$dbName] = $process;
+        }
+
+        if ($format === 'text') {
+            $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
         }
 
         $this->processManager->runParallel($processes, $maxParallel, 100);

@@ -15,7 +15,7 @@ RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buste
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
-# Base packages
+# Base packages (some are required by the steps below)
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     alien \
@@ -55,7 +55,7 @@ RUN ln -s /etc/php/7.3/mods-available/sqlsrv.ini /etc/php/7.3/cli/conf.d/90-sqls
 RUN pecl install pdo_sqlsrv-5.7.0preview
 RUN echo 'extension=pdo_sqlsrv.so'> /etc/php/7.3/mods-available/pdo_sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/pdo_sqlsrv.ini /etc/php/7.3/cli/conf.d/90-pdo_sqlsrv.ini
-# @todo export PATH=$PATH:/opt/mssql-tools/bin
+RUN echo 'export PATH=$PATH:/opt/mssql-tools/bin' > /etc/profile.d/mssql-tools.sh
 
 # Oracle Instant client, slpqlus and php extension
 RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm
@@ -66,10 +66,15 @@ RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/
 RUN alien -i /tmp/oracle-instantclient19.5-tools-19.5.0.0.0-1.x86_64.rpm
 RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm -o /tmp/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm
 RUN alien -i /tmp/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm
-# @todo export LD_LIBRARY_PATH=/usr/lib/oracle/19.5/client64/lib/
+RUN echo 'LD_LIBRARY_PATH="/usr/lib/oracle/19.5/client64/lib/"' >> etc/environment
 RUN printf 'instantclient,/usr/lib/oracle/19.5/client64/lib\n' | pecl install oci8
 RUN echo 'extension=oci8.so'> /etc/php/7.3/mods-available/oci8.ini
 RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/cli/conf.d/90-oci8.ini
+RUN echo 'export PATH=$PATH:/usr/lib/oracle/19.5/client64/bin' > /etc/profile.d/oracle-instantclient.sh
+
+# Make sure that the db clients tools are in the path for non-login, non-interactive shells...
+# Is there a better way than doing it this way ?
+#RUN echo 'PATH="/usr/local/bin:/usr/bin:/bin:/opt/mssql-tools/bin:/usr/lib/oracle/19.5/client64/bin"' >> etc/environment
 
 # mysqltuner.pl
 RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl

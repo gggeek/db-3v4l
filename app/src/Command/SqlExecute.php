@@ -176,8 +176,16 @@ class SqlExecute extends DatabaseManagingCommand
      * @param string $processIndex;
      * @param Process $process
      */
-    public function onSubProcessOutput($type, $buffer, $processIndex, $process=null)
+    public function onSubProcessOutput($type, $buffer, $processIndex, $process = null)
     {
+        if (is_object($processIndex) && $process === null) {
+            /// @todo php bug ? investigate deeper...
+            $process = $processIndex;
+            $processIndex = '?';
+        }
+
+        $pid = is_object($process) ? $process->getPid() : '';
+
         $lines = explode("\n", trim($buffer));
 
         foreach ($lines as $line) {
@@ -185,13 +193,13 @@ class SqlExecute extends DatabaseManagingCommand
             if (trim($line) !== '') {
                 if ($type === 'err') {
                     $this->writeErrorln(
-                        '[' . $processIndex . '][' . ($process ? $process->getPid() : '') . '] ' . trim($line),
+                        '[' . $processIndex . '][' . $pid . '] ' . trim($line),
                         OutputInterface::VERBOSITY_VERBOSE,
                         OutputInterface::OUTPUT_RAW
                     );
                 } else {
                     $this->writeln(
-                        '[' . $processIndex . '][' . ($process ? $process->getPid() : '') . '] ' . trim($line),
+                        '[' . $processIndex . '][' . $pid . '] ' . trim($line),
                         OutputInterface::VERBOSITY_VERBOSE,
                         OutputInterface::OUTPUT_RAW
                     );

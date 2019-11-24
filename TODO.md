@@ -19,9 +19,11 @@
 
 - add travis testing
 
-- worker: bring back mysql client via dedicated installation
+- worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
 
-- web: allow to insert sql snippet, pick the desired instances, run it and show results
+- worker+web: add a queued-task implementation, using sf messenger and a db
+
+- web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
 - web/worker: allow user-defined charset for both manual and auto db-schema create
 
@@ -71,14 +73,12 @@
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
 
-- worker: test: can we add mysql-client alongside mariadb-client?
-
-- update web and worker containers: rebase from stretch to buster
-
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
-- add sqlite (see: https://hub.docker.com/r/nouchka/sqlite3/dockerfile), Firebird, MSSQL, cockroachdb and Elastic containers
-  (the latter is not supported by Doctrine DBAL...)
+- add Firebird 2 and 3, cockroachdb, DB2 and Elastic containers
+  - https://hub.docker.com/r/ibmcom/db2
+  - https://hub.docker.com/r/cockroachdb/cockroach
+  (nb: might be hard: they are not supported by Doctrine DBAL...)
 
 - add clustered mysql/postgresql containers
 

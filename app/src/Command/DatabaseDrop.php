@@ -69,7 +69,7 @@ class DatabaseDrop extends DatabaseManagingCommand
                 'dbname' => $dbName
             ];
         }
-        $results = $this->dropDatabases($dbToDropSpecs, $maxParallel, $timeout);
+        $results = $this->dropDatabases($dbToDropSpecs, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 

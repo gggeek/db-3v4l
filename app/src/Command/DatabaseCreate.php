@@ -77,7 +77,7 @@ class DatabaseCreate extends DatabaseManagingCommand
                 'dbname' => $dbName
             ];
         }
-        $results = $this->createDatabases($newDbSpecs, $maxParallel, $timeout);
+        $results = $this->createDatabases($newDbSpecs, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 

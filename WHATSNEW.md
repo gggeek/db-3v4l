@@ -1,3 +1,11 @@
+Version 0.5
+-----------
+
+- New: added Microsoft SQL Server 2017 and 2017
+
+- Fixed: allow possibility of settings custom configs for the new  PostgreSQL versions added in release 0.4
+
+
 Version 0.4
 -----------
 

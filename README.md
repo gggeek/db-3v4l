@@ -18,8 +18,10 @@ In the meantime, you can try out http://sqlfiddle.com/
 ## Supported Databases:
 
 * MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
+* Microsoft SQL Server: 2017.cu17, 2019.ga
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
+* SQLite (WIP): 3.3
 
 
 ## Requirements
@@ -36,6 +38,8 @@ In the meantime, you can try out http://sqlfiddle.com/
 ### Installation
 
     cd docker && touch containers.env.local && docker-compose build
+
+*NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help. 
 
 *NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
 the file  docker/containers.env.local _before_ running the `build` command, and add in there correct values for

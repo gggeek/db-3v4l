@@ -49,7 +49,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
      * @param int $timeout
      * @return array 'succeeded': int, 'failed': int, 'results': same format as dbManager::getDatabaseConnectionSpecification
      */
-    protected function createDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT)
+    protected function createDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
         $connectionSpecs = [];
@@ -74,10 +74,18 @@ abstract class DatabaseManagingCommand extends BaseCommand
             $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteFileProcess($tempSQLFileName);
 
+            if ($format === 'text') {
+                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+
             $process->setTimeout($timeout);
 
             $processes[$instanceName] = $process;
             $connectionSpecs[$instanceName] = $rootDbConnectionSpec;
+        }
+
+        if ($format === 'text') {
+            $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
         }
 
         $this->processManager->runParallel($processes, $maxParallel, 100);
@@ -116,7 +124,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
      * @param int $timeout
      * @return array 'succeeded': int, 'failed': int
      */
-    protected function dropDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT)
+    protected function dropDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
         $tempSQLFileNames = [];
@@ -136,9 +144,17 @@ abstract class DatabaseManagingCommand extends BaseCommand
             $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteFileProcess($tempSQLFileName);
 
+            if ($format === 'text') {
+                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+
             $process->setTimeout($timeout);
 
             $processes[$instanceName] = $process;
+        }
+
+        if ($format === 'text') {
+            $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
         }
 
         $this->processManager->runParallel($processes, $maxParallel, 100);

@@ -55,6 +55,22 @@ parameters:
             driver: pdo_mysql
             charset: UTF8
             server_version: mariadb-10.4
+        mssql_2017_cu17:
+            host: mssqlserver_2017_cu17
+            port: 1433
+            user: sa
+            password: 3v4l3V4L
+            driver: pdo_sqlsrv
+            charset: UTF8
+            #server_version: '5.5'
+        mssql_2019_ga:
+            host: mssqlserver_2019_ga
+            port: 1433
+            user: sa
+            password: 3v4l3V4L
+            driver: pdo_sqlsrv
+            charset: UTF8
+            #server_version: '5.6'
         mysql_5_5:
             host: mysql_5_5
             port: 3306
@@ -87,6 +103,7 @@ parameters:
             driver: pdo_mysql
             charset: UTF8
             server_version: '8.0'
+        # oracle...
         postgresql_9_4:
             host: postgresql_9_4
             port: 5432
