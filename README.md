@@ -18,7 +18,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 ## Supported Databases:
 
 * MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
-* Microsoft SQL Server: 2017.cu17, 2019.ga
+* Microsoft SQL Server (WIP): 2017.cu17, 2019.ga
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 * SQLite (WIP): 3.3
@@ -76,8 +76,9 @@ As well as test connecting to them using the standard clients:
 
         mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
         psql -h postgresql_9_4 -U postgres -c 'select current_date'
+        sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
 
-The default password for the last 2 commands is '3v4l'.
+The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 
 Once the containers are up and running, you can access a database administration console at: http://localhost/adminer.php
 (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where

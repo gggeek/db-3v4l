@@ -5,6 +5,7 @@
     - ok for mysql? (to be tested)
     - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
       driver... it might be in fact already happening when NOT using input via files...)
+    - missing for sqlsrv
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
   + check: can the temp user drop&creates other databases for postgresql?
 
@@ -17,11 +18,15 @@
   + also, add a 'console' script to transparently execute sf commands from the host
   + move from bash to sh
 
+- allow building/starting partial docker stack for speed and resources (eg no oracle, no sqlserver, etc...) 
+
+- add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
+
 - add travis testing
 
-- worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
-
 - worker+web: add a queued-task implementation, using sf messenger and a db
+
+- worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
@@ -72,8 +77,6 @@
   - make php code non-writeable by www-data user
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
-
-- add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - add Firebird 2 and 3, cockroachdb, DB2 and Elastic containers
   - https://hub.docker.com/r/ibmcom/db2
