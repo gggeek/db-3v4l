@@ -18,7 +18,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 ## Supported Databases:
 
 * MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
-* Microsoft SQL Server (WIP): 2017.cu17, 2019.ga
+* Microsoft SQL Server: 2017.cu17, 2019.ga
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 * SQLite (WIP): 3.3

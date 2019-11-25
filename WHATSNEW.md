@@ -1,7 +1,7 @@
 Version 0.5
 -----------
 
-- New: added Microsoft SQL Server 2017 and 2017
+- New: added Microsoft SQL Server 2017 and 2019
 
 - New: added the possibility to run sql commands against a subset of all available databases 
 
