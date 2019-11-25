@@ -73,7 +73,7 @@ command does replace some tokens in the values of the `--file` option. Eg:
 
     php bin/console sql:execute --file='./shared/test_{dbtype}.sql'
 
-   will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_`
+   will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`
     
 From within the worker container, you can also list all available databases: 
 
