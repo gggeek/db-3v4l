@@ -7,7 +7,7 @@ use Db3v4l\API\Interfaces\ForkedFileExecutor;
 use Db3v4l\Util\Process;
 
 /**
- * @todo allow setting a PATH for each tool
+ * @todo allow to inject path of db clients via setter/constructor
  */
 class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, ForkedFileExecutor
 {
@@ -33,7 +33,6 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
      * @param string $sqlOrFilename
      * @param bool $isFile
      * @return Process
-     * @todo allow to inject location of db clients via setter/constructor
      */
     public function getProcess($sqlOrFilename, $isFile = false)
     {
@@ -96,7 +95,8 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     '-S' . $this->databaseConfiguration['host'] . ($this->databaseConfiguration['port'] != '' ?  ',' . $this->databaseConfiguration['port'] : ''),
                     '-U' . $this->databaseConfiguration['user'],
                     '-P' . $this->databaseConfiguration['password'],
-                    //'-u', // unicode output, but only for files...
+                    '-r1',
+                    '-b',
                 ];
                 if (isset($this->databaseConfiguration['dbname'])) {
                     $options[] = '-d' . $this->databaseConfiguration['dbname'];
@@ -106,8 +106,6 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                 } else {
                     $options[] = '-Q' . $sqlOrFilename;
                 }
-                // pass on _all_ env vars, including PATH
-                $env = null;
                 break;
             default:
                 throw new \OutOfBoundsException("Unsupported db client '$clientType'");
@@ -115,7 +113,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
 
         $commandLine = $this->buildCommandLine($command, $options);
 
-        /// @todo for psql this is probably better done via --file
+        /// @todo investigate: for psql is this better done via --file ?
         if ($isFile && $clientType != 'sqlsrv') {
             $commandLine .= ' < ' . escapeshellarg($sqlOrFilename);
         }
