@@ -39,7 +39,7 @@ class DatabaseCreate extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances();
+        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
         $userName = $input->getOption('user');
         $password = $input->getOption('password');
         $dbName = $input->getOption('database');

@@ -39,7 +39,7 @@ class SqlExecute extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances();
+        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
         $sql = $input->getOption('sql');
         $file = $input->getOption('file');
         $timeout = $input->getOption('timeout');

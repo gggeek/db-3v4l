@@ -94,7 +94,7 @@ class DatabaseSchemaManager
     /**
      * @return string
      */
-    public function getListInstancesSQL()
+    public function getListDatabasesSQL()
     {
         $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
 

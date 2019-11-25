@@ -36,7 +36,7 @@ class UserList extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances();
+        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
 
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');

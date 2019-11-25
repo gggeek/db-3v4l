@@ -36,7 +36,7 @@ class DatabaseList extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances();
+        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
 
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
@@ -54,14 +54,14 @@ class DatabaseList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listInstances($dbList, $maxParallel, $timeout, $format);
+        $results = $this->listDatabases($dbList, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listInstances($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
+    protected function listDatabases($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
 
@@ -69,7 +69,7 @@ class DatabaseList extends DatabaseManagingCommand
             $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
-            $sql = $schemaManager->getListInstancesSQL();
+            $sql = $schemaManager->getListDatabasesSQL();
 
             $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
             $process = $executor->getExecuteCommandProcess($sql);

@@ -12,11 +12,18 @@ class DatabaseConfigurationManager
     }
 
     /**
+     * @param string $includeFilter accepts 'glob' wildcards
+     * @param string $excludeFilter accepts 'glob' wildcards
      * @return string[]
      */
-    public function listInstances()
+    public function listInstances($includeFilter = null, $excludeFilter = null)
     {
-        return array_keys($this->instanceList);
+        $names = [];
+        foreach(array_keys($this->instanceList) as $name) {
+            if (($includeFilter == '' || fnmatch($includeFilter, $name)) && ($excludeFilter == '' || !fnmatch($includeFilter, $name)))
+                $names[] = $name;
+        }
+        return $names;
     }
 
     /**
