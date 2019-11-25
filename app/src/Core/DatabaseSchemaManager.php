@@ -41,6 +41,7 @@ class DatabaseSchemaManager
                     ($charset !== null ? " ENCODING $charset" : '') . /// @todo transform charset name into a supported one
                         "; COMMIT; CREATE USER \"$userName\" WITH PASSWORD '$password'" .
                         "; GRANT ALL ON DATABASE \"$dbName\" TO \"$userName\""; // q: should we avoid granting CREATE?
+            //case 'sqlite':
             case 'sqlsrv':
                 return
                     /// @see https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility
@@ -81,6 +82,7 @@ class DatabaseSchemaManager
             case 'pgsql':
                 return
                     "DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\";";
+            //case 'sqlite':
             case 'sqlsrv':
                 return
                     "SET QUOTED_IDENTIFIER ON; DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\"; DROP LOGIN \"$userName\";";
@@ -104,6 +106,7 @@ class DatabaseSchemaManager
             case 'pgsql':
                 return
                     'SELECT datname AS "Database" FROM pg_database;';
+            //case 'sqlite':
             case 'sqlsrv':
                 return
                     // the way we create it, the user account is contained in the db
@@ -120,13 +123,14 @@ class DatabaseSchemaManager
         switch ($dbType) {
             case 'mysql':
                 return
-                    'SELECT User FROM mysql.user;';
+                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;';
             //case 'oracle':
             case 'pgsql':
                 return
-                    'SELECT usename AS "User" FROM pg_catalog.pg_user;';
+                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;';
+            //case 'sqlite':
             case 'sqlsrv':
-                return '';
+                return "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name";
             default:
                 throw new \OutOfBoundsException("Unsupported database type '$dbType'");
         }
