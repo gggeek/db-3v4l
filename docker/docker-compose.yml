@@ -59,8 +59,8 @@ services:
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mysql_5_5
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_5"
-        ports:
-            - "3306:3306"
+        #ports:
+        #    - "3306:3306"
         volumes:
             - ./config/mysql/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/5.5:/var/lib/mysql
@@ -267,7 +267,7 @@ services:
         hostname: mariadb_10_4
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_4"
         #ports:
-        #    - "3314:3306"
+        #    - "3315:3306"
         volumes:
             - ./config/mariadb/10.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.4:/var/lib/mysql
@@ -290,11 +290,11 @@ services:
         hostname:  mssqlserver_2017_cu17
         container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2017_cu17"
         #ports:
-        #    - "3314:3306"
-        #volumes:
-        #    - ./config/mariadb/10.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-        #    - ./data/mariadb/10.4:/var/lib/mysql
-        #    - ./logs/mariadb/10.4:/var/log/mysql
+        #    - "1433:1433"
+        volumes:
+            - ./config/mssqlserver/2017.cu17/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
+            - ./data/mssqlserver/2017.cu17:/var/opt/mssql/data
+            - ./logs/mssqlserver/2017.cu17:/var/opt/mssql/log
         #tmpfs:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g
@@ -313,11 +313,11 @@ services:
         hostname:  mssqlserver_2019_ga
         container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2019_ga"
         #ports:
-        #    - "3314:3306"
-        #volumes:
-        #    - ./config/mariadb/10.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-        #    - ./data/mariadb/10.4:/var/lib/mysql
-        #    - ./logs/mariadb/10.4:/var/log/mysql
+        #    - "1434:1433"
+        volumes:
+            - ./config/mssqlserver/2019.ga/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
+            - ./data/mssqlserver/2019.ga:/var/opt/mssql/data
+            - ./logs/mssqlserver/2019.ga:/var/opt/mssql/log
         #tmpfs:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g
@@ -438,7 +438,7 @@ services:
         hostname: postgresql_12_1
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12_1"
         #ports:
-        #    - "5436:5432"
+        #    - "5437:5432"
         volumes:
             - ./config/postgresql/12.1/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
             - ./data/postgresql/12.1:/var/lib/postgresql

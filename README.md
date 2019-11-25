@@ -110,6 +110,13 @@ After starting the containers via `docker-compose up -d`, you can:
   in docker/config. If you change them, you need to restart the docker containers for the settings to take effect, but
   there is no need to rebuild them
 
+- Q: can I make the db3v4l application use an existing database available in my infrastructure besides the self-contained ones?
+  A: yes, as long as the type of database is already supported by the application.
+  In order to add a new database, it is enough to:
+  - edit `app/config/services.yml` and add the definition of the extra remote database in key `db3v4l.database_instances`
+  - test that the worker container can connect to the remote database on the desired port (besides firewalls, the
+    dns resolution might be problematic. If in doubt, test first using IP addresses)
+
 - Q: what is the level of security offered by this tool? Can I allow untrusted users use it to run _any_ query they want?
   A: this is the end goal, but at the moment there is close to zero security enforced. Please only allow trusted developers
   to access the platform and run queries on it
