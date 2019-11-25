@@ -1,5 +1,4 @@
 - worker: improve sql execution cmd:
-  + allow it to pick a set of desired instances
   + allow it to pick an existing db/user
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
     - ok for mysql? (to be tested)

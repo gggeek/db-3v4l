@@ -3,6 +3,12 @@ Version 0.5
 
 - New: added Microsoft SQL Server 2017 and 2017
 
+- New: added the possibility to run sql commands against a subset of all available databases 
+
+- New: when running `db3v4l:sql:execute --file`, it is now possible to use placeholder tokens in the path/name of the
+  sql file to execute. This allows to run a different set of commands based on the database type.
+  Accepted tokens are at the moment `{dbtype}` and `{instancename}` (including the curly braces) 
+
 - Fixed: allow possibility of settings custom configs for the new  PostgreSQL versions added in release 0.4
 
 

@@ -68,6 +68,13 @@ to a file and then execute it in parallel on all databases:
 
 *NB* to share files between the host computer and the container, put them in the `shared` folder.  
 
+*NB* you can also execute different sql commands based on database type by saving them to separate files. The `sql:execute`
+command does replace some tokens in the values of the `--file` option. Eg:
+
+    php bin/console sql:execute --file='./shared/test_{dbtype}.sql'
+
+   will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_`
+    
 From within the worker container, you can also list all available databases: 
 
         php bin/console db3v4l:instance:list

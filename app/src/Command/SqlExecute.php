@@ -17,7 +17,7 @@ class SqlExecute extends DatabaseManagingCommand
         $this
             ->setDescription('Executes an SQL command in parallel on all configured database instances, creating a dedicated temporary database (and user)')
             ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
-            ->addOption('file', null, InputOption::VALUE_REQUIRED, 'A file with sql commands to execute')
+            ->addOption('file', null, InputOption::VALUE_REQUIRED, "A file with sql commands to execute. The tokens '{dbtype}' and '{instancename}' will be replaced with actual values")
             ->addCommonOptions()
         ;
     }
@@ -114,13 +114,18 @@ class SqlExecute extends DatabaseManagingCommand
         /** @var Process[] $processes */
         $processes = [];
         $executors = [];
-        foreach ($dbConnectionSpecs as $dbName => $dbConnectionSpec) {
+        $filePattern = $file;
+        foreach ($dbConnectionSpecs as $instanceName => $dbConnectionSpec) {
 
             $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
 
             if ($sql != null) {
                 $process = $executor->getExecuteCommandProcess($sql);
             } else {
+                $file = $this->replaceDBSpecTokens($filePattern, $instanceName, $dbConnectionSpec);
+                if (!is_file($file)) {
+                    throw new \RuntimeException("Can not find sql file for execution: '$file'");
+                }
                 $process = $executor->getExecuteFileProcess($file);
             }
 
@@ -130,8 +135,8 @@ class SqlExecute extends DatabaseManagingCommand
 
             $process->setTimeout($timeout);
 
-            $executors[$dbName] = $executor;
-            $processes[$dbName] = $process;
+            $executors[$instanceName] = $executor;
+            $processes[$instanceName] = $process;
         }
 
         if ($format === 'text') {
@@ -143,22 +148,22 @@ class SqlExecute extends DatabaseManagingCommand
         $succeeded = 0;
         $failed = 0;
         $results = array();
-        foreach ($processes as $dbName => $process) {
-            $results[$dbName] = array(
+        foreach ($processes as $instanceName => $process) {
+            $results[$instanceName] = array(
                 'stdout' => rtrim($process->getOutput()),
                 'stderr' => trim($process->getErrorOutput()),
                 'exitcode' => $process->getExitCode()
             );
 
-            if ($executors[$dbName] instanceof TimedExecutor) {
-                $timingData = $executors[$dbName]->getTimingData();
-                $results[$dbName] = array_merge($results[$dbName], $timingData);
+            if ($executors[$instanceName] instanceof TimedExecutor) {
+                $timingData = $executors[$instanceName]->getTimingData();
+                $results[$instanceName] = array_merge($results[$instanceName], $timingData);
             }
 
             if ($process->isSuccessful()) {
                 $succeeded++;
             } else {
-                $this->writeErrorln("\n<error>Execution on database '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Execution on database '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 $failed++;
             }
         }
@@ -206,5 +211,18 @@ class SqlExecute extends DatabaseManagingCommand
                 }
             }
         }
+    }
+
+    /**
+     * Replaces tokens
+     * @param string $instanceName
+     * @aparam string[] $dbConnectionSpec
+     * @param $string
+     * @return string
+     */
+    protected function replaceDBSpecTokens($string, $instanceName, $dbConnectionSpec)
+    {
+        $dbType = explode('_', $instanceName, 2)[0];
+        return str_replace(array('{dbtype}', '{instancename}'), array($dbType, $instanceName), $string);
     }
 }
