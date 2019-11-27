@@ -1,3 +1,9 @@
+- finish sqlite support
+
+- improve handling of character sets:
+  + make sure we always create utf8 databases
+  + make sure we always get back by default utf8 data from the clients 
+
 - worker: improve sql execution cmd:
   + allow it to pick an existing db/user
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
@@ -8,20 +14,21 @@
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
   + check: can the temp user drop&creates other databases for postgresql?
 
-- worker: improve profile of 'db3v4l' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
-
 - improve cli scripts:
-  + add a separate sf console that only registers db3v4l commands
-  + add a script that removes images+logs+data
   + add a 'stack' script that simplifies building the stack and logging into it
   + also, add a 'console' script to transparently execute sf commands from the host
+  + add a script that removes images+logs+data
   + move from bash to sh
+  + add a separate sf console that only registers db3v4l commands?
 
-- allow building/starting partial docker stack for speed and resources (eg no oracle, no sqlserver, etc...) 
+- allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
+  Being able to start a single 'db type' might also make sense in parallelization of tests on travis 
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - add travis testing
+
+- worker: improve profile of 'db3v4l' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
 
@@ -77,10 +84,9 @@
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
 
-- add Firebird 2 and 3, cockroachdb, DB2 and Elastic containers
+- add more database types: Firebird 2 and 3, cockroachdb, DB2, Elastic
   - https://hub.docker.com/r/ibmcom/db2
   - https://hub.docker.com/r/cockroachdb/cockroach
-  (nb: might be hard: they are not supported by Doctrine DBAL...)
 
 - add clustered mysql/postgresql containers
 

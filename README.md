@@ -18,7 +18,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 ## Supported Databases:
 
 * MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
-* Microsoft SQL Server: 2017.cu17, 2019.ga
+* Microsoft SQL Server: 2017.cu17, 2019.ga (on Linux)
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 * SQLite (WIP): 3.3
@@ -26,7 +26,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 ## Requirements
 
-* Docker: 1.13 or later.
+* Docker: 17.09 or later. Overlay2 storage driver recommended
 
 * Docker-compose: version 1.10 or later
 
@@ -123,6 +123,16 @@ After starting the containers via `docker-compose up -d`, you can:
   - edit `app/config/services.yml` and add the definition of the extra remote database in key `db3v4l.database_instances`
   - test that the worker container can connect to the remote database on the desired port (besides firewalls, the
     dns resolution might be problematic. If in doubt, test first using IP addresses)
+
+- Q: can I access the db3v4l databases from other applications running outside the provided Docker containers?
+  A: it is possible, but not enabled by default. In order to allow it, stop the Docker Compose stack, edit the
+  `docker-compose.yml` file, set port mapping for any database that you want to expose to the 'outside world' and restart 
+  the stack.
+  *Note* that some of the databases included in the db3v4l, such as Microsoft SQL Server, have licensing conditions
+  which restrict what you are legally allowed to use them for. We assume no responsibility for any abuse of such conditions.
+  *Note also* that there has be no hardening or tuning done of the containers running the database - the database root
+  account password is not even randomized... Opening them up for access from external tools might result in 
+  security-related issues
 
 - Q: what is the level of security offered by this tool? Can I allow untrusted users use it to run _any_ query they want?
   A: this is the end goal, but at the moment there is close to zero security enforced. Please only allow trusted developers
