@@ -2,6 +2,8 @@
   + allow it to pick an existing db/user
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
 
+- add a minimal html welcome page with a link to adminer, phpinfo, the .md docs
+
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients 
