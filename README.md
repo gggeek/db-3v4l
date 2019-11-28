@@ -91,6 +91,12 @@ Once the containers are up and running, you can access a database administration
 (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
 your browser is executing).
 
+Last but not least, you have access to other command-libe tools which can be useful in troubleshooting SQL queries:
+
+        ./vendor/bin/highlight-query  
+        ./vendor/bin/lint-query
+        ./vendor/bin/tokenize-query
+
 
 ## Details
 

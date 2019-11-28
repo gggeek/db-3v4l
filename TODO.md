@@ -12,6 +12,7 @@
   + add a script that removes images+logs+data
   + move from bash to sh
   + add a separate sf console that only registers db3v4l commands?
+  + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
 - allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis 
