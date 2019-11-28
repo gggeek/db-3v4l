@@ -1,5 +1,3 @@
-- finish sqlite support
-
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients 

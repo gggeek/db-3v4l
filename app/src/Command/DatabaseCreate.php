@@ -49,6 +49,7 @@ class DatabaseCreate extends DatabaseManagingCommand
         $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
         $format = $input->getOption('output-type');
 
+        /// @todo some dbs are actually fine with this (eg. SQLite)
         if ($userName == null) {
             throw new \Exception("Please provide a username");
         }
