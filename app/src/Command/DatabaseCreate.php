@@ -16,7 +16,7 @@ class DatabaseCreate extends DatabaseManagingCommand
         $this
             ->setDescription('Creates a user+database in parallel on all configured database instances')
             ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to create')
-            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password')
+            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed to stderr')
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database. If omitted, the user name will be used as database name')
             ->addCommonOptions()
         ;
@@ -54,9 +54,12 @@ class DatabaseCreate extends DatabaseManagingCommand
             throw new \Exception("Please provide a username");
         }
 
-        /// @todo warn the user...
         if ($password == null) {
             $password = bin2hex(random_bytes(16));
+
+            // Should we warn the user always? To avoid breaking non-text-format, we can send it to stderr...
+            // Otoh we give the password in the structured output that we produce
+            //$this->writeErrorln("<info>Assigned password to the user: $password</info>");
         }
 
         // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild

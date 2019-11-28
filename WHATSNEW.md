@@ -3,11 +3,10 @@ Version 0.6
 
 - New: added SQLite 3.27
 
-- Improved: sort database names when listing them (except for MySQL and MariaDB)
-
 - Fixed: the number of total failures was not computed correctly when executing SQL if the failure was in the creation
    of the temporary database 
 
+- Improved: sort database names when listing them (except for MySQL and MariaDB)
 
 Version 0.5
 -----------

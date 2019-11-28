@@ -1,16 +1,10 @@
+- worker: improve sql execution cmd:
+  + allow it to pick an existing db/user
+  + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
+
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients 
-
-- worker: improve sql execution cmd:
-  + allow it to pick an existing db/user
-  + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
-    - ok for mysql? (to be tested)
-    - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
-      driver... it might be in fact already happening when NOT using input via files...)
-    - missing for sqlsrv
-  + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
-  + check: can the temp user drop&creates other databases for postgresql?
 
 - improve cli scripts:
   + add a 'stack' script that simplifies building the stack and logging into it
@@ -26,7 +20,19 @@
 
 - add travis testing
 
-- worker: improve profile of 'db3v4l' account (esp: add APP_ENV and APP_DEBUG env vars; start in correct dir automatically)
+- worker: sanitize sql execution cmd:
+  + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
+    - ok for mysql? (to be tested)
+    - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
+      driver... it might be in fact already happening when NOT using input via files...)
+    - missing for sqlsrv
+  + check: can the temp user drop&creates other databases for postgresql?
+
+- worker: improve profile of 'db3v4l' account
+  + esp: add APP_ENV and APP_DEBUG env vars
+  + start in correct dir automatically
+  + enable `ll` and `la` shell aliases
+  + use a colored shell prompt
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
 
