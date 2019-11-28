@@ -2,6 +2,8 @@
 
 namespace Db3v4l\Core;
 
+use \OutOfBoundsException;
+
 class DatabaseSchemaManager
 {
     protected $databaseConfiguration;
@@ -18,6 +20,7 @@ class DatabaseSchemaManager
      * @param string $dbName Max 63 chars for Postgres
      * @param string $charset
      * @return string
+     * @throws OutOfBoundsException for unsupported database types
      */
     public function getCreateDatabaseSQL($userName, $password, $dbName = null, $charset = null)
     {
@@ -41,7 +44,10 @@ class DatabaseSchemaManager
                     ($charset !== null ? " ENCODING $charset" : '') . /// @todo transform charset name into a supported one
                         "; COMMIT; CREATE USER \"$userName\" WITH PASSWORD '$password'" .
                         "; GRANT ALL ON DATABASE \"$dbName\" TO \"$userName\""; // q: should we avoid granting CREATE?
-            //case 'sqlite':
+            case 'sqlite':
+                $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
+                return
+                    "ATTACH '$fileName' AS \"$dbName\";";
             case 'sqlsrv':
                 return
                     /// @see https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility
@@ -56,7 +62,7 @@ class DatabaseSchemaManager
                     "; CREATE USER \"$userName\" FOR LOGIN \"$userName\"" .
                     ";  ALTER ROLE db_owner ADD MEMBER \"$userName\"";
             default:
-                throw new \OutOfBoundsException("Unsupported database type '$dbType'");
+                throw new OutOfBoundsException("Unsupported database type '$dbType'");
         }
     }
 
@@ -64,7 +70,8 @@ class DatabaseSchemaManager
      * Returns the sql commands used to drop a db
      * @param string $userName
      * @param string $dbName
-     * @return string
+     * @return string|Callable null when the only way to drop a database is do something more complex than a sql query
+     * @throws OutOfBoundsException for unsupported database types
      */
     public function getDropDatabaseQL($userName, $dbName = null)
     {
@@ -82,17 +89,22 @@ class DatabaseSchemaManager
             case 'pgsql':
                 return
                     "DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\";";
-            //case 'sqlite':
+            case 'sqlite':
+                $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
+                return function() use($fileName) {
+                    unlink($fileName);
+                };
             case 'sqlsrv':
                 return
                     "SET QUOTED_IDENTIFIER ON; DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\"; DROP LOGIN \"$userName\";";
             default:
-                throw new \OutOfBoundsException("Unsupported database type '$dbType'");
+                throw new OutOfBoundsException("Unsupported database type '$dbType'");
         }
     }
 
     /**
-     * @return string
+     * @return string|Callable when the only way to drop a database is do something more complex than a sql query
+     * @throws OutOfBoundsException for unsupported database types
      */
     public function getListDatabasesSQL()
     {
@@ -101,21 +113,34 @@ class DatabaseSchemaManager
         switch ($dbType) {
             case 'mysql':
                 return
+                    /// @todo to sort the output,
                     'SHOW DATABASES;';
             //case 'oracle':
             case 'pgsql':
                 return
-                    'SELECT datname AS "Database" FROM pg_database;';
-            //case 'sqlite':
+                    'SELECT datname AS "Database" FROM pg_database ORDER BY datname;';
+            case 'sqlite':
+                $fileGlob = dirname($this->databaseConfiguration['path']) . '/*.sqlite';
+                return function() use ($fileGlob) {
+                    $out = "Database";
+                    foreach(glob($fileGlob) as $fileName){
+                        $out .= "\n" . basename($fileName);
+                    }
+                    return $out;
+                };
             case 'sqlsrv':
                 return
                     // the way we create it, the user account is contained in the db
-                    "SELECT name AS 'Database' FROM sys.databases";
+                    "SELECT name AS 'Database' FROM sys.databases ORDER BY name;";
             default:
-                throw new \OutOfBoundsException("Unsupported database type '$dbType'");
+                throw new OutOfBoundsException("Unsupported database type '$dbType'");
         }
     }
 
+    /**
+     * @return string|Callable when the only way to list databases is do something more complex than a sql query
+     * @throws OutOfBoundsException for unsupported database types
+     */
     public function getListUsersSQL()
     {
         $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
@@ -128,11 +153,14 @@ class DatabaseSchemaManager
             case 'pgsql':
                 return
                     'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;';
-            //case 'sqlite':
+            case 'sqlite':
+                return function () {
+                    return array();
+                };
             case 'sqlsrv':
                 return "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name";
             default:
-                throw new \OutOfBoundsException("Unsupported database type '$dbType'");
+                throw new OutOfBoundsException("Unsupported database type '$dbType'");
         }
     }
 

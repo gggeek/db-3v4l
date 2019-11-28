@@ -70,7 +70,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
             // sadly, psql does not allow to create a db and a user using a multiple-sql-commands string,
             // and we have to resort to using temp files
             /// @todo can we make this safer? Ideally the new userv name and pwd should neither hit disk nor the process list...
-            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_');
+            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_') . '.sql';
             file_put_contents($tempSQLFileName, $sql);
             $tempSQLFileNames[] = $tempSQLFileName;
 
@@ -130,6 +130,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
     protected function dropDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
+        $callables = [];
         $tempSQLFileNames = [];
 
         foreach ($dbSpecList as $instanceName => $dbConnectionSpec) {
@@ -140,36 +141,53 @@ abstract class DatabaseManagingCommand extends BaseCommand
                 $dbConnectionSpec['user'],
                 (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null
             );
-            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_');
-            file_put_contents($tempSQLFileName, $sql);
-            $tempSQLFileNames[] = $tempSQLFileName;
+            if (is_callable($sql)) {
+                $callables[$instanceName] = $sql;
+            } else {
+                $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_') . '.sql';
+                file_put_contents($tempSQLFileName, $sql);
+                $tempSQLFileNames[] = $tempSQLFileName;
 
-            $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
-            $process = $executor->getExecuteFileProcess($tempSQLFileName);
+                $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
+                $process = $executor->getExecuteFileProcess($tempSQLFileName);
 
-            if ($format === 'text') {
-                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+                if ($format === 'text') {
+                    $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+                }
+
+                $process->setTimeout($timeout);
+
+                $processes[$instanceName] = $process;
             }
-
-            $process->setTimeout($timeout);
-
-            $processes[$instanceName] = $process;
         }
-
-        if ($format === 'text') {
-            $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
-        }
-
-        $this->processManager->runParallel($processes, $maxParallel, 100);
 
         $succeeded = 0;
         $failed = 0;
-        foreach ($processes as $instanceName => $process) {
-            if ($process->isSuccessful()) {
+
+        foreach ($callables as $instanceName => $callable) {
+            try {
+                $callable();
                 $succeeded++;
-            } else {
+            } catch (\Throwable $t) {
                 $failed++;
-                $this->writeErrorln("\n<error>Drop of new database & user on instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Drop of new database & user on instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+            }
+        }
+
+        if (count($processes)) {
+            if ($format === 'text') {
+                $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+
+            $this->processManager->runParallel($processes, $maxParallel, 100);
+
+            foreach ($processes as $instanceName => $process) {
+                if ($process->isSuccessful()) {
+                    $succeeded++;
+                } else {
+                    $failed++;
+                    $this->writeErrorln("\n<error>Drop of new database & user on instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                }
             }
         }
 

@@ -6,6 +6,7 @@ use Db3v4l\API\Interfaces\ForkedCommandExecutor;
 use Db3v4l\API\Interfaces\ForkedFileExecutor;
 use Db3v4l\Core\SqlExecutor\Forked\NativeClient;
 use Db3v4l\Core\SqlExecutor\Forked\Doctrine;
+use Db3v4l\Core\SqlExecutor\Forked\PDO;
 use Db3v4l\Core\SqlExecutor\Forked\TimedExecutor;
 
 class SqlExecutorFactory
@@ -25,6 +26,9 @@ class SqlExecutorFactory
                 break;
             case 'NativeClient':
                 $executor = new NativeClient($databaseConnectionConfiguration);
+                break;
+            case 'PDO':
+                $executor = new PDO($databaseConnectionConfiguration);
                 break;
             default:
                 throw new \OutOfBoundsException("Unsupported executor strategy '$executionStrategy'");

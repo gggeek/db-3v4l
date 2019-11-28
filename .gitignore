@@ -26,6 +26,7 @@
 /docker/data/postgresql/10.11/*
 /docker/data/postgresql/11.6/*
 /docker/data/postgresql/12.1/*
+/docker/data/sqlite/3.27/*
 !/docker/data/composer_cache/.gitkeep
 !/docker/data/mariadb/5.5/.gitkeep
 !/docker/data/mariadb/10.0/.gitkeep
@@ -45,6 +46,7 @@
 !/docker/data/postgresql/10.11/.gitkeep
 !/docker/data/postgresql/11.6/.gitkeep
 !/docker/data/postgresql/12.1/.gitkeep
+!docker/data/sqlite/3.27/.gitkeep
 
 /docker/containers.env.local
 

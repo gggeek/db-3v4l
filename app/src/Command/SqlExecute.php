@@ -80,16 +80,20 @@ class SqlExecute extends DatabaseManagingCommand
             ];
         }
 
-        $results = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);
-        $dbConnectionSpecs = $results['data'];
+        $creationResults = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);
+        $dbConnectionSpecs = $creationResults['data'];
 
-        $results = $this->executeSQL($dbConnectionSpecs, $sql, $file, $format, $maxParallel, $timeout);
+        if (count($dbConnectionSpecs)) {
+            $results = $this->executeSQL($dbConnectionSpecs, $sql, $file, $format, $maxParallel, $timeout);
 
-        if ($format === 'text') {
-            $this->writeln('<info>Dropping temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
+            if ($format === 'text') {
+                $this->writeln('<info>Dropping temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
+            }
+
+            $this->dropDatabases($dbConnectionSpecs, $maxParallel);
+
+            $results['failed'] += $creationResults['failed'];
         }
-
-        $this->dropDatabases($dbConnectionSpecs, $maxParallel);
 
         $time = microtime(true) - $start;
 

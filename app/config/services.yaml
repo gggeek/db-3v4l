@@ -153,6 +153,10 @@ parameters:
             driver: pdo_pgsql
             charset: UTF8
             server_version: '12.1'
+        sqlite_3_27:
+            driver: pdo_sqlite
+            path: /home/db3v4l/data/sqlite/3.27/3v4l.sqlite
+
 services:
     # default configuration for services in *this* file
     _defaults:

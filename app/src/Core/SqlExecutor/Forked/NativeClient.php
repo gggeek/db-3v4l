@@ -87,8 +87,20 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     //'PGPASSWORD' => $this->databaseConfiguration['password'],
                 //];
                 break;
-            //case 'sqlite':
-            //    break;
+            case 'sqlite':
+                $command = 'sqlite3';
+                // 'path' is the full path to the 'master' db (for Doctrine compatibility).
+                //  non-master dbs are supposed to reside in the same directory
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    $options[] = dirname($this->databaseConfiguration['path']) . '/' . $this->databaseConfiguration['dbname'] . '.sqlite';
+                } else {
+                    $options[] = $this->databaseConfiguration['path'];
+                }
+
+                if (!$isFile) {
+                    $options[] = $sqlOrFilename;
+                }
+                break;
             case 'sqlsrv':
                 $command = 'sqlcmd';
                 $options = [

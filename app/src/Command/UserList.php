@@ -64,6 +64,7 @@ class UserList extends DatabaseManagingCommand
     protected function listUsers($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
+        $callables = [];
 
         foreach ($dbList as $dbName) {
             $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
@@ -71,36 +72,56 @@ class UserList extends DatabaseManagingCommand
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getlistUsersSQL();
 
-            $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
-            $process = $executor->getExecuteCommandProcess($sql);
+            if (is_callable($sql)) {
+                $callables[$dbName] = $sql;
+            } else {
+                $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
+                /// @todo sqlite needs to say 'no users' instead of running a sql command...
+                $process = $executor->getExecuteCommandProcess($sql);
 
-            if ($format === 'text') {
-                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+                if ($format === 'text') {
+                    $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+                }
+
+                $process->setTimeout($timeout);
+
+                $processes[$dbName] = $process;
             }
-
-            $process->setTimeout($timeout);
-
-            $processes[$dbName] = $process;
         }
-
-        if ($format === 'text') {
-            $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
-        }
-
-        $this->processManager->runParallel($processes, $maxParallel, 100);
 
         $succeeded = 0;
         $failed = 0;
         $results = [];
-        foreach ($processes as $dbName => $process) {
-            if ($process->isSuccessful()) {
-                $results[$dbName] = rtrim($process->getOutput());
+
+        foreach ($callables as $instanceName => $callable) {
+            try {
+                $callable();
                 $succeeded++;
-            } else {
+            } catch (\Throwable $t) {
                 $failed++;
-                $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
             }
         }
+
+        if (count($processes)) {
+            if ($format === 'text') {
+                $this->writeln('<info>Starting parallel execution...</info>', OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
+
+            $this->processManager->runParallel($processes, $maxParallel, 100);
+
+            foreach ($processes as $dbName => $process) {
+                if ($process->isSuccessful()) {
+                    $results[$dbName] = rtrim($process->getOutput());
+                    $succeeded++;
+                } else {
+                    $failed++;
+                    $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                }
+            }
+        }
+
+        ksort($results);
 
         return [
             'succeeded' => $succeeded,
