@@ -1,25 +1,32 @@
-- worker: some failures in db removal are not reported (eg on mysql, for inexisting db)
-
-- worker: improve sql execution cmd:
-  + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
+- worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db).
+  Are we leaving behind temp databases?
 
 - worker: when listing instances, show the exact db version nr.
 
-- add a minimal html welcome page with a link to adminer, phpinfo, the .md docs
+- web: add a minimal html welcome page with a link to adminer, phpinfo, the .md docs
 
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients
 
-- improve cli scripts:
+- host: improve cli scripts:
   + add a 'stack' script that simplifies building the stack and logging into it
+    => force usage of a non-default pwd for db root account on startup
   + also, add a 'console' script to transparently execute sf commands from the host
   + add a script that removes images+logs+data
   + move from bash to sh
+
+- worker: improve cli scripts
   + add a separate sf console that only registers db3v4l commands?
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
-- allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
+- worker: improve profile of 'db3v4l' account
+  + esp: add APP_ENV and APP_DEBUG env vars
+  + start in correct dir automatically
+  + enable `ll` and `la` shell aliases
+  + use a colored shell prompt
+
+- host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
@@ -27,18 +34,13 @@
 - add travis testing
 
 - worker: sanitize sql execution cmd:
+  + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
     - ok for mysql? (to be tested)
     - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
       driver... it might be in fact already happening when NOT using input via files...)
     - missing for sqlsrv
   + check: can the temp user drop&creates other databases for postgresql?
-
-- worker: improve profile of 'db3v4l' account
-  + esp: add APP_ENV and APP_DEBUG env vars
-  + start in correct dir automatically
-  + enable `ll` and `la` shell aliases
-  + use a colored shell prompt
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
 
