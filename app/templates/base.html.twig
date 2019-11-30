@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}DB3v4l!{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <div id="sidebar">
+        {% block sidebar %}
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/adminer.php">Adminer</a></li>
+            </ul>
+        {% endblock %}
+    </div>
+
+    <div id="content">
+    {% block body %}{% endblock %}
+    </div>
+
+    {% block javascripts %}{% endblock %}
+</body>
 </html>

@@ -2,10 +2,10 @@
 
 namespace Db3v4l\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class Doc extends Controller
+class DocController extends AbstractController
 {
     /// @todo get this injected
     protected $docRoot = '/home/db3v4l/doc';
@@ -14,6 +14,7 @@ class Doc extends Controller
      * @Route("/doc/{fileName}}")
      *
      * @param string $fileName
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function displayFileAction($fileName)
     {
