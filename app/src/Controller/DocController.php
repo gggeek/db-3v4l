@@ -8,10 +8,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocController extends AbstractController
 {
     /// @todo get this injected
-    protected $docRoot = '/home/db3v4l/doc';
+    protected $docRoot = '/var/www/doc';
 
     /**
-     * @Route("/doc/{fileName}}")
+     * @Route("/doc/{fileName}")
      *
      * @param string $fileName
      * @return \Symfony\Component\HttpFoundation\Response
@@ -28,6 +28,6 @@ class DocController extends AbstractController
         }
 
         /// @todo allow different types of doc format
-        return $this->render('Doc/markdown.html.twig');
+        return $this->render('Doc/markdown.html.twig', ['markup' => file_get_contents($fileName)]);
     }
 }
