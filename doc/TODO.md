@@ -101,5 +101,3 @@
   - https://hub.docker.com/r/cockroachdb/cockroach
 
 - add clustered mysql/postgresql containers
-
-- app: move to Symfony 4.4

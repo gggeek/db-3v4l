@@ -6,6 +6,8 @@ Version 0.7 (unreleased)
 
 - Fixed: the app would not be set up automatically on 1st run of the container (introduced in 0.4)
 
+- Improved: moved application to Symfony 4.4; upgraded phpmyadmin/sql-parser to 5.1.0
+
 
 Version 0.6
 -----------
