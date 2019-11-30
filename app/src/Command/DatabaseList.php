@@ -14,7 +14,7 @@ class DatabaseList extends DatabaseManagingCommand
     protected function configure()
     {
         $this
-            ->setDescription('Lists all existing users+databases on all configured database instances')
+            ->setDescription('Lists all existing databases on all configured database instances')
             ->addCommonOptions()
         ;
     }
@@ -36,7 +36,7 @@ class DatabaseList extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
 
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
@@ -54,27 +54,27 @@ class DatabaseList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listDatabases($dbList, $maxParallel, $timeout, $format);
+        $results = $this->listDatabases($instanceList, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listDatabases($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
+    protected function listDatabases($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
         $callables = [];
 
-        foreach ($dbList as $dbName) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+        foreach ($instanceList as $instanceName) {
+            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             /// @todo sqlite needs to execute an os command here instead of a sql command...
             $sql = $schemaManager->getListDatabasesSQL();
 
             if (is_callable($sql)) {
-                $callables[$dbName] = $sql;
+                $callables[$instanceName] = $sql;
             } else {
                 $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
                 $process = $executor->getExecuteCommandProcess($sql);
@@ -85,7 +85,7 @@ class DatabaseList extends DatabaseManagingCommand
 
                 $process->setTimeout($timeout);
 
-                $processes[$dbName] = $process;
+                $processes[$instanceName] = $process;
             }
         }
 
@@ -99,7 +99,7 @@ class DatabaseList extends DatabaseManagingCommand
                 $succeeded++;
             } catch (\Throwable $t) {
                 $failed++;
-                $this->writeErrorln("\n<error>Listing of databases in instance '$dbName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Listing of databases in instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
             }
         }
 
@@ -109,13 +109,13 @@ class DatabaseList extends DatabaseManagingCommand
             }
             $this->processManager->runParallel($processes, $maxParallel, 100);
 
-            foreach ($processes as $dbName => $process) {
+            foreach ($processes as $instanceName => $process) {
                 if ($process->isSuccessful()) {
-                    $results[$dbName] = rtrim($process->getOutput());
+                    $results[$instanceName] = rtrim($process->getOutput());
                     $succeeded++;
                 } else {
                     $failed++;
-                    $this->writeErrorln("\n<error>Listing of databases in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                    $this->writeErrorln("\n<error>Listing of databases in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 }
             }
         }

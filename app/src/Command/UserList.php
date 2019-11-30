@@ -36,7 +36,7 @@ class UserList extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
 
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
@@ -54,26 +54,26 @@ class UserList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listUsers($dbList, $maxParallel, $timeout);
+        $results = $this->listUsers($instanceList, $maxParallel, $timeout);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listUsers($dbList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
+    protected function listUsers($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
         $callables = [];
 
-        foreach ($dbList as $dbName) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($dbName);
+        foreach ($instanceList as $instanceName) {
+            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getlistUsersSQL();
 
             if (is_callable($sql)) {
-                $callables[$dbName] = $sql;
+                $callables[$instanceName] = $sql;
             } else {
                 $executor = $this->executorFactory->createForkedExecutor($rootDbConnectionSpec, 'NativeClient', false);
                 /// @todo sqlite needs to say 'no users' instead of running a sql command...
@@ -85,7 +85,7 @@ class UserList extends DatabaseManagingCommand
 
                 $process->setTimeout($timeout);
 
-                $processes[$dbName] = $process;
+                $processes[$instanceName] = $process;
             }
         }
 
@@ -99,7 +99,7 @@ class UserList extends DatabaseManagingCommand
                 $succeeded++;
             } catch (\Throwable $t) {
                 $failed++;
-                $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                $this->writeErrorln("\n<error>Listing of users in instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
             }
         }
 
@@ -110,13 +110,13 @@ class UserList extends DatabaseManagingCommand
 
             $this->processManager->runParallel($processes, $maxParallel, 100);
 
-            foreach ($processes as $dbName => $process) {
+            foreach ($processes as $instanceName => $process) {
                 if ($process->isSuccessful()) {
-                    $results[$dbName] = rtrim($process->getOutput());
+                    $results[$instanceName] = rtrim($process->getOutput());
                     $succeeded++;
                 } else {
                     $failed++;
-                    $this->writeErrorln("\n<error>Listing of users in instance '$dbName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                    $this->writeErrorln("\n<error>Listing of users in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 }
             }
         }

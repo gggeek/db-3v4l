@@ -1,12 +1,15 @@
+- worker: some failures in db removal are not reported (eg on mysql, for inexisting db)
+
 - worker: improve sql execution cmd:
-  + allow it to pick an existing db/user
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
+
+- worker: when listing instances, show the exact db version nr.
 
 - add a minimal html welcome page with a link to adminer, phpinfo, the .md docs
 
 - improve handling of character sets:
   + make sure we always create utf8 databases
-  + make sure we always get back by default utf8 data from the clients 
+  + make sure we always get back by default utf8 data from the clients
 
 - improve cli scripts:
   + add a 'stack' script that simplifies building the stack and logging into it
@@ -17,7 +20,7 @@
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
 - allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
-  Being able to start a single 'db type' might also make sense in parallelization of tests on travis 
+  Being able to start a single 'db type' might also make sense in parallelization of tests on travis
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
@@ -55,19 +58,19 @@
 
 - web/worker: move sf logs to a mounted volume
 
-- web: improve Adminer gui by providing a pre-filled list of databases 
+- web: improve Adminer gui by providing a pre-filled list of databases
 
 - web: add rest API
-  
+
 - web/worker: allow easy loading of 'standard' testing data sets
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
 - web gui: store previous snippets in a dedicated db, list them (private to each user session)
 
-- mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs; 
+- mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
- 
+
 - postgresql: move stats_temp_directory to /tmpfs
 
 - worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.

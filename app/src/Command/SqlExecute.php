@@ -15,9 +15,14 @@ class SqlExecute extends DatabaseManagingCommand
     protected function configure()
     {
         $this
-            ->setDescription('Executes an SQL command in parallel on all configured database instances, creating a dedicated temporary database (and user)')
+            ->setDescription('Executes an SQL command in parallel on all configured database instances, by default in a dedicated temporary database/user')
             ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
             ->addOption('file', null, InputOption::VALUE_REQUIRED, "A file with sql commands to execute. The tokens '{dbtype}' and '{instancename}' will be replaced with actual values")
+
+            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing the database to use. If omitted a dedicated temporary database will be created on the fly and disposed after use')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to use for connecting to the existing database. Temporary databases get created with a temp user and random password')
+            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The user password')
+
             ->addCommonOptions()
         ;
     }
@@ -39,20 +44,30 @@ class SqlExecute extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
         $sql = $input->getOption('sql');
         $file = $input->getOption('file');
+        $dbName = $input->getOption('database');
+        $userName = $input->getOption('user');
+        $password = $input->getOption('password');
         $timeout = $input->getOption('timeout');
         $maxParallel = $input->getOption('max-parallel');
         $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
         $format = $input->getOption('output-type');
 
         if ($sql == null && $file == null) {
-            throw new \Exception("Please provide an sql command/file to be executed");
+            throw new \Exception("Please provide an sql command or file to be executed");
         }
         if ($sql != null && $file != null) {
             throw new \Exception("Please provide either an sql command or file to be executed, not both");
         }
+
+        if (($dbName == null) xor ($userName == null)) {
+
+            throw new \Exception("Please provide both a custom database name and associated user account");
+        }
+
+        $createDB = ($dbName == null);
 
         // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
         // We thus force it, but give end users an option to disable this
@@ -61,27 +76,51 @@ class SqlExecute extends DatabaseManagingCommand
             Process::forceSigchildEnabled(true);
         }
 
-        if ($format === 'text') {
-            $this->writeln('<info>Creating temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
-        }
+        if ($createDB) {
+            // create temp databases
 
-        /// @todo inject more randomness in the username, by allowing more chars than bin2hex produces
-        $userName = 'db3v4l_' . substr(bin2hex(random_bytes(5)), 0, 9); // some mysql versions have a limitation of 16 chars for usernames
-        $password = bin2hex(random_bytes(16));
-        //$dbName = bin2hex(random_bytes(31));
-        $dbName = null; // $userName will be used as db name
+            if ($format === 'text') {
+                $this->writeln('<info>Creating temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
+            }
 
-        $tempDbSpecs = [];
-        foreach($dbList as $instanceName) {
-            $tempDbSpecs[$instanceName] = [
+            /// @todo inject more randomness in the username, by allowing more chars than bin2hex produces
+            $userName = 'db3v4l_' . substr(bin2hex(random_bytes(5)), 0, 9); // some mysql versions have a limitation of 16 chars for usernames
+            $password = bin2hex(random_bytes(16));
+            //$dbName = bin2hex(random_bytes(31));
+            $dbName = null; // $userName will be used as db name
+
+            $tempDbSpecs = [];
+            foreach($instanceList as $instanceName) {
+                $tempDbSpecs[$instanceName] = [
+                    'user' => $userName,
+                    'password' => $password,
+                    'dbname' => $dbName
+                ];
+            }
+
+            $creationResults = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);
+            $dbConnectionSpecs = $creationResults['data'];
+
+        } else {
+            // use existing databases
+
+            if ($format === 'text') {
+                $this->writeln('<info>Using existing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
+            }
+
+            $dbConfig = [
                 'user' => $userName,
                 'password' => $password,
-                'dbname' => $dbName
+                'dbname' => $dbName,
             ];
-        }
 
-        $creationResults = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);
-        $dbConnectionSpecs = $creationResults['data'];
+            $dbConnectionSpecs = [];
+            foreach($instanceList as $instanceName) {
+                $dbConnectionSpecs[$instanceName] = array_merge(
+                    $this->dbManager->getDatabaseConnectionSpecification($instanceName), $dbConfig
+                );
+            }
+        }
 
         if (count($dbConnectionSpecs)) {
             $results = $this->executeSQL($dbConnectionSpecs, $sql, $file, $format, $maxParallel, $timeout);
@@ -90,9 +129,11 @@ class SqlExecute extends DatabaseManagingCommand
                 $this->writeln('<info>Dropping temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
             }
 
-            $this->dropDatabases($dbConnectionSpecs, $maxParallel);
+            if ($createDB) {
+                $results['failed'] += $creationResults['failed'];
 
-            $results['failed'] += $creationResults['failed'];
+                $this->dropDatabases($dbConnectionSpecs, $maxParallel);
+            }
         }
 
         $time = microtime(true) - $start;
@@ -219,9 +260,9 @@ class SqlExecute extends DatabaseManagingCommand
 
     /**
      * Replaces tokens
+     * @param string $string the original string
      * @param string $instanceName
      * @aparam string[] $dbConnectionSpec
-     * @param $string
      * @return string
      */
     protected function replaceDBSpecTokens($string, $instanceName, $dbConnectionSpec)

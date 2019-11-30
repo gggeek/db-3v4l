@@ -25,16 +25,18 @@ CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
 if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
-
     groupmod -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
-
-    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
-    # Altered as we mount volumes inside here
-    #chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
-    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
-
 fi
+if [ -d /var/lib/postgresql ]; then
+    if [ $(stat -c '%u' "/var/lib/postgresql") != "${DEV_UID}" -o $(stat -c '%g' "/var/lib/postgresql") != "${DEV_GID}" ]; then
+        chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
+    fi
+fi
+# @todo we always do this for safety, but is it really necessary ?
+# Altered as we mount volumes inside here
+#chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
+chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
 
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost ]; then cat /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost > /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys ]; then chown ${CONTAINER_USER}:${CONTAINER_USER} /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
@@ -44,14 +46,14 @@ fi
 echo "[`date`] Setting up the application..."
 
 # @todo allow to not deploy the app on bootstrap
-if [ ! -f "${ORIG_HOME}/db3v4l/vendor/autoload.php" ]; then
+if [ ! -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install"
 fi
 
-if [ ! -f "${ORIG_HOME}/db3v4l/.env.local" ]; then
-    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/db3v4l/.env.local
-    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/db3v4l/.env.local
-    chown  "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/db3v4l/.env.local
+if [ ! -f "${ORIG_HOME}/app/.env.local" ]; then
+    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/app/.env.local
+    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/app/.env.local
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok

@@ -1,23 +1,33 @@
+Version 0.7 (unreleased)
+-----------
+
+- New: allow to run sql snippets against existing databases (within the predefined db servers).
+  This allows scenarios where data is persisted between execution of different queries.
+
+- Fixed: the app would not be set up automatically on 1st run of the container (introduced in 0.4)
+
+
 Version 0.6
 -----------
 
 - New: added SQLite 3.27
 
 - Fixed: the number of total failures was not computed correctly when executing SQL if the failure was in the creation
-   of the temporary database 
+  of the temporary database
 
 - Improved: sort database names when listing them (except for MySQL and MariaDB)
+
 
 Version 0.5
 -----------
 
 - New: added Microsoft SQL Server 2017 and 2019
 
-- New: added the possibility to run sql commands against a subset of all available databases 
+- New: added the possibility to run sql commands against a subset of all available databases
 
 - New: when running `db3v4l:sql:execute --file`, it is now possible to use placeholder tokens in the path/name of the
   sql file to execute. This allows to run a different set of commands based on the database type.
-  Accepted tokens are at the moment `{dbtype}` and `{instancename}` (including the curly braces) 
+  Accepted tokens are at the moment `{dbtype}` and `{instancename}` (including the curly braces)
 
 - Fixed: allow possibility of settings custom configs for the new  PostgreSQL versions added in release 0.4
 
@@ -35,7 +45,7 @@ Version 0.4
 
 - New: added phpmyadmin/sql-parser as dependency, to allow linting of sql snippets
 
-- Fixed: removed one warning from `./bin/cleanup-logs.sh -d` in corner cases 
+- Fixed: removed one warning from `./bin/cleanup-logs.sh -d` in corner cases
 
 - Changed: renamed command `db3v4l:database:list` to `db3v4l:instance:list`
 
@@ -74,7 +84,7 @@ Version 0.3
 Version 0.2
 -----------
 
-- Fixed: sql commands executed against mariadb would be reported as failed 
+- Fixed: sql commands executed against mariadb would be reported as failed
 
 - Fixed: auth problems with mysql 8.0
 

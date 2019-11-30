@@ -38,7 +38,7 @@ class DatabaseDrop extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $dbList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
         $userName = $input->getOption('user');
         $dbName = $input->getOption('database');
 
@@ -63,7 +63,7 @@ class DatabaseDrop extends DatabaseManagingCommand
         }
 
         $dbToDropSpecs = [];
-        foreach($dbList as $instanceName) {
+        foreach($instanceList as $instanceName) {
             $dbToDropSpecs[$instanceName] = [
                 'user' => $userName,
                 'dbname' => $dbName
