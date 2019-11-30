@@ -22,7 +22,7 @@ services:
             - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTPS}:443"
         volumes:
             - ../app:/var/www/db3v4l
-            - ./doc:/var/www/doc
+            - ../doc:/var/www/doc
             - ./logs/web/nginx:/var/log/nginx
             - ./logs/web/php:/var/log/php
         environment:
@@ -43,6 +43,7 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
         volumes:
             - "../app:/home/${CONTAINER_USER}/app"
+            - "../doc:/home/${CONTAINER_USER}/doc"
             - "../shared:/home/${CONTAINER_USER}/shared"
             - "./data/composer_cache/:/home/${CONTAINER_USER}/.composer"
             - "./data/sqlite/:/home/${CONTAINER_USER}/data/sqlite"

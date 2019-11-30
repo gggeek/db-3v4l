@@ -47,7 +47,8 @@ echo "[`date`] Setting up the application..."
 
 # @todo allow to not deploy the app on bootstrap
 if [ ! -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
-    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install"
+    # q: does 'prod' work for encore, or do we need to use 'production' ?
+    su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${APP_ENV}"
 fi
 
 if [ ! -f "${ORIG_HOME}/app/.env.local" ]; then

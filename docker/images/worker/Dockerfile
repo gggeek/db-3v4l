@@ -8,15 +8,15 @@ ARG container_user=user
 
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buster main\n" > /etc/apt/sources.list; fi
 
 # Configure timezone
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
 # Base packages (some are required by the steps below)
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     alien \
     default-mysql-client \
@@ -40,7 +40,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     unzip
 
 # DB connectors and helper tools
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN pecl channel-update pecl.php.net
 
 # MS SQL server driver and php extension
@@ -88,7 +88,7 @@ RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/loc
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
 
 # Local user
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # nb: the 1013 used here for user id and group id is later on replaced by the code in bootstrap.sh...
 # q: why not use useradd and groupadd commands which can do more in one line?
 RUN addgroup --gid 1013 ${container_user} && \
@@ -122,7 +122,7 @@ RUN chown -R ${container_user}:${container_user} /home/${container_user}
 
 # Composer global install
 # @todo a github oauth token should be saved in containers.env...
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
     mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
     chmod 755 /usr/local/bin/composer; \
@@ -130,7 +130,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     chown -R ${container_user}:${container_user} /home/${container_user}/.composer
 
 # NodeJS recent version + yarn for building the web app frontend
-# -----------------------------------------------------------------------------
+# @todo if those are only needed for developers of the app itself and not users, compile this in conditionally
+# ------------------------------------------------------------------------------
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
@@ -140,12 +141,12 @@ RUN apt-get update
 RUN apt-get -y install yarn
 
 # Clear archives in apt cache folder
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN  rm -rf /tmp/*
 
 # Set up entrypoint
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
 
