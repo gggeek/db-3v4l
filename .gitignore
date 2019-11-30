@@ -2,6 +2,7 @@
 
 
 /app/.env.local
+/app/node_modules/*
 /app/var/cache/*
 /app/var/log/*
 /app/vendor/*
