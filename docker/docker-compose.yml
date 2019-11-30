@@ -22,6 +22,7 @@ services:
             - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTPS}:443"
         volumes:
             - ../app:/var/www/db3v4l
+            - ./doc:/var/www/doc
             - ./logs/web/nginx:/var/log/nginx
             - ./logs/web/php:/var/log/php
         environment:

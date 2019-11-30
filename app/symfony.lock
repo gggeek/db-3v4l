@@ -59,6 +59,9 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "php": {
+        "version": "7.3"
+    },
     "phpmyadmin/sql-parser": {
         "version": "5.1.0"
     },
@@ -178,7 +181,31 @@
             "config/routes.yaml"
         ]
     },
+    "symfony/twig-bridge": {
+        "version": "v3.4.35"
+    },
+    "symfony/twig-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "1da1987340b5ba64b16383906d678b989e3d096e"
+        },
+        "files": [
+            "config/packages/test/twig.yaml",
+            "config/packages/twig.yaml",
+            "config/routes/dev/twig.yaml",
+            "templates/base.html.twig"
+        ]
+    },
     "symfony/yaml": {
         "version": "v3.4.23"
+    },
+    "twig/markdown-extra": {
+        "version": "v3.0.0"
+    },
+    "twig/twig": {
+        "version": "v3.0.0"
     }
 }

@@ -16,7 +16,7 @@ Broad advancement status:
 - database support: good coverage. Of the 'well-known players', only Oracle is missing
 - GUI interface: completely missing
 
-See the [TODO](./TODO.md) and [CHANGELOG](./WHATSNEW.md) files for more details on recent improvements and future plans.
+See the [TODO](./doc/TODO.md) and [CHANGELOG](./doc/WHATSNEW.md) files for more details on recent improvements and future plans.
 
 In the meantime, you can try out http://sqlfiddle.com/
 

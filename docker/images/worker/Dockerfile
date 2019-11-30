@@ -36,7 +36,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     procps \
     sqlite3 \
     sudo \
-    time
+    time \
+    unzip
 
 # DB connectors and helper tools
 # -----------------------------------------------------------------------------
