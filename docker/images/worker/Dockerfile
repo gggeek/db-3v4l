@@ -129,6 +129,16 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     mkdir -p /home/${container_user}/.composer && \
     chown -R ${container_user}:${container_user} /home/${container_user}/.composer
 
+# NodeJS recent version + yarn for building the web app frontend
+# -----------------------------------------------------------------------------
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get install -y nodejs
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+RUN apt-get update
+RUN apt-get -y install yarn
+
 # Clear archives in apt cache folder
 # -----------------------------------------------------------------------------
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
