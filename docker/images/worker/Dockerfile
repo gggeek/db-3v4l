@@ -25,6 +25,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     gnupg \
     locales \
     php-cli \
+    php-curl \
     php-dev \
     php-mbstring \
     php-mysql \
