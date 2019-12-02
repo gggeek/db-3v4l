@@ -1,28 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}DB3v4l!{% endblock %}</title>
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
-</head>
-<body>
-    <div id="sidebar">
-        {% block sidebar %}
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/adminer.php">Adminer</a></li>
-            </ul>
-        {% endblock %}
-    </div>
+{% extends '@AdminLTE/layout/default-layout.html.twig' %}
 
-    <div id="content">
-    {% block body %}{% endblock %}
-    </div>
+{% block logo_mini %}<b>DB</b>3val{% endblock %}
+{% block logo_large %} <b>DB</b>3val {% endblock %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</body>
-</html>
+{% block title %}DB3v4l{% endblock %}
+{% block page_title %}<b>DB</b>3v4l{% endblock %}
+
+{% block page_subtitle %}{% endblock %}

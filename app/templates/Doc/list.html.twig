@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Documentation{% endblock %}
+
+{% block page_content %}
+    {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+        {% block box_title %}
+            Available documents
+        {% endblock %}
+        {% block box_body %}
+            {# Content goes here #}
+            <ul>
+                {% for doc in docs %}
+                    <li><a href="{{ path('doc_view', {fileName: doc}) }}">{{ doc }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

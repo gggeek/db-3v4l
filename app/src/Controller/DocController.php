@@ -5,18 +5,31 @@ namespace Db3v4l\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/doc")
+ */
 class DocController extends AbstractController
 {
     /// @todo get this injected
     protected $docRoot = '/var/www/doc';
 
     /**
-     * @Route("/doc/{fileName}")
+     * @Route("/list", name="doc_list")
+     */
+    public function list()
+    {
+        $docs = glob($this->docRoot . '/*.md');
+        array_walk($docs, function(&$path, $key) {$path = basename($path);});
+        return $this->render('Doc/list.html.twig', ['docs' => $docs]);
+    }
+
+    /**
+     * @Route("/view/{fileName}", name="doc_view")
      *
      * @param string $fileName
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function displayFileAction($fileName)
+    public function displayFile($fileName)
     {
         // sanitize
         $fileName = basename($fileName);
@@ -28,6 +41,6 @@ class DocController extends AbstractController
         }
 
         /// @todo allow different types of doc format
-        return $this->render('Doc/markdown.html.twig', ['markup' => file_get_contents($fileName)]);
+        return $this->render('Doc/File/markdown.html.twig', ['file' => basename($fileName), 'markup' => file_get_contents($fileName)]);
     }
 }

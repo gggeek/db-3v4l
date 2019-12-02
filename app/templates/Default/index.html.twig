@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}Welcome!{% endblock %}
+
+{% block page_content %}
+    {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+        {% block box_title %}
+        {% endblock %}
+        {% block box_body %}
+            ...
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
