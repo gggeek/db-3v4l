@@ -14,6 +14,10 @@ admin_lte:
         collapsed_sidebar: false
         mini_sidebar: false
 
+    theme:
+        widget:
+            use_footer: false
+
     knp_menu:
         enable: false
 
