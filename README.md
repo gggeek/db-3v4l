@@ -94,7 +94,7 @@ As well as test connecting to them using the standard clients:
 
 The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 
-Once the containers are up and running, you can access a database administration console at: http://localhost/adminer.php
+Once the containers are up and running, you can access a database administration console at: http://localhost/admin/
 (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
 your browser is executing).
 
