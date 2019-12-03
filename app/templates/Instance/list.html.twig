@@ -5,8 +5,9 @@
 {% block page_content %}
     {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
         {% block box_title %}The following database instances are available{% endblock %}
+        {% block box_body_class %}table-responsive no-padding{% endblock %}
         {% block box_body %}
-            <div class="table-responsive"><table class="table no-margin">
+            <table class="table hover">
                 <thead>
                 <tr><td>Database</td><td>Manage</td></tr>
                 </thead>
@@ -15,7 +16,7 @@
                     <tr><td>{{ instance }}</td><td><a href="/adminer.php?" class="fa fa-toolbox"></a></td></tr>
                 {% endfor %}
                 </tbody>
-            </table></div>
+            </table>
         {% endblock %}
     {% endembed %}
 {% endblock %}

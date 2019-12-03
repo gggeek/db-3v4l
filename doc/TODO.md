@@ -1,33 +1,39 @@
 - worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db).
   Are we leaving behind temp databases?
 
-- worker: when listing instances, show the exact db version nr.
-
-- web: add a minimal html welcome page with a link to adminer, phpinfo, the .md docs
-
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients
 
 - host: improve cli scripts:
   + add a 'stack' script that simplifies building the stack and logging into it
-    => force usage of a non-default pwd for db root account on startup
+    => force usage of a random (or user-provided) pwd for db root account on startup
   + also, add a 'console' script to transparently execute sf commands from the host
   + add a script that removes images+logs+data
   + move from bash to sh
+
+- set default sf env to prod
+
+- worker: when listing instances, show the exact db version nr. (from a query, not config)
+
+- web gui improvements:
+  + improve Adminer gui by providing a pre-filled list of databases
+  + keep icons visible when collapsing left menu
+  + add portainer.io, opcache control panel ?
 
 - worker: improve cli scripts
   + add a separate sf console that only registers db3v4l commands?
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
 - worker: improve profile of 'db3v4l' account
-  + esp: add APP_ENV and APP_DEBUG env vars
+  + esp: add APP_ENV and APP_DEBUG env vars (via bootstrap.sh ?)
   + start in correct dir automatically
   + enable `ll` and `la` shell aliases
   + use a colored shell prompt
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
-  Being able to start a single 'db type' might also make sense in parallelization of tests on travis
+  Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
+  Also: add a portainer.io container?
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
@@ -54,21 +60,17 @@
 
 - pick up a library which allows to load db-agnostic schema defs and data
 
-- symfony config: get pwd for db root accounts injected from docker-compose
-
 - web/worker: set up a cronjob to remove SF profiler data
 
 - web/worker: move sf logs to a mounted volume
 
-- web: improve Adminer gui by providing a pre-filled list of databases
+- web gui: store previous snippets in a dedicated db, list them for reuse (private to each user session)
 
 - web: add rest API
 
 - web/worker: allow easy loading of 'standard' testing data sets
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
-
-- web gui: store previous snippets in a dedicated db, list them (private to each user session)
 
 - mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
@@ -78,7 +80,7 @@
 - worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
   This would allow to find out if any code construct has _scalability_ problems on a given db version
 
-- worker: add phpbench as dependency
+- worker: add phpbench as dependency for easing testing
 
 - borrow ideas from https://github.com/zzzprojects/sqlfiddle3
 
@@ -95,8 +97,9 @@
   - make php code non-writeable by www-data user
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
+  - mak GUI multilingual
 
-- add more database types: Firebird 2 and 3, cockroachdb, DB2, Elastic
+- add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/ibmcom/db2
   - https://hub.docker.com/r/cockroachdb/cockroach
 
