@@ -19,15 +19,12 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
 
 # Base packages - nginx, php-fpm, ...
-# @q: do we need the db-related extensions? All db interaction is done by the worker images...
+# NB All db interaction is done by the 'admin' and 'worker' images...
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     nginx \
     php-fpm \
     php-mbstring \
-    php-mysql \
-    php-pgsql \
-    php-sqlite3 \
     php-xml \
     php-zip
 

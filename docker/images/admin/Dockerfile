@@ -76,74 +76,21 @@ RUN echo 'extension=oci8.so'> /etc/php/7.3/mods-available/oci8.ini
 RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/cli/conf.d/90-oci8.ini
 RUN echo 'export PATH=$PATH:/usr/lib/oracle/19.5/client64/bin' > /etc/profile.d/oracle-instantclient.sh
 
-### Tools not shared with admin
+### Tools not shared with worker
 
-# Make sure that the db clients tools are in the path for non-login, non-interactive shells...
-# Is there a better way than doing it this way ?
-#RUN echo 'PATH="/usr/local/bin:/usr/bin:/bin:/opt/mssql-tools/bin:/usr/lib/oracle/19.5/client64/bin"' >> etc/environment
+# Base packages - nginx, php-fpm, ...
+# NB All db interaction is done by the 'admin' and 'worker' images...
+# -----------------------------------------------------------------------------
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    nginx \
+    php-fpm
 
-# mysqltuner.pl
-RUN curl -L http://mysqltuner.pl/ -o /usr/local/bin/mysqltuner.pl
-RUN chmod 0755 /usr/local/bin/mysqltuner.pl
-#RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/basic_passwords.txt -o basic_passwords.txt
-#RUN curl -L https://raw.githubusercontent.com/major/MySQLTuner-perl/master/vulnerabilities.csv -o vulnerabilities.csv
-
-# tuning-primer.sh
-RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
-RUN chmod 0755 /usr/local/bin/tuning-primer.sh
-
-# Local user
-# ------------------------------------------------------------------------------
-# nb: the 1013 used here for user id and group id is later on replaced by the code in bootstrap.sh...
-# q: why not use useradd and groupadd commands which can do more in one line?
-RUN addgroup --gid 1013 ${container_user} && \
-    adduser --system --uid=1013 --gid=1013 --home /home/${container_user} --shell /bin/bash ${container_user} && \
-    adduser ${container_user} ${container_user} && \
-    mkdir -p /home/${container_user}/.ssh && \
-    cp /etc/skel/.[!.]* /home/${container_user}/
-
-RUN adduser ${container_user} sudo && \
-    sed -i '$ a ${container_user}   ALL=\(ALL:ALL\) NOPASSWD: ALL' /etc/sudoers
-
-#COPY profile /tmp/profile
-
-RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
-    curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;
-    #cp /tmp/profile/.bash_profile /home/${container_user}/; \
-    #cat /tmp/profile/.bashrc_append >> /home/${container_user}/.bashrc; \
-    #cat /tmp/profile/.bash_always_append >> /home/${container_user}/.bashrc; \
-    #cat /tmp/profile/.bash_always_append >> /home/${container_user}/.bash_profile; \
-    #cp /tmp/profile/.gitconfig /home/${container_user}/; \
-    #mkdir -p /home/${container_user}/build
-
-# Set up a keypair and authorized keys to allow inter-container passwordless ssh
-# This file is later used by bootstrap.sh
-#RUN ssh-keygen -t rsa -N "" -f /home/${container_user}/.ssh/id_rsa && cat /home/${container_user}/.ssh/id_rsa.pub > /home/${container_user}/.ssh/authorized_keys_fortarget && \
-#    chown -R ${container_user}:${container_user} /home/${container_user}/.ssh
-
-RUN mkdir /home/${container_user}/data
-
-RUN chown -R ${container_user}:${container_user} /home/${container_user}
-
-# Composer global install
-# @todo a github oauth token should be saved in containers.env...
-# ------------------------------------------------------------------------------
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
-    mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
-    chmod 755 /usr/local/bin/composer; \
-    mkdir -p /home/${container_user}/.composer && \
-    chown -R ${container_user}:${container_user} /home/${container_user}/.composer
-
-# NodeJS recent version + yarn for building the web app frontend
-# @todo if those are only needed for developers of the app itself and not users, compile this in conditionally
-# ------------------------------------------------------------------------------
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-RUN apt-get update
-RUN apt-get -y install yarn
+# Set up Nginx+PHP
+# -----------------------------------------------------------------------------
+COPY nginx/sites-enabled/* /etc/nginx/sites-enabled/
+RUN rm /etc/nginx/sites-enabled/default
+COPY php/7.3/fpm/pool.d/db3v4l.conf /etc/php/7.3/fpm/pool.d/db3v4l.conf
+RUN rm /etc/php/7.3/fpm/pool.d/www.conf
 
 # Clear archives in apt cache folder
 # ------------------------------------------------------------------------------

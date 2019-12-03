@@ -18,7 +18,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
     public function onSetupMenu(SidebarMenuEvent $event)
     {
         $instances = new MenuItemModel('instances', 'DB Instances', 'instance_list', [], 'fas fa-server');
-        $adminer = new MenuItemModel('adminer', 'Adminer', '/adminer.php', [], 'fas fa-toolbox');
+        $adminer = new MenuItemModel('adminer', 'Adminer', '/admin/', [], 'fas fa-toolbox');
         $docs = new MenuItemModel('docs', 'Docs', 'doc_list', [], 'fas fa-book');
         $sources = new MenuItemModel('sources', 'Source code', 'https://github.com/gggeek/db-3v4l', [], 'fab fa-github');
 

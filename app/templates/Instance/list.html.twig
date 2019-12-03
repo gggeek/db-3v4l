@@ -9,11 +9,11 @@
         {% block box_body %}
             <table class="table hover">
                 <thead>
-                <tr><td>Database</td><td>Manage</td></tr>
+                <tr><td>Instance</td><td>Vendor</td><td>Version</td><td>Manage</td></tr>
                 </thead>
                 <tbody>
                 {% for instance in instances %}
-                    <tr><td>{{ instance }}</td><td><a href="/adminer.php?" class="fa fa-toolbox"></a></td></tr>
+                    <tr><td>{{ instance }}</td><td></td><td></td><td><a href="/adminer.php?" class="fa fa-toolbox"></a></td></tr>
                 {% endfor %}
                 </tbody>
             </table>
