@@ -8,7 +8,6 @@
             Available documents
         {% endblock %}
         {% block box_body %}
-            {# Content goes here #}
             <ul>
                 {% for doc in docs %}
                     <li><a href="{{ path('doc_view', {fileName: doc}) }}">{{ doc }}</a></li>

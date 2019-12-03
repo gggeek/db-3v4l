@@ -50,7 +50,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': optional, if unspecified assumed same as user)
      * @param int $maxParallel
      * @param int $timeout
-     * @return array 'succeeded': int, 'failed': int, 'results': same format as dbManager::getDatabaseConnectionSpecification
+     * @return array 'succeeded': int, 'failed': int, 'results': same format as dbManager::getConnectionSpecification
      */
     protected function createDatabases($dbSpecList, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
@@ -59,7 +59,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
         $tempSQLFileNames = [];
 
         foreach ($dbSpecList as $instanceName => $dbConnectionSpec) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
+            $rootDbConnectionSpec = $this->dbManager->getConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getCreateDatabaseSQL(
@@ -134,7 +134,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
         $tempSQLFileNames = [];
 
         foreach ($dbSpecList as $instanceName => $dbConnectionSpec) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
+            $rootDbConnectionSpec = $this->dbManager->getConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getDropDatabaseQL(

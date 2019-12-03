@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DatabaseController extends AbstractController
 {
     /**
-     * @Route("/list")
+     * @Route("/list", name="database_list")
      */
     public function list()
     {

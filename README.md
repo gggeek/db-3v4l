@@ -12,9 +12,9 @@ b) allow doing full-fledged performance testing, comparing results across many d
 
 Broad advancement status:
 - command-line interface to execute SQL snippets on multiple databases and compare results: mostly done.
-  Missing feature: proper support for character sets
+  Major missing features: proper support for character sets
 - database support: good coverage. Of the 'well-known players', only Oracle is missing
-- GUI interface: completely missing
+- GUI interface: only displays documentation
 
 See the [TODO](./doc/TODO.md) and [CHANGELOG](./doc/WHATSNEW.md) files for more details on recent improvements and future plans.
 
@@ -122,9 +122,6 @@ After starting the containers via `docker-compose up -d`, you can:
 
 
 ## FAQ
-
-- Q: why Can I see only a 'symfony welcome' web page? A: the app is being developed with a command-line interface at 1st,
-  the web version will come later
 
 - Q: can I customize the configuration of the databases? A: Yes, there is one config file for each db that you can edit,
   in docker/config. If you change them, you need to restart the docker containers for the settings to take effect, but

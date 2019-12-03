@@ -67,7 +67,7 @@ class DatabaseList extends DatabaseManagingCommand
         $callables = [];
 
         foreach ($instanceList as $instanceName) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
+            $rootDbConnectionSpec = $this->dbManager->getConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             /// @todo sqlite needs to execute an os command here instead of a sql command...

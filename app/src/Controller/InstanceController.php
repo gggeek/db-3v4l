@@ -2,6 +2,7 @@
 
 namespace Db3v4l\Controller;
 
+use Db3v4l\Service\DatabaseConfigurationManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,10 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class InstanceController extends AbstractController
 {
     /**
-     * @Route("/list")
+     * @Route("/list", name="instance_list")
      */
-    public function list()
+    public function list(DatabaseConfigurationManager $configurationManager)
     {
-        /// @todo
+        $instances = $configurationManager->listInstances();
+        return $this->render('Instance/list.html.twig', ['instances' => $instances]);
     }
 }

@@ -31,7 +31,7 @@ class DatabaseConfigurationManager
      * @return string[]
      * @throws \OutOfBoundsException
      */
-    public function getDatabaseConnectionSpecification($instanceName)
+    public function getConnectionSpecification($instanceName)
     {
         if (isset($this->instanceList[$instanceName])) {
             return $this->instanceList[$instanceName];

@@ -67,7 +67,7 @@ class UserList extends DatabaseManagingCommand
         $callables = [];
 
         foreach ($instanceList as $instanceName) {
-            $rootDbConnectionSpec = $this->dbManager->getDatabaseConnectionSpecification($instanceName);
+            $rootDbConnectionSpec = $this->dbManager->getConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
             $sql = $schemaManager->getlistUsersSQL();

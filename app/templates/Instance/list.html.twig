@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block page_title %}DB Instances{% endblock %}
+
+{% block page_content %}
+    {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+        {% block box_title %}The following database instances are available{% endblock %}
+        {% block box_body %}
+            <div class="table-responsive"><table class="table no-margin">
+                <thead>
+                <tr><td>Database</td><td>Manage</td></tr>
+                </thead>
+                <tbody>
+                {% for instance in instances %}
+                    <tr><td>{{ instance }}</td><td><a href="/adminer.php?" class="fa fa-toolbox"></a></td></tr>
+                {% endfor %}
+                </tbody>
+            </table></div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
