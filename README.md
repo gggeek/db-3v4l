@@ -160,6 +160,7 @@ Many thanks to
 - https://3v4l.org/ for providing the inspiration
 - Docker, for providing the core technology used to manage all the different database installations
 - Symfony and Doctrine, for providing the building bricks for the application
+- Jakub Vrána, for the Adminer tool for database management
 - eZPublish for giving me the itch to build this tool
 - JetBrains for kindly providing the lead developer with a license for PHPStorm that he uses daily in his open source endeavours
 

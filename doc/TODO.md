@@ -16,6 +16,7 @@
 
 - web gui improvements:
   + keep icons visible when collapsing left menu
+  + add a logo + favicon
 
 - admin(er) improvements:
   + provide a pre-filled list of databases => either https://www.adminer.org/en/plugins/ or https://github.com/crazy-max/login-servers-enhanced
