@@ -14,16 +14,21 @@
 
 - set default sf env to prod
 
-- worker: when listing instances, show the exact db version nr. (from a query, not config)
-
 - web gui improvements:
-  + improve Adminer gui by providing a pre-filled list of databases
   + keep icons visible when collapsing left menu
-  + add portainer.io, opcache control panel ?
+
+- admin(er) improvements:
+  + provide a pre-filled list of databases => either https://www.adminer.org/en/plugins/ or https://github.com/crazy-max/login-servers-enhanced
+  + add sql log file
+  + add data dump capabilities
+  + add schema dump capabilities
+  + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
 
 - worker: improve cli scripts
-  + add a separate sf console that only registers db3v4l commands?
+  + add a separate sf console that only registers db3v4l commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
+
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config)
 
 - worker: improve profile of 'db3v4l' account
   + esp: add APP_ENV and APP_DEBUG env vars (via bootstrap.sh ?)
@@ -54,28 +59,28 @@
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
-- web/worker: allow user-defined charset for both manual and auto db-schema create
+- worker+web?: allow user-defined charset for both manual and auto db-schema create
 
-- web/worker: allow custom db init scripts (to load data and set session vars)
+- worker+web?: allow custom db init scripts (to load data and set session vars)
 
-- pick up a library which allows to load db-agnostic schema defs and data
+- pick up a library which allows to load db-agnostic schema defs and data (see what adminer can do...)
 
-- web/worker: set up a cronjob to remove SF profiler data
+- web+worker: set up a cronjob to remove SF profiler data
 
-- web/worker: move sf logs to a mounted volume
+- web+worker: move sf logs to a mounted volume
 
-- web gui: store previous snippets in a dedicated db, list them for reuse (private to each user session)
+- web: store previous snippets in a dedicated db, list them for reuse (private to each user session)
 
 - web: add rest API
 
-- web/worker: allow easy loading of 'standard' testing data sets
+- web+worker: allow easy loading of 'standard' testing data sets
   https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
   https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
-- mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
+- db: mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
 
-- postgresql: move stats_temp_directory to /tmpfs
+- db: postgresql: move stats_temp_directory to /tmpfs
 
 - worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
   This would allow to find out if any code construct has _scalability_ problems on a given db version
@@ -87,7 +92,7 @@
 - allow to easily set up either prod/public or dev/private stacks via a parameter in .env
 
 - "public server" configuration:
-  - disable access to adminer
+  - disable access to admin
   - add mod_security 3
   - prevent usage of custom db schemas, allow only temp ones
   - rate-limit http requests
@@ -97,10 +102,10 @@
   - make php code non-writeable by www-data user
   - harden php configuration
   - move execution of sql snippets to a queue, to avoid dos/overload
-  - mak GUI multilingual
+  - make GUI multilingual
 
-- add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
+- db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/ibmcom/db2
   - https://hub.docker.com/r/cockroachdb/cockroach
 
-- add clustered mysql/postgresql containers
+- db: add clustered mysql/postgresql containers
