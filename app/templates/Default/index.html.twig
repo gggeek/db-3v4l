@@ -5,10 +5,18 @@
 {% block page_content %}
     {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
         {% block box_title %}
-            DB-3v4l is a platform dedicated dedicated to ease comparison of databases
+            Welcome to the best command-line SQL shell
         {% endblock %}
         {% block box_body %}
             {% apply markdown_to_html %}
+            DB-3v4l.org (leetspeak for database-eval) is a command-line tool that allows you to run SQL code on multiple database servers.
+
+            There are currently 19 server instances for you to test against.
+
+            For every script you submit, this tool gives you back:
+            - Output (the selected data)
+            - Performance (time and memory) of execution
+
             ### Usage
 
             Example: executing the sql snippet `select current_date` in parallel on all databases:
@@ -59,10 +67,9 @@
 
             Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-            ./vendor/bin/highlight-query
-            ./vendor/bin/lint-query
-            ./vendor/bin/tokenize-query
-
+                ./vendor/bin/highlight-query
+                ./vendor/bin/lint-query
+                ./vendor/bin/tokenize-query
 
             ## Details
 
@@ -78,7 +85,6 @@
             ### Maintenance
 
             - 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
-
 
             ## FAQ
 

@@ -52,7 +52,7 @@
 /docker/containers.env.local
 
 /docker/logs/admin/nginx/*
-/docker/logs/admin/web/*
+/docker/logs/admin/php/*
 /docker/logs/mariadb/5.5/*
 /docker/logs/mariadb/10.0/*
 /docker/logs/mariadb/10.1/*
@@ -75,7 +75,7 @@
 /docker/logs/web/php/*
 /docker/logs/worker/*
 !/docker/logs/admin/nginx/.gitkeep
-!/docker/logs/admin/web/.gitkeep
+!/docker/logs/admin/php/.gitkeep
 !/docker/logs/mariadb/5.5/.gitkeep
 !/docker/logs/mariadb/10.0/.gitkeep
 !/docker/logs/mariadb/10.1/.gitkeep
