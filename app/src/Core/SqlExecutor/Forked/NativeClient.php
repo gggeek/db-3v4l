@@ -36,7 +36,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
      */
     public function getProcess($sqlOrFilename, $isFile = false)
     {
-        $clientType = $this->getDbClientTypeFromDriver($this->databaseConfiguration['driver']);
+        $clientType = $this->getDbClientType($this->databaseConfiguration);
 
         // pass on _all_ env vars, including PATH. Not doing so is deprecated...
         $env = null;
@@ -134,16 +134,17 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
     }
 
     /**
-     * @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/configuration.html for supported aliases
-     * @param string $driver
+     * @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/configuration.html for supported aliases
+     * @param array $connectionConfiguration
      * @return string
      */
-    protected function getDbClientTypeFromDriver($driver)
+    protected function getDbClientType(array $connectionConfiguration)
     {
+        $vendor = $connectionConfiguration['vendor'];
         return str_replace(
-            array('pdo_', 'mssql', 'mysql2', 'postgres', 'postgresql', 'sqlite3'),
-            array('', 'sqlsrv', 'mysql', 'pgsql', 'pgsql', 'sqlite'),
-            $driver
+            array('mariadb', 'mssql', 'postgresql', 'postgres'),
+            array('mysql', 'sqlsrv', 'pgsql', 'pgsql'),
+            $vendor
         );
     }
 

@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block head %}
+    {{ parent() }}
+    <meta name="robots" content="noindex">
+{% endblock %}
+
 {% block page_title %}DB Instances{% endblock %}
 
 {% block page_content %}
@@ -12,8 +17,8 @@
                 <tr><td>Instance</td><td>Vendor</td><td>Version</td><td>Manage</td></tr>
                 </thead>
                 <tbody>
-                {% for instance in instances %}
-                    <tr><td>{{ instance }}</td><td></td><td></td><td><a href="/adminer.php?" class="fa fa-toolbox"></a></td></tr>
+                {% for instance, config in instances %}
+                    <tr><td>{{ instance }}</td><td>{{ config.vendor }}</td><td>{{ config.version }}</td><td><a href="/admin" class="fa fa-toolbox"></a></td></tr>
                 {% endfor %}
                 </tbody>
             </table>

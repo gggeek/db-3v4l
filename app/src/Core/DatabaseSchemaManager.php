@@ -28,7 +28,7 @@ class DatabaseSchemaManager
             $dbName = $userName;
         }
 
-        $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
+        $dbType = $this->getDbType($this->databaseConfiguration);
 
         switch ($dbType) {
             case 'mysql':
@@ -143,13 +143,13 @@ class DatabaseSchemaManager
      */
     public function getListUsersSQL()
     {
-        $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
+        $dbType = $this->getDbType($this->databaseConfiguration);
 
         switch ($dbType) {
             case 'mysql':
                 return
                     'SELECT DISTINCT User FROM mysql.user ORDER BY User;';
-            //case 'oracle':
+            //case 'oci':
             case 'pgsql':
                 return
                     'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;';
@@ -166,15 +166,16 @@ class DatabaseSchemaManager
 
     /**
      * @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.9/reference/configuration.html for supported aliases
-     * @param string $driver
+     * @param array $connectionConfiguration
      * @return string
      */
-    protected function getDbTypeFromDriver($driver)
+    protected function getDbType(array $connectionConfiguration)
     {
+        $vendor = $connectionConfiguration['vendor'];
         return str_replace(
-            array('pdo_', 'mssql', 'mysql2', 'postgres', 'postgresql', 'sqlite3'),
-            array('', 'sqlsrv', 'mysql', 'pgsql', 'pgsql', 'sqlite'),
-            $driver
+            array('mariadb', 'mssql', 'postgresql', 'postgres'),
+            array('mysql', 'sqlsrv', 'pgsql', 'pgsql'),
+            $vendor
         );
     }
 }
