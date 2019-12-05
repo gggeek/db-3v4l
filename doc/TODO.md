@@ -16,13 +16,15 @@
 
 - web gui improvements:
   + keep icons visible when collapsing left menu
-  + add a logo + favicon
+  + add a logo
 
 - admin(er) improvements:
-  + provide a pre-filled list of databases => either https://www.adminer.org/en/plugins/ or https://github.com/crazy-max/login-servers-enhanced
+  + provide a pre-filled list of databases => sqllite not working
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
+  + mssql not supported with pdo_sqlsrv ext
+  + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
 
 - worker: improve cli scripts
