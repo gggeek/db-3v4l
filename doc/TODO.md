@@ -19,11 +19,10 @@
   + add a logo
 
 - admin(er) improvements:
-  + provide a pre-filled list of databases => sqllite not working
+  + sqllite not working in pre-filled list of databases (miss filename for root db)
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
-  + mssql not supported with pdo_sqlsrv ext
   + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
 
@@ -31,7 +30,7 @@
   + add a separate sf console that only registers db3v4l commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config)
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => ses how Adminer does it)
 
 - worker: improve profile of 'db3v4l' account
   + esp: add APP_ENV and APP_DEBUG env vars (via bootstrap.sh ?)

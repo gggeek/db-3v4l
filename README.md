@@ -14,7 +14,8 @@ Broad advancement status:
 - command-line interface to execute SQL snippets on multiple databases and compare results: mostly done.
   Major missing features: proper support for character sets
 - database support: good coverage. Of the 'well-known players', only Oracle is missing
-- GUI interface: only displays documentation
+- GUI interface: displays documentation and the list of databases. It also includes Adminer for db management, but
+  does not allow parallel execution of queries
 
 See the [TODO](./doc/TODO.md) and [CHANGELOG](./doc/WHATSNEW.md) files for more details on recent improvements and future plans.
 

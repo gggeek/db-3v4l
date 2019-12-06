@@ -78,6 +78,7 @@ RUN echo 'export PATH=$PATH:/usr/lib/oracle/19.5/client64/bin' > /etc/profile.d/
 
 ### Tools not shared with worker
 
+RUN ln -s /etc/php/7.3/mods-available/sqlsrv.ini /etc/php/7.3/fpm/conf.d/90-sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/pdo_sqlsrv.ini /etc/php/7.3/fpm/conf.d/90-pdo_sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/fpm/conf.d/90-oci8.ini
 
