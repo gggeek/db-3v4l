@@ -79,7 +79,7 @@ class DatabaseSchemaManager
             $dbName = $userName;
         }
 
-        $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
+        $dbType = $this->getDbType($this->databaseConfiguration);
 
         switch ($dbType) {
             case 'mysql':
@@ -108,7 +108,7 @@ class DatabaseSchemaManager
      */
     public function getListDatabasesSQL()
     {
-        $dbType = $this->getDbTypeFromDriver($this->databaseConfiguration['driver']);
+        $dbType = $this->getDbType($this->databaseConfiguration);
 
         switch ($dbType) {
             case 'mysql':

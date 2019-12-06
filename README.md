@@ -37,14 +37,18 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 * Docker-compose: version 1.10 or later
 
+* Recommended: bash shell
+
 * minimum RAM, CPU, Disk space: these have not been measured, but you probably want something better than a raspberry pi...
 
 
 ## Quick Start
 
+NB: if you have no bash shell interpreter on your host computer, scroll to the end for alternative instructions
+
 ### Installation
 
-    cd docker && touch containers.env.local && docker-compose build
+    ./bin/stack.sh build
 
 *NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help.
 
@@ -59,39 +63,34 @@ the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMP
 
 Example: executing the sql snippet `select current_date` in parallel on all databases:
 
-    cd docker && docker-compose up -d
-    docker exec -ti db3v4l_worker su - db3v4l
-        cd app
-
-        php bin/console db3v4l:sql:execute --sql='select current_date'
-
-        exit
-    docker-compose stop
+    ./bin/stack.sh start
+    ./bin/stack.sh console db3v4l:sql:execute --sql='select current_date'
+    ./bin/stack.sh stop
 
 If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
 to a file and then execute it in parallel on all databases:
 
-        php bin/console db3v4l:sql:execute --file=./shared/my_huge_script.sql
+    ./bin/stack.sh console db3v4l:sql:execute --file=./shared/my_huge_script.sql
 
 *NB* to share files between the host computer and the container, put them in the `shared` folder.
 
 *NB* you can also execute different sql commands based on database type by saving them to separate files. The `sql:execute`
 command does replace some tokens in the values of the `--file` option. Eg:
 
-    php bin/console db3v4l:sql:execute --file='./shared/test_{dbtype}.sql'
+    ./bin/stack.sh console db3v4l:sql:execute --file='./shared/test_{dbtype}.sql'
 
-   will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
+will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
-From within the worker container, you can also list all available database instances:
+You can also list all available database instances:
 
-        php bin/console db3v4l:instance:list
+    ./bin/stack.sh console db3v4l:instance:list
 
 As well as test connecting to them using the standard clients:
 
-        mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
-        psql -h postgresql_9_4 -U postgres -c 'select current_date'
-        sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
-        sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
+    ./bin/stack.sh run mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
+    ./bin/stack.sh run psql -h postgresql_9_4 -U postgres -c 'select current_date'
+    ./bin/stack.sh run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
+    ./bin/stack.sh run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
 
 The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 
@@ -101,9 +100,9 @@ your browser is executing).
 
 Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-        ./vendor/bin/highlight-query
-        ./vendor/bin/lint-query
-        ./vendor/bin/tokenize-query
+    ./vendor/bin/highlight-query
+    ./vendor/bin/lint-query
+    ./vendor/bin/tokenize-query
 
 
 ## Details
@@ -153,6 +152,18 @@ After starting the containers via `docker-compose up -d`, you can:
 - Q: does the platform store/log anywhere the executed SQL commands? A: no. But those might be stored in the databases log
   files, which are stored on disk. So it's not a good idea to copy-paste sql snippets which contain sensitive information
   such as passwords
+
+
+## Alternative commands to stack.sh
+
+    ./bin/stack.sh build => cd docker && touch containers.env.local && docker-compose build
+    ./bin/stack.sh start => cd docker && docker-compose up -d
+    ./bin/stack.sh shell => docker exec -ti db3v4l_worker su - db3v4l
+    ./bin/stack.sh stop  => cd docker && docker-compose stop
+
+    ./bin/stack.sh console ... =>
+        docker exec -ti db3v4l_worker su - db3v4l
+        php bin/console ...
 
 
 ## Thanks

@@ -45,16 +45,18 @@ chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
 
 echo "[`date`] Setting up the application..."
 
+if [ ! -f "${ORIG_HOME}/app/.env.local" ]; then
+    # @todo if current values for APP_ENV and APP_DEBUG are different from the ones stored in app/.env.local:
+    #       overwrite the file and clear symfony caches
+    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/app/.env.local
+    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/app/.env.local
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
+fi
+
 # @todo allow to not deploy the app on bootstrap
 if [ ! -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     # q: does 'prod' work for encore, or do we need to use 'production' ?
     su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${APP_ENV}"
-fi
-
-if [ ! -f "${ORIG_HOME}/app/.env.local" ]; then
-    echo "APP_ENV=${APP_ENV}" > ${ORIG_HOME}/app/.env.local
-    echo "APP_DEBUG=${APP_DEBUG}" >> ${ORIG_HOME}/app/.env.local
-    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok

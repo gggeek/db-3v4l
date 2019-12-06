@@ -19,7 +19,7 @@
                 <tbody>
                 {% for instance, config in instances %}
                     {# @todo add prefilling of root username #}
-                    <tr><td>{{ instance }}</td><td>{{ config.vendor }}</td><td>{{ config.version }}</td><td><a href="/admin/?server={{ instance }}" class="fa fa-toolbox"></a></td></tr>
+                    <tr><td>{{ instance }}</td><td>{{ config.vendor }}</td><td>{{ config.version }}</td><td><a href="/admin/?server={% if config.host is defined %}{{ config.host }}{% if config.port is defined  %}:{{ config.port }}{% endif %}{% endif %}" class="fa fa-toolbox"></a></td></tr>
                 {% endfor %}
                 </tbody>
             </table>

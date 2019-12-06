@@ -102,19 +102,17 @@ RUN addgroup --gid 1013 ${container_user} && \
     mkdir -p /home/${container_user}/.ssh && \
     cp /etc/skel/.[!.]* /home/${container_user}/
 
-RUN adduser ${container_user} sudo && \
-    sed -i '$ a ${container_user}   ALL=\(ALL:ALL\) NOPASSWD: ALL' /etc/sudoers
+#COPY profile/.bash_profile /home/${container_user}/.bash_profile
+COPY profile/.bashrc /home/${container_user}/.bashrc
 
-#COPY profile /tmp/profile
+# Make shell nice for git usage - No need for running git commands within the container at the moment...
+#RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
+#    curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;
 
-RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
-    curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;
-    #cp /tmp/profile/.bash_profile /home/${container_user}/; \
-    #cat /tmp/profile/.bashrc_append >> /home/${container_user}/.bashrc; \
-    #cat /tmp/profile/.bash_always_append >> /home/${container_user}/.bashrc; \
-    #cat /tmp/profile/.bash_always_append >> /home/${container_user}/.bash_profile; \
-    #cp /tmp/profile/.gitconfig /home/${container_user}/; \
-    #mkdir -p /home/${container_user}/build
+# Make user a passwordless sudoer.
+# Is this needed? 1. we are not running any service inside the container and 2. the end user can always connect as root
+#RUN adduser ${container_user} sudo && \
+#    sed -i '$ a ${container_user}   ALL=\(ALL:ALL\) NOPASSWD: ALL' /etc/sudoers
 
 # Set up a keypair and authorized keys to allow inter-container passwordless ssh
 # This file is later used by bootstrap.sh

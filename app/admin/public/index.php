@@ -11,7 +11,11 @@ function buildServerList()
         $servers[$instance] = new AdminerLoginServerEnhanced(
             $def['host'].':'.$def['port'],
             $def['vendor'].' '.$def['version'],
-            str_replace(array('mariadb', 'mysql', 'postgresql'), array('server', 'server', 'pgsql'), $def['vendor'])
+            str_replace(
+                array('mariadb', 'mysql', 'postgresql'),
+                array('server', 'server', 'pgsql'),
+                $def['vendor']
+            )
         );
     }
     return $servers;
@@ -19,7 +23,6 @@ function buildServerList()
 
 function adminer_object()
 {
-
     $pluginsDir = dirname(__DIR__).'/adminer/plugins/';
 
     // required to run any plugin
@@ -36,7 +39,8 @@ function adminer_object()
     );
 
     // customizations
-    class AdminerCustomization extends AdminerPlugin {
+    class AdminerCustomization extends AdminerPlugin
+    {
         function name() {
             // custom name in title and heading
             return 'DB-3v4l Admin';

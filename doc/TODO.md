@@ -1,24 +1,9 @@
-- worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db).
-  Are we leaving behind temp databases?
-
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients
 
-- host: improve cli scripts:
-  + add a 'stack' script that simplifies building the stack and logging into it
-    => force usage of a random (or user-provided) pwd for db root account on startup
-  + also, add a 'console' script to transparently execute sf commands from the host
-  + add a script that removes images+logs+data
-  + move from bash to sh
-
-- set default sf env to prod
-
-- web gui improvements:
-  + keep icons visible when collapsing left menu
-  + add a logo
-
 - admin(er) improvements:
+  + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
   + add sql log file
   + add data dump capabilities
@@ -30,13 +15,7 @@
   + add a separate sf console that only registers db3v4l commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
 
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => ses how Adminer does it)
-
-- worker: improve profile of 'db3v4l' account
-  + esp: add APP_ENV and APP_DEBUG env vars (via bootstrap.sh ?)
-  + start in correct dir automatically
-  + enable `ll` and `la` shell aliases
-  + use a colored shell prompt
+- worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db)?
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
@@ -45,6 +24,20 @@
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - add travis testing
+
+- host: improve cli scripts:
+  + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
+  + add a script that removes docker images and containers (eg. docker-compose down)
+  + move from bash to sh
+
+- web gui improvements:
+  + keep icons visible when collapsing left menu
+  + add a logo
+
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => ses how Adminer does it)
+
+- worker: improve profile of 'db3v4l' account
+  + use a colorful shell prompt
 
 - worker: sanitize sql execution cmd:
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)

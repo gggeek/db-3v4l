@@ -4,13 +4,18 @@ Version 0.7 (unreleased)
 - New: allow to run sql snippets against existing databases (within the predefined db servers).
   This allows scenarios where data is persisted between execution of different queries
 
-- New: began work on a web interface. For the moment, all it does is display some documentation and the list of dbs
+- New: added a basic web interface. For the moment, all it does is display some documentation and the list of databases
+
+- New: added a shell script to simplify interaction with docker and docker-compose: `./bin/stack.sh`
 
 - Fixed: the app would not be set up automatically on 1st run of the container (introduced in 0.4)
 
 - Improved: the bundled Adminer now comes with a pre-filled list of databases
 
 - Improved: moved application to Symfony 4.4.1; upgraded phpmyadmin/sql-parser to 5.1.0
+
+- Improved: the shell environment inside the worker container has some useful command aliases such as `ll` and `console`;
+  the starting directory when opening a shell in the container has been changed to be ~/app
 
 
 Version 0.6

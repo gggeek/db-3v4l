@@ -5,15 +5,15 @@
 {% block page_content %}
     {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
         {% block box_title %}
-            Welcome to the best command-line SQL shell
+            Welcome to the most promiscuous command-line SQL shell
         {% endblock %}
         {% block box_body %}
             {% apply markdown_to_html %}
             DB-3v4l.org (leetspeak for database-eval) is a command-line tool that allows you to run SQL code on multiple database servers.
 
-            There are currently 19 server instances for you to test against.
+            There are currently 19 server instances for you to test your queries on.
 
-            For every script you submit, this tool gives you back:
+            For every query you submit, this tool gives you back:
             - Output (the selected data)
             - Performance (time and memory) of execution
 
@@ -24,9 +24,8 @@
             ```
             cd docker && docker-compose up -d
             docker exec -ti db3v4l_worker su - db3v4l
-            cd app
 
-            php bin/console db3v4l:sql:execute --sql='select current_date'
+                php bin/console db3v4l:sql:execute --sql='select current_date'
 
             exit
             docker-compose stop
