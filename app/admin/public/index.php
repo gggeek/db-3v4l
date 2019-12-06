@@ -4,13 +4,15 @@ require dirname(dirname(__DIR__)).'/vendor/autoload.php';
 
 function buildServerList()
 {
+    // Avoid bootstrapping Symfony for something so trivial...
     $config = \Symfony\Component\Yaml\Yaml::parseFile(dirname(dirname(__DIR__)).'/config/services.yaml');
     $servers = [];
-    foreach($config['parameters']['db3v4l.database_instances'] as $def) {
-        $servers[] = new AdminerLoginServerEnhanced(
+    foreach($config['parameters']['db3v4l.database_instances'] as $instance => $def) {
+        $servers[$instance] = new AdminerLoginServerEnhanced(
             $def['host'].':'.$def['port'],
             $def['vendor'].' '.$def['version'],
-            str_replace(array('mariadb', 'mysql', 'postgresql'), array('server', 'server', 'pgsql'), $def['vendor']));
+            str_replace(array('mariadb', 'mysql', 'postgresql'), array('server', 'server', 'pgsql'), $def['vendor'])
+        );
     }
     return $servers;
 }

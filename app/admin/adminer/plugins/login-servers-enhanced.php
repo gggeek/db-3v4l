@@ -69,7 +69,8 @@ class AdminerLoginServersEnhanced
             if (!$server instanceof AdminerLoginServerEnhanced) {
                 continue;
             }
-            $html .= $server->getOptionTag($key == 0);
+            // allow to start with a different db selected based on $_GET['db']
+            $html .= $server->getOptionTag($key == @$_GET['server']);
         }
         $html .= '</select>';
 

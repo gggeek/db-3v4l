@@ -6,8 +6,8 @@
 parameters:
 
     db3v4l.database_instances:
-        # Same format as the connection options used by doctrine
-        # Please use the 'database type' as initial part of the name, followed by an underscore
+        # Same format as the connection options used by doctrine for the most part
+        # @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/configuration.html#configuration
         mariadb_5_5:
             host: mariadb_5_5
             port: 3306
