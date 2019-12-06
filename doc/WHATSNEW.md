@@ -1,4 +1,4 @@
-Version 0.7 (unreleased)
+Version 0.7
 -----------
 
 - New: allow to run sql snippets against existing databases (within the predefined db servers).
