@@ -3,6 +3,7 @@
 
 /app/.env.local
 /app/node_modules/*
+/app/public/build/*
 /app/var/bootstrap_ok
 /app/var/cache/*
 /app/var/log/*
