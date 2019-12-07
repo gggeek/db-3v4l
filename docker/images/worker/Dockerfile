@@ -103,7 +103,8 @@ RUN addgroup --gid 1013 ${container_user} && \
     cp /etc/skel/.[!.]* /home/${container_user}/
 
 #COPY profile/.bash_profile /home/${container_user}/.bash_profile
-COPY profile/.bashrc /home/${container_user}/.bashrc
+COPY profile/.bashrc_append /tmp/.bashrc_append
+RUN cat /tmp/.bashrc_append >> /home/${container_user}/.bashrc
 
 # Make shell nice for git usage - No need for running git commands within the container at the moment...
 #RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \

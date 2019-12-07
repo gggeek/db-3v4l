@@ -1,0 +1,11 @@
+
+## DB-3v4l customization - added into the container by Docker build
+
+alias ll='ls -l'
+alias la='ls -A'
+
+alias console='php ~/app/bin/console'
+
+if [ -d  ~/app ]; then
+  cd ~/app
+fi

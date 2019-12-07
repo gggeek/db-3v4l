@@ -66,24 +66,24 @@ fi
 mv /tmp/.env.local ${ORIG_HOME}/app/.env.local
 chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
 
-YARN_ENV=APP_ENV
-if [ "${YARN_ENV}" = prod ]; then
-    YARN_ENV=production
+ENCORE_CMD=${APP_ENV}
+if [ "${ENCORE_CMD}" = test ]; then
+    ENCORE_CMD=dev
 fi
 # @todo move execution of yarn encore to composer.json
 if [ -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     if [ ${CLEAR_CACHE} = true ]; then
-        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear && yarn encore ${YARN_ENV}"
+        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear && yarn encore ${ENCORE_CMD}"
     fi
 else
     if [ "${COMPOSE_SETUP_APP_ON_BUILD}" != false ]; then
-        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${YARN_ENV}"
+        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${ENCORE_CMD}"
     fi
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 
-rm "${BS_OK}"
+touch "${BS_OK}"
 
 trap clean_up TERM
 

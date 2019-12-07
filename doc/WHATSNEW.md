@@ -1,3 +1,13 @@
+Version 0.7.1
+-------------
+
+- Fixed: `docker-compose build` had been broken in 0.7
+
+- Improved: better startup of the containers after changing the values in docker/containers.env.local
+
+- Improved: the web app and cli console now use by default the Symfony 'prod' configuration
+
+
 Version 0.7
 -----------
 
