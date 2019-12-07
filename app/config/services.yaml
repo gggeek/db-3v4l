@@ -12,7 +12,7 @@ parameters:
             host: mariadb_5_5
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-5.5
@@ -22,7 +22,7 @@ parameters:
             host: mariadb_10_0
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.0
@@ -32,7 +32,7 @@ parameters:
             host: mariadb_10_1
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.1
@@ -72,7 +72,7 @@ parameters:
             host: mssqlserver_2017_cu17
             port: 1433
             user: sa
-            password: 3v4l3V4L
+            password: '%env(SA_PASSWORD)%'
             charset: UTF8
             #driver: pdo_sqlsrv
             #server_version: ''
@@ -82,7 +82,7 @@ parameters:
             host: mssqlserver_2019_ga
             port: 1433
             user: sa
-            password: 3v4l3V4L
+            password: '%env(SA_PASSWORD)%'
             charset: UTF8
             #driver: pdo_sqlsrv
             #server_version: ''
@@ -92,7 +92,7 @@ parameters:
             host: mysql_5_5
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.5'
@@ -102,7 +102,7 @@ parameters:
             host: mysql_5_6
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.6'
@@ -112,7 +112,7 @@ parameters:
             host: mysql_5_7
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.7'
@@ -122,7 +122,7 @@ parameters:
             host: mysql_8_0
             port: 3306
             user: root
-            password: 3v4l
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
             charset: UTF8
             #driver: pdo_mysql
             #server_version: '8.0'
@@ -133,7 +133,7 @@ parameters:
             host: postgresql_9_4
             port: 5432
             user: postgres
-            password: 3v4l
+            password: '%env(POSTGRES_PASSWORD)%'
             charset: UTF8
             #driver: pdo_pgsql
             #server_version: '9.4'
@@ -143,7 +143,7 @@ parameters:
             host: postgresql_9_5
             port: 5432
             user: postgres
-            password: 3v4l
+            password: '%env(POSTGRES_PASSWORD)%'
             charset: UTF8
             #driver: pdo_pgsql
             #server_version: '9.5'
@@ -163,7 +163,7 @@ parameters:
             host: postgresql_10_11
             port: 5432
             user: postgres
-            password: 3v4l
+            password: '%env(POSTGRES_PASSWORD)%'
             charset: UTF8
             #driver: pdo_pgsql
             #server_version: '10.11'
@@ -173,7 +173,7 @@ parameters:
             host: postgresql_11_6
             port: 5432
             user: postgres
-            password: 3v4l
+            password: '%env(POSTGRES_PASSWORD)%'
             charset: UTF8
             #driver: pdo_pgsql
             #server_version: '11.6'
@@ -183,7 +183,7 @@ parameters:
             host: postgresql_12_1
             port: 5432
             user: postgres
-            password: 3v4l
+            password: '%env(POSTGRES_PASSWORD)%'
             charset: UTF8
             #driver: pdo_pgsql
             #server_version: '12.1'

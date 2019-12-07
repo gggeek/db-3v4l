@@ -12,13 +12,13 @@ WORKER_SERVICE=worker
 WORKER_USER=
 RECREATE=false
 REBUILD=false
-NO_SETUP=false
+SETUP_APP=true
 CLEANUP_IMAGES=false
 DOCKER_NO_CACHE=
 VERBOSITY=
 
 function help() {
-    echo -e "Usage: stack.sh [OPTIONS] COMMAND
+    echo -e "Usage: stack.sh [OPTIONS] COMMAND [OPTARG]
 
 Manages the Db3v4l Docker Stack
 
@@ -58,23 +58,21 @@ function build() {
 
     echo "[`date`] Building and Starting all Containers..."
 
-    docker-compose ${VERBOSITY}  stop
+    docker-compose ${VERBOSITY} stop
     if [ $REBUILD = 'true' ]; then
-        docker-compose ${VERBOSITY}  rm -f
+        docker-compose ${VERBOSITY} rm -f
     fi
 
-    docker-compose ${VERBOSITY}  build ${DOCKER_NO_CACHE}
+    docker-compose ${VERBOSITY} build ${DOCKER_NO_CACHE}
 
-    if [ $NO_SETUP = 'true' ]; then
-        # @todo tell bootstrap.sh of Worker container not to provision the app
-        echo "The -n flag is not yet supported"
-        exit 1
+    if [ $SETUP_APP = 'false' ]; then
+        export COMPOSE_SETUP_APP_ON_BUILD=false
     fi
 
     if [ $RECREATE = 'true' ]; then
-        docker-compose ${VERBOSITY}  up -d --force-recreate
+        docker-compose ${VERBOSITY} up -d --force-recreate
     else
-        docker-compose ${VERBOSITY}  up -d
+        docker-compose ${VERBOSITY} up -d
     fi
 
     if [ $CLEANUP_IMAGES = 'true' ]; then
@@ -89,7 +87,7 @@ function setup() {
     echo "[`date`] Starting all Containers..."
 
     # @todo avoid automatic app setup being triggered here
-    docker-compose ${VERBOSITY}  up -d
+    docker-compose ${VERBOSITY} up -d
 
     until docker exec ${WORKER_CONTAINER} cat /var/run/bootstrap_ok 2>/dev/null; do
         echo "[`date`] Waiting for the Worker container to be fully set up..."
@@ -112,7 +110,7 @@ do
             exit 0
         ;;
         n)
-            NO_SETUP=true
+            SETUP_APP=false
         ;;
         p)
             RECREATE=true
@@ -172,8 +170,11 @@ case "$COMMAND" in
         build
     ;;
 
+    #cleanup)
+    #;;
+
     config)
-        docker-compose ${VERBOSITY}  config
+        docker-compose ${VERBOSITY} config
     ;;
 
     console)
@@ -182,15 +183,15 @@ case "$COMMAND" in
     ;;
 
     images)
-        docker-compose ${VERBOSITY}  images
+        docker-compose ${VERBOSITY} images
     ;;
 
     logs)
-        docker-compose ${VERBOSITY}  logs
+        docker-compose ${VERBOSITY} logs
     ;;
 
     ps)
-        docker-compose ${VERBOSITY}  ps
+        docker-compose ${VERBOSITY} ps
     ;;
 
     #run)
@@ -198,7 +199,7 @@ case "$COMMAND" in
     #;;
 
     pause)
-        docker-compose ${VERBOSITY}  pause
+        docker-compose ${VERBOSITY} pause
     ;;
 
     setup)
@@ -218,19 +219,19 @@ case "$COMMAND" in
     ;;
 
     start)
-        docker-compose ${VERBOSITY}  up -d
+        docker-compose ${VERBOSITY} up -d
     ;;
 
     stop)
-        docker-compose ${VERBOSITY}  stop
+        docker-compose ${VERBOSITY} stop
     ;;
 
     top)
-        docker-compose ${VERBOSITY}  top
+        docker-compose ${VERBOSITY} top
     ;;
 
     unpause)
-        docker-compose ${VERBOSITY}  unpause
+        docker-compose ${VERBOSITY} unpause
     ;;
 
     *)

@@ -12,8 +12,6 @@
 
 - worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db)?
 
-- worker: in bootstrap.sh properly handle changed values for env vars such as APP_ENV, APP_DEBUG
-
 
 ## Major features
 
@@ -59,6 +57,7 @@
   - make app code non-writeable by www-data user
   - harden php configuration
   - make GUI multilingual
+  - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres')
 
 - db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/ibmcom/db2
@@ -75,7 +74,10 @@
   + add schema dump capabilities
 
 - build:
+  + in bootstrap.sh of worker properly handle changed values for env vars such as APP_ENV, APP_DEBUG
+  + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
+  + also: run yarn install as part of composer post-upgrade ?
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
 
 - host: improve cli scripts:
