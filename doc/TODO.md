@@ -1,21 +1,21 @@
+## Fixes
+
 - improve handling of character sets:
   + make sure we always create utf8 databases
   + make sure we always get back by default utf8 data from the clients
 
-- admin(er) improvements:
+- adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
-  + add sql log file
-  + add data dump capabilities
-  + add schema dump capabilities
-  + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
-  + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
 
-- worker: improve cli scripts
-  + add a separate sf console that only registers db3v4l commands
-  + either remove ./vendor/bin/doctrine-dbal or make it actually work
+- stack.sh options to build containers without setting up the app do not work
 
 - worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db)?
+
+- worker: in bootstrap.sh properly handle changed values for env vars such as APP_ENV, APP_DEBUG
+
+
+## Major features
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
@@ -25,12 +25,69 @@
 
 - add travis testing
 
+- worker+web: add a queued-task implementation, using sf messenger and a db
+
+- web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
+
+- worker+web?: allow user-defined charset for both manual and auto db-schema create
+
+- worker+web?: allow custom init scripts for temp dbs (to load data and set session vars)
+
+- pick up a library which allows to load db-agnostic schema defs and data (see what adminer can do...)
+
+- web: store previous snippets in a dedicated db, list them for reuse (private to each user session)
+
+- web: add rest API
+
+- web+worker: allow easy loading of 'standard' testing data sets
+  https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
+  https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
+
+- worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
+  This would allow to find out if any code construct has _scalability_ problems on a given db version
+
+- allow to easily set up either public or private stacks via a parameter in .env (nb: != sf env)
+
+- "public server" configuration:
+  - disable access to admin
+  - add mod_security 3
+  - prevent usage of custom db schemas, allow only temp ones
+  - rate-limit http requests
+  - size-limit http requests
+  - add caching in nginx of static assets
+  - add firewall rules to the all containers to block access to outside world (at bootstrap)
+  - make app code non-writeable by www-data user
+  - harden php configuration
+  - make GUI multilingual
+
+- db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
+  - https://hub.docker.com/r/ibmcom/db2
+  - https://hub.docker.com/r/cockroachdb/cockroach
+
+- db: add clustered mysql/postgresql containers
+
+
+## Improvements
+
+- admin(er):
+  + add sql log file
+  + add data dump capabilities
+  + add schema dump capabilities
+
+- build:
+  + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
+  + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
+
 - host: improve cli scripts:
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh
 
-- web gui improvements:
+- worker: improve cli scripts
+  + add a separate sf console that only registers db3v4l commands
+  + either remove ./vendor/bin/doctrine-dbal or make it actually work
+
+- web gui:
   + keep icons visible when collapsing left menu
   + add a logo
 
@@ -48,59 +105,17 @@
     - missing for sqlsrv
   + check: can the temp user drop&creates other databases for postgresql?
 
-- worker+web: add a queued-task implementation, using sf messenger and a db
-
 - worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
-
-- web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
-
-- worker+web?: allow user-defined charset for both manual and auto db-schema create
-
-- worker+web?: allow custom db init scripts (to load data and set session vars)
-
-- pick up a library which allows to load db-agnostic schema defs and data (see what adminer can do...)
 
 - web+worker: set up a cronjob to remove SF profiler data
 
 - web+worker: move sf logs to a mounted volume
-
-- web: store previous snippets in a dedicated db, list them for reuse (private to each user session)
-
-- web: add rest API
-
-- web+worker: allow easy loading of 'standard' testing data sets
-  https://www.percona.com/blog/2011/02/01/sample-datasets-for-benchmarking-and-testing/
-  https://docs.microsoft.com/en-us/azure/sql-database/sql-database-public-data-sets
 
 - db: mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
 
 - db: postgresql: move stats_temp_directory to /tmpfs
 
-- worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
-  This would allow to find out if any code construct has _scalability_ problems on a given db version
-
 - worker: add phpbench as dependency for easing testing
 
 - borrow ideas from https://github.com/zzzprojects/sqlfiddle3
-
-- allow to easily set up either prod/public or dev/private stacks via a parameter in .env
-
-- "public server" configuration:
-  - disable access to admin
-  - add mod_security 3
-  - prevent usage of custom db schemas, allow only temp ones
-  - rate-limit http requests
-  - size-limit http requests
-  - add caching in nginx of static assets
-  - add firewall rules to the all containers to block access to outside world at bootstrap
-  - make php code non-writeable by www-data user
-  - harden php configuration
-  - move execution of sql snippets to a queue, to avoid dos/overload
-  - make GUI multilingual
-
-- db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
-  - https://hub.docker.com/r/ibmcom/db2
-  - https://hub.docker.com/r/cockroachdb/cockroach
-
-- db: add clustered mysql/postgresql containers

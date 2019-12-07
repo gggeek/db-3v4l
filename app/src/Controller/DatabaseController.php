@@ -16,5 +16,6 @@ class DatabaseController extends AbstractController
     public function list()
     {
         /// @todo
+        throw new \Exception('Not implemented yet');
     }
 }
