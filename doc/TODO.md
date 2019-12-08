@@ -13,13 +13,13 @@
 
 ## Major features
 
+- add travis testing
+
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
   Also: add a portainer.io container?
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
-
-- add travis testing
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
 
@@ -42,6 +42,8 @@
 - worker: allow to run tests which consist of executing sql/sh/php payloads in parallel with N threads against each server.
   This would allow to find out if any code construct has _scalability_ problems on a given db version
 
+- web: make GUI multilingual
+
 - allow to easily set up either public or private stacks via a parameter in .env (nb: != sf env)
 
 - "public server" configuration:
@@ -54,7 +56,6 @@
   - add firewall rules to the all containers to block access to outside world (at bootstrap)
   - make app code non-writeable by www-data user
   - harden php configuration
-  - make GUI multilingual
   - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres')
 
 - db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
@@ -73,14 +74,15 @@
 
 - build:
   + while setting up symfony, have the web site show up a courtesy page
-  + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
+  + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
   + also: run yarn install as part of composer post-upgrade scripts ?
   + also: run security-checker as part of composer post-install and post-upgrade?
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
   + use --parallel option for `docker-compose build` if d-c version is recent enough
+  + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
 
 - host: improve cli scripts:
-  + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
+  + move cleanup scripts to stack.sh
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh
 
