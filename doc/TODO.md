@@ -8,8 +8,6 @@
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
 
-- stack.sh options to build containers without setting up the app do not work
-
 - worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db)?
 
 
@@ -74,11 +72,12 @@
   + add schema dump capabilities
 
 - build:
-  + in bootstrap.sh of worker properly handle changed values for env vars such as APP_ENV, APP_DEBUG
   + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version or at least checks it
-  + also: run yarn install as part of composer post-upgrade ?
+  + also: run yarn install as part of composer post-upgrade scripts ?
+  + also: run security-checker as part of composer post-install and post-upgrade?
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
+  + use --parallel option for `docker-compose build` if d-c version is recent enough
 
 - host: improve cli scripts:
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
