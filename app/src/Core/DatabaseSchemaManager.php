@@ -251,7 +251,15 @@ class DatabaseSchemaManager
 
             case 'mssql':
                 if ($charset == 'utf8') {
-
+                    if (version_compare(
+                        str_replace(array('.ga', '.cu'), array('.0', '.'), $this->databaseConfiguration['version']),
+                        '2019',
+                        '>=')
+                    ) {
+                        /// @todo allow to set this via configuration
+                        // default collation for sql server on Linux is SQL_Latin1_General_CP1_CI_AS; we use the UTF8 variant
+                        $charset = 'Latin1_General_100_CI_AI_SC_UTF8';
+                    }
                 }
                 break;
 
