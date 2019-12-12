@@ -1,7 +1,7 @@
 ## Fixes
 
 - improve handling of character sets:
-  + make sure we always create utf8 databases by default => what about mssql 2017 ?
+  + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
 
@@ -102,7 +102,7 @@
 
 - worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
   native functions, not sql code...)
-  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;`
+  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
 
 - worker: improve profile of 'db3v4l' account
   + use a colorful shell prompt
