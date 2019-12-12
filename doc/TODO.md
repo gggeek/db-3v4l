@@ -1,8 +1,9 @@
 ## Fixes
 
 - improve handling of character sets:
-  + make sure we always create utf8 databases
+  + make sure we always create utf8 databases by default => what about mssql ?
   + make sure we always get back by default utf8 data from the clients
+  + allow to use utf16, utf16le, utf16ber as encodings for sqlite
 
 - adminer:
   + can not connect to mariadb 5.5
@@ -47,6 +48,8 @@
 - allow to easily set up either public or private stacks via a parameter in .env (nb: != sf env)
 
 - "public server" configuration:
+  - make sure there is no possibility to achieve 'command injection' when invoking sql cli tools by passing in
+    arguments that start with a dash
   - disable access to admin
   - add mod_security 3
   - prevent usage of custom db schemas, allow only temp ones
@@ -89,12 +92,16 @@
 - worker: improve cli scripts
   + add a separate sf console that only registers db3v4l commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
+  + make it possible to have uniform table formatting for SELECT-like queries
+    - test with wows containing multiple cols, newlines, ...
+  + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
 
 - web gui:
   + keep icons visible when collapsing left menu
   + add a logo
 
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => ses how Adminer does it)
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
+  native functions, not sql code...)
 
 - worker: improve profile of 'db3v4l' account
   + use a colorful shell prompt

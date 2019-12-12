@@ -1,3 +1,12 @@
+Version 0.8 (unreleased)
+------------------------
+
+- New: it is now possible to specify the collation (character set) used when creating new databases.
+  ... explain collation names to use...
+
+- New cli command: `db3v4l:collation:list`, to list available collations for each instance
+
+
 Version 0.7.1
 -------------
 

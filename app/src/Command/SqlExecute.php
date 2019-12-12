@@ -22,6 +22,7 @@ class SqlExecute extends DatabaseManagingCommand
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing the database to use. If omitted a dedicated temporary database will be created on the fly and disposed after use')
             ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to use for connecting to the existing database. Temporary databases get created with a temp user and random password')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The user password')
+            ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use, _only_ for the dedicated temporary database. If omitted, the default collation for the instance will be used')
 
             ->addCommonOptions()
         ;
@@ -96,6 +97,12 @@ class SqlExecute extends DatabaseManagingCommand
                     'password' => $password,
                     'dbname' => $dbName
                 ];
+            }
+
+            if (($charset = $input->getOption('charset')) != '') {
+                foreach($instanceList as $instanceName) {
+                    $tempDbSpecs[$instanceName]['charset'] = $charset;
+                }
             }
 
             $creationResults = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);

@@ -62,12 +62,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     //'MYSQL_PWD' => $this->databaseConfiguration['password'],
                 //];
                 break;
-            // case 'oracle':
-            //    $command = 'sqlplus';
-            //    // pass on _all_ env vars, including PATH
-            //    $env = null;
-            //    break;
-            case 'pgsql':
+            case 'psql':
                 $command = 'psql';
                 $connectString = "postgresql://".$this->databaseConfiguration['user'].":".$this->databaseConfiguration['password'].
                     "@{$this->databaseConfiguration['host']}:".($this->databaseConfiguration['port'] ?? '5432').'/';
@@ -87,21 +82,7 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     //'PGPASSWORD' => $this->databaseConfiguration['password'],
                 //];
                 break;
-            case 'sqlite':
-                $command = 'sqlite3';
-                // 'path' is the full path to the 'master' db (for Doctrine compatibility).
-                //  non-master dbs are supposed to reside in the same directory
-                if (isset($this->databaseConfiguration['dbname'])) {
-                    $options[] = dirname($this->databaseConfiguration['path']) . '/' . $this->databaseConfiguration['dbname'] . '.sqlite';
-                } else {
-                    $options[] = $this->databaseConfiguration['path'];
-                }
-
-                if (!$isFile) {
-                    $options[] = $sqlOrFilename;
-                }
-                break;
-            case 'sqlsrv':
+            case 'sqlcmd':
                 $command = 'sqlcmd';
                 $options = [
                     '-S' . $this->databaseConfiguration['host'] . ($this->databaseConfiguration['port'] != '' ?  ',' . $this->databaseConfiguration['port'] : ''),
@@ -119,6 +100,25 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
                     $options[] = '-Q' . $sqlOrFilename;
                 }
                 break;
+            case 'sqlite':
+                $command = 'sqlite3';
+                // 'path' is the full path to the 'master' db (for Doctrine compatibility).
+                //  non-master dbs are supposed to reside in the same directory
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    $options[] = dirname($this->databaseConfiguration['path']) . '/' . $this->databaseConfiguration['dbname'] . '.sqlite';
+                } else {
+                    $options[] = $this->databaseConfiguration['path'];
+                }
+
+                if (!$isFile) {
+                    $options[] = $sqlOrFilename;
+                }
+                break;
+            // case 'sqlplus':
+            //    $command = 'sqlplus';
+            //    // pass on _all_ env vars, including PATH
+            //    $env = null;
+            //    break;
             default:
                 throw new \OutOfBoundsException("Unsupported db client '$clientType'");
         }
@@ -142,8 +142,8 @@ class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, Fork
     {
         $vendor = $connectionConfiguration['vendor'];
         return str_replace(
-            array('mariadb', 'mssql', 'postgresql', 'postgres'),
-            array('mysql', 'sqlsrv', 'pgsql', 'pgsql'),
+            array('mariadb', 'mssql', 'oracle', 'postgresql'),
+            array('mysql', 'sqlcmd', 'sqlplus', 'psql'),
             $vendor
         );
     }

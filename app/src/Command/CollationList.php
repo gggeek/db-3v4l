@@ -3,23 +3,24 @@
 namespace Db3v4l\Command;
 
 use Db3v4l\Core\DatabaseSchemaManager;
+use Db3v4l\Util\Process;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Db3v4l\Util\Process;
 
-class DatabaseList extends DatabaseManagingCommand
+class CollationList extends DatabaseManagingCommand
 {
-    protected static $defaultName = 'db3v4l:database:list';
+    protected static $defaultName = 'db3v4l:collation:list';
 
     protected function configure()
     {
         $this
-            ->setDescription('Lists all existing databases on all configured database instances')
+            ->setDescription('Lists available collations for all database instances')
             ->addCommonOptions()
         ;
     }
 
     /**
+     * @todo allow to dump full configuration, not just db name
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
@@ -54,24 +55,31 @@ class DatabaseList extends DatabaseManagingCommand
             $this->writeln('<info>Analyzing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        $results = $this->listDatabases($instanceList, $maxParallel, $timeout, $format);
+        $results = $this->listCollations($instanceList, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
     }
 
-    protected function listDatabases($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
+    protected function listCollations($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
     {
         $processes = [];
         $callables = [];
+        $outputFilters = [];
 
         foreach ($instanceList as $instanceName) {
             $rootDbConnectionSpec = $this->dbManager->getConnectionSpecification($instanceName);
 
             $schemaManager = new DatabaseSchemaManager($rootDbConnectionSpec);
 
-            $sql = $schemaManager->getListDatabasesSQL();
+            $sql = $schemaManager->getListCollationsSQL();
+            $outputFilter = null;
+
+            if (is_array($sql)) {
+                $outputFilters[$instanceName] = $sql[1];
+                $sql = $sql[0];
+            }
 
             if (is_callable($sql)) {
                 $callables[$instanceName] = $sql;
@@ -111,11 +119,15 @@ class DatabaseList extends DatabaseManagingCommand
 
             foreach ($processes as $instanceName => $process) {
                 if ($process->isSuccessful()) {
-                    $results[$instanceName] = rtrim($process->getOutput());
+                    $result = rtrim($process->getOutput());
+                    if (isset($outputFilters[$instanceName])) {
+                        $result = $outputFilters[$instanceName]($result);
+                    }
+                    $results[$instanceName] = $result;
                     $succeeded++;
                 } else {
                     $failed++;
-                    $this->writeErrorln("\n<error>Listing of databases in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                    $this->writeErrorln("\n<error>Listing of collations in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 }
             }
         }

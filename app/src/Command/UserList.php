@@ -121,6 +121,7 @@ class UserList extends DatabaseManagingCommand
             }
         }
 
+        /// @todo implement proper sorting based on vendor name + version
         ksort($results);
 
         return [

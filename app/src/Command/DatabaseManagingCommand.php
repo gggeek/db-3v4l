@@ -65,7 +65,8 @@ abstract class DatabaseManagingCommand extends BaseCommand
             $sql = $schemaManager->getCreateDatabaseSQL(
                 $dbConnectionSpec['user'],
                 $dbConnectionSpec['password'],
-                (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null
+                (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null,
+                (isset($dbConnectionSpec['charset']) && $dbConnectionSpec['charset'] != '') ? $dbConnectionSpec['charset'] : null
             );
             // sadly, psql does not allow to create a db and a user using a multiple-sql-commands string,
             // and we have to resort to using temp files
@@ -103,6 +104,9 @@ abstract class DatabaseManagingCommand extends BaseCommand
                     'password' => $dbConnectionSpec['password'],
                     'dbname' => (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : $dbConnectionSpec['user']
                 ));
+                if (isset($dbConnectionSpec['charset']) && $dbConnectionSpec['charset'] != '') {
+                    $results[$instanceName]['charset'] = $dbConnectionSpec['charset'];
+                }
                 $succeeded++;
             } else {
                 $failed++;
@@ -203,9 +207,10 @@ abstract class DatabaseManagingCommand extends BaseCommand
     }
 
     /**
-     * @param array $results
-     * @param float $time
+     * @param array $results should contain elements: succeeded(int) failed(int), data(mixed)
+     * @param float $time seconds
      * @param string $format
+     * @throws \Exception for unsupported formats
      */
     protected function writeResults(array $results, $time, $format = 'text')
     {

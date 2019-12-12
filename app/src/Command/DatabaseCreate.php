@@ -18,6 +18,7 @@ class DatabaseCreate extends DatabaseManagingCommand
             ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to create')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed to stderr')
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database. If omitted, the user name will be used as database name')
+            ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use for the database. If omitted, the default collation for the instance will be used')
             ->addCommonOptions()
         ;
     }
@@ -81,6 +82,13 @@ class DatabaseCreate extends DatabaseManagingCommand
                 'dbname' => $dbName
             ];
         }
+
+        if (($charset = $input->getOption('charset')) != '') {
+            foreach($instanceList as $instanceName) {
+                $newDbSpecs[$instanceName]['charset'] = $charset;
+            }
+        }
+
         $results = $this->createDatabases($newDbSpecs, $maxParallel, $timeout, $format);
 
         $time = microtime(true) - $start;

@@ -8,56 +8,57 @@ parameters:
     db3v4l.database_instances:
         # Same format as the connection options used by doctrine for the most part
         # @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/configuration.html#configuration
+        # @see \Doctrine\Bundle\DoctrineBundle\DependencyInjection\Configuration::configureDbalDriverNode
         mariadb_5_5:
             host: mariadb_5_5
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-5.5
             vendor: mariadb
-            version: 5.5
+            version: '5.5'
         mariadb_10_0:
             host: mariadb_10_0
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.0
             vendor: mariadb
-            version: 10.0
+            version: '10.0'
         mariadb_10_1:
             host: mariadb_10_1
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.1
             vendor: mariadb
-            version: 10.1
+            version: '10.1'
         mariadb_10_2:
             host: mariadb_10_2
             port: 3306
             user: root
             password: 3v4l
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.2
             vendor: mariadb
-            version: 10.2
+            version: '10.2'
         mariadb_10_3:
             host: mariadb_10_3
             port: 3306
             user: root
             password: 3v4l
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: mariadb-10.3
             vendor: mariadb
-            version: 10.3
+            version: '10.3'
         mariadb_10_4:
             host: mariadb_10_4
             port: 3306
@@ -67,133 +68,133 @@ parameters:
             #driver: pdo_mysql
             #server_version: mariadb-10.4
             vendor: mariadb
-            version: 10.4
+            version: '10.4'
         mssql_2017_cu17:
             host: mssqlserver_2017_cu17
             port: 1433
             user: sa
             password: '%env(SA_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_sqlsrv
             #server_version: ''
             vendor: mssql
-            version: 2017.cu17
+            version: '2017.cu17'
         mssql_2019_ga:
             host: mssqlserver_2019_ga
             port: 1433
             user: sa
             password: '%env(SA_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_sqlsrv
             #server_version: ''
             vendor: mssql
-            version: 2019.ga
+            version: '2019.ga'
         mysql_5_5:
             host: mysql_5_5
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.5'
             vendor: mysql
-            version: 5.5
+            version: '5.5'
         mysql_5_6:
             host: mysql_5_6
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.6'
             vendor: mysql
-            version: 5.6
+            version: '5.6'
         mysql_5_7:
             host: mysql_5_7
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: '5.7'
             vendor: mysql
-            version: 5.7
+            version: '5.7'
         mysql_8_0:
             host: mysql_8_0
             port: 3306
             user: root
             password: '%env(MYSQL_ROOT_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_mysql
             #server_version: '8.0'
             vendor: mysql
-            version: 8.0
+            version: '8.0'
         # oracle...
         postgresql_9_4:
             host: postgresql_9_4
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '9.4'
             vendor: postgresql
-            version: 9.4
+            version: '9.4'
         postgresql_9_5:
             host: postgresql_9_5
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '9.5'
             vendor: postgresql
-            version: 9.5
+            version: '9.5'
         postgresql_9_6:
             host: postgresql_9_6
             port: 5432
             user: postgres
             password: 3v4l
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '9.6'
             vendor: postgresql
-            version: 9.6
+            version: '9.6'
         postgresql_10_11:
             host: postgresql_10_11
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '10.11'
             vendor: postgresql
-            version: 10.11
+            version: '10.11'
         postgresql_11_6:
             host: postgresql_11_6
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '11.6'
             vendor: postgresql
-            version: 11.6
+            version: '11.6'
         postgresql_12_1:
             host: postgresql_12_1
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
-            charset: UTF8
+            #charset: UTF8
             #driver: pdo_pgsql
             #server_version: '12.1'
             vendor: postgresql
-            version: 12.1
+            version: '12.1'
         sqlite_3_27:
             driver: pdo_sqlite
             path: /home/db3v4l/data/sqlite/3.27/3v4l.sqlite
             vendor: sqlite
-            version: 3.27
+            version: '3.27'
 services:
     # default configuration for services in *this* file
     _defaults:
