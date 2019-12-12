@@ -2,6 +2,7 @@
 
 namespace Db3v4l;
 
+use Db3v4l\DependencyInjection\AddDBConsoleCommandPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -50,5 +51,14 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/'.$this->environment.'/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * Use this method to register compiler passes and manipulate the container during the building process.
+     */
+    protected function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new AddDBConsoleCommandPass());
     }
 }

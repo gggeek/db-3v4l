@@ -222,3 +222,31 @@ services:
             - '%db3v4l.database_instances%'
 
     Db3v4l\Service\DatabaseConfigurationManager: '@db3v4l.database_configuration_manager'
+
+    # manual 'aliasing' of autoconfigured console commands, for the custom console
+
+    # @todo finish... extra svcs and constructor args
+
+    db3v4l.dbconsole.collation_list:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\CollationList
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.database_list:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\DatabaseList
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.instance_list:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\InstanceList
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.user_list:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\UserList
+        tags: ['dbconsole.command']
