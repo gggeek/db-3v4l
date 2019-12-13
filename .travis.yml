@@ -1,7 +1,7 @@
 language: bash
 
 env:
-    - DOCKER_COMPOSE_VERSION=1.10
+    - DOCKER_COMPOSE_VERSION=1.10.0
 
 before_install:
     # install docker-compose
@@ -16,8 +16,8 @@ before_install:
     #- sudo apt-get update
     #- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
-    - docker-compose --version
     - docker --version
+    - docker-compose --version
 
 #install:
 
