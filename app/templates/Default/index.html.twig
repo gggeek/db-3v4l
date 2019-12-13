@@ -25,7 +25,7 @@
             cd docker && docker-compose up -d
             docker exec -ti db3v4l_worker su - db3v4l
 
-                php bin/console db3v4l:sql:execute --sql='select current_date'
+                php bin/dbconsole sql:execute --sql='select current_date'
 
             exit
             docker-compose stop
@@ -34,20 +34,20 @@
             If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
             to a file and then execute it in parallel on all databases:
 
-            `php bin/console db3v4l:sql:execute --file=./shared/my_huge_script.sql`
+            `php bin/dbconsole sql:execute --file=./shared/my_huge_script.sql`
 
             *NB* to share files between the host computer and the container, put them in the `shared` folder.
 
             *NB* you can also execute different sql commands based on database type by saving them to separate files. The `sql:execute`
             command does replace some tokens in the values of the `--file` option. Eg:
 
-            `php bin/console db3v4l:sql:execute --file='./shared/test_{dbtype}.sql'`
+            `php bin/dbconsole sql:execute --file='./shared/test_{dbtype}.sql'`
 
             will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
             From within the worker container, you can also list all available database instances:
 
-            `php bin/console db3v4l:instance:list`
+            `php bin/dbconsole instance:list`
 
             As well as test connecting to them using the standard clients:
 

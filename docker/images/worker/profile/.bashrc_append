@@ -4,7 +4,7 @@
 alias ll='ls -l'
 alias la='ls -A'
 
-alias console='php ~/app/bin/console'
+alias dbconsole='php ~/app/bin/dbconsole'
 
 if [ -d  ~/app ]; then
   cd ~/app

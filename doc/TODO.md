@@ -2,8 +2,7 @@
 
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
-  + make sure we always get back by default utf8 data from the clients
-  + allow to use utf16, utf16le, utf16ber as encodings for sqlite
+  + make sure we always get back by default utf8 data from the clients ?
 
 - adminer:
   + can not connect to mariadb 5.5
@@ -70,18 +69,26 @@
 
 ## Improvements
 
+- improve handling of character sets:
+  + allow to use utf16, utf16le, utf16ber as encodings for sqlite
+
 - admin(er):
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
 
+
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
+  native functions, not sql code...)
+  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
+
 - build:
   + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
-  + also: run yarn install as part of composer post-upgrade scripts ?
+  + also: run `yarn install` as part of composer post-upgrade scripts ?
   + also: run security-checker as part of composer post-install and post-upgrade?
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
-  + use --parallel option for `docker-compose build` if d-c version is recent enough
+  + use `--parallel` option for `docker-compose build` if d-c version is recent enough
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
 
 - host: improve cli scripts:
@@ -90,19 +97,14 @@
   + move from bash to sh
 
 - worker: improve cli scripts
-  + add a separate sf console that only registers db3v4l commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
   + make it possible to have uniform table formatting for SELECT-like queries
-    - test with wows containing multiple cols, newlines, ...
+    - test with rows containing multiple cols, newlines, ...
   + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
 
 - web gui:
   + keep icons visible when collapsing left menu
   + add a logo
-
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
-  native functions, not sql code...)
-  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
 
 - worker: improve profile of 'db3v4l' account
   + use a colorful shell prompt
@@ -115,6 +117,7 @@
       driver... it might be in fact already happening when NOT using input via files...)
     - missing for sqlsrv
   + check: can the temp user drop&creates other databases for postgresql?
+  + make sure no command-injection / option-injection is possible
 
 - worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
 

@@ -2,9 +2,29 @@ Version 0.8 (unreleased)
 ------------------------
 
 - New: it is now possible to specify the collation (character set) used when creating new databases.
-  ... explain collation names to use...
+  Please note that this is supported with many limitations:
+  - 'utf8' as character set name is accepted by all databases except ms sql server 2017
+  - sqllite databases are always created with utf8 character set and will not respect the one specified on the command line
+  - 'utf8' is the only character set name which seems to be usable across all databases
+  - you can use database-specific naming to specify a collation/character set, but it will not be converted to be
+    useable by other databases. Use the `only-instances` option to limit your commands to be executed on a single type
+    of database at a time when you are passing in a specific collation name
 
-- New cli command: `db3v4l:collation:list`, to list available collations for each instance
+- New cli command: `collation:list`, to list available collations for each instance
+
+- New: a `dbconsole` command is available, that can be used instead of the existing `console` one.
+  It is simpler, as it does not list any actions which come from Symfony platform code, and it lets you do less typing,
+  as it removes the prefix in action names.
+
+  Before:
+
+      php bin/console db3val:instance:list
+
+  Now:
+
+      php bin/dbconsole instance:list
+
+  Note: the standard `console` command is still available.
 
 
 Version 0.7.1
