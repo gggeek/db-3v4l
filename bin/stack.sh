@@ -24,7 +24,7 @@ Manages the Db3v4l Docker Stack
 
 Commands:
     build           build or rebuild the complete set of containers and set up the app. Leaves the stack running
-    console         execute an application command in the worker container
+    dbconsole       execute an application command in the worker container
     images          list container images
     kill            kill containers
     logs            view output from containers
@@ -177,9 +177,9 @@ case "$COMMAND" in
         docker-compose ${VERBOSITY} config
     ;;
 
-    console)
+    dbconsole)
         shift
-        docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- /usr/bin/php app/bin/console $@
+        docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- /usr/bin/php app/bin/dbconsole $@
     ;;
 
     images)
