@@ -17,7 +17,7 @@ done
 
 # Stack status
 
-# @todo check that all images are up and running
+# @todo check that all images are up and running by parsing output
 ./bin/stack.sh images
 
 ./bin/stack.sh ps
@@ -26,7 +26,11 @@ done
 
 ./bin/stack.sh logs
 
-# @todo test stack pause & restart
+# Stack pausing
+
+./bin/stack.sh pause
+
+./bin/stack.sh unpause
 
 # Stop the stack
 
