@@ -273,13 +273,17 @@ class SqlExecute extends DatabaseManagingCommand
      * Replaces tokens
      * @param string $string the original string
      * @param string $instanceName
-     * @aparam string[] $dbConnectionSpec
+     * @param string[] $dbConnectionSpec
      * @return string
      * @todo add support for more tokens, eg '{version}'
      */
     protected function replaceDBSpecTokens($string, $instanceName, $dbConnectionSpec)
     {
         $dbType = $dbConnectionSpec['vendor'];
-        return str_replace(array('{dbtype}', '{instancename}'), array($dbType, $instanceName), $string);
+        return str_replace(
+            array('{dbtype}', '{instancename}', '{vendor}'),
+            array($dbType, $instanceName, $dbConnectionSpec['vendor']),
+            $string
+        );
     }
 }

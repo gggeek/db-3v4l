@@ -10,7 +10,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 ./bin/stack.sh -p build
 
 # Wait until worker has booted
-while [ ! -f /tmp/list.txt ]; do
+# @todo add a time limit...
+while [ ! -f ./app/var/bootstrap_ok ]; do
   sleep 1
   echo .
 done
