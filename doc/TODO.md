@@ -88,7 +88,6 @@
   + also: run `yarn install` as part of composer post-upgrade scripts ?
   + also: run security-checker as part of composer post-install and post-upgrade?
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
-  + use `--parallel` option for `docker-compose build` if d-c version is recent enough
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + remove more unused stuff from containers, such as man pages, fdisk?, etc...
 

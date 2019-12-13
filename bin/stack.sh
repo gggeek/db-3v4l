@@ -12,6 +12,7 @@ WORKER_SERVICE=worker
 WORKER_USER=
 RECREATE=false
 REBUILD=false
+PARALLEL=
 SETUP_APP=true
 CLEANUP_IMAGES=false
 DOCKER_NO_CACHE=
@@ -42,7 +43,8 @@ Options:
     -c              clean up docker images which have become useless - when running 'build'
     -h              print help
     -n              do not set up the app - when running 'build'
-    -p              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
+    -p              build containers in parallel - when running 'build'
+    -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
     -v              verbose mode
     -z              avoid using docker cache - when running 'build -r'
@@ -50,7 +52,7 @@ Options:
 }
 
 function build() {
-    if [ $CLEANUP_IMAGES = 'true' ]; then
+    if [ ${CLEANUP_IMAGES} = 'true' ]; then
         # for good measure, do a bit of hdd disk cleanup ;-)
         echo "[`date`] Removing dead Docker images from disk..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
@@ -59,23 +61,23 @@ function build() {
     echo "[`date`] Building and Starting all Containers..."
 
     docker-compose ${VERBOSITY} stop
-    if [ $REBUILD = 'true' ]; then
+    if [ ${REBUILD} = 'true' ]; then
         docker-compose ${VERBOSITY} rm -f
     fi
 
-    docker-compose ${VERBOSITY} build ${DOCKER_NO_CACHE}
+    docker-compose ${VERBOSITY} build ${PARALLEL} ${DOCKER_NO_CACHE}
 
-    if [ $SETUP_APP = 'false' ]; then
+    if [ ${SETUP_APP} = 'false' ]; then
         export COMPOSE_SETUP_APP_ON_BUILD=false
     fi
 
-    if [ $RECREATE = 'true' ]; then
+    if [ ${RECREATE} = 'true' ]; then
         docker-compose ${VERBOSITY} up -d --force-recreate
     else
         docker-compose ${VERBOSITY} up -d
     fi
 
-    if [ $CLEANUP_IMAGES = 'true' ]; then
+    if [ ${CLEANUP_IMAGES} = 'true' ]; then
         echo "[`date`] Removing dead Docker images from disk, again..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
     fi
@@ -99,7 +101,7 @@ function setup() {
     echo "[`date`] Setup finished"
 }
 
-while getopts ":chnprvz" opt
+while getopts ":chnprsvz" opt
 do
     case $opt in
         c)
@@ -113,10 +115,13 @@ do
             SETUP_APP=false
         ;;
         p)
-            RECREATE=true
+            PARALLEL=--parallel
         ;;
         r)
             REBUILD=true
+        ;;
+        s)
+            RECREATE=true
         ;;
         v)
             VERBOSITY=--verbose
@@ -165,7 +170,7 @@ if [ -z "${WORKER_USER}" ]; then
     exit 1
 fi
 
-case "$COMMAND" in
+case "${COMMAND}" in
     build)
         build
     ;;

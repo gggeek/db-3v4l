@@ -9,14 +9,15 @@ ARG do_update_os=true
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
-# Update preinstalled packages
-# -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
-
-# Base packages
+# Base packages - `ps` is required before the apt upgrade of mysql...
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     procps
+
+# Update preinstalled packages
+# NB: updating the db will ask whether to overwrite my.cnf...
+# -----------------------------------------------------------------------------
+RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confold" upgrade; fi
 
 # Clear archives in apt cache folder to slim down the image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

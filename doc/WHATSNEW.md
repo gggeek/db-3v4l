@@ -26,6 +26,11 @@ Version 0.8 (unreleased)
 
   Note: the standard `console` command is still available.
 
+- Improved: `stack.sh` has a new `-p` option for parallel builds. Previous option  `-p` has been renamed `-s`
+
+- Improved: The MariaDB and MySQL databases will now properly update to the latest available minor version during the
+  build of the containers
+
 
 Version 0.7.1
 -------------

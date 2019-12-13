@@ -10,8 +10,9 @@ ARG do_update_os=true
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
 # Update preinstalled packages
+# NB: updating the db will ask whether to overwrite my.cnf...
 # -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
+RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confold" upgrade; fi
 
 # Base packages
 # -----------------------------------------------------------------------------
