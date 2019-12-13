@@ -1,7 +1,5 @@
 ## Fixes
 
-- temp db creation (or usage ?) fails for pgsql 9.4
-
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?

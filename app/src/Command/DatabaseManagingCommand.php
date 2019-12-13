@@ -41,7 +41,7 @@ abstract class DatabaseManagingCommand extends BaseCommand
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for execution (secs)', self::DEFAULT_PROCESS_TIMEOUT)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of processes to run in parallel', self::DEFAULT_PARALLEL_PROCESSES)
             ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate php process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
-            ->addOption('only-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `db3v4l:instance:list`', null)
+            ->addOption('only-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `instance:list`', null)
             ->addOption('except-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against.', null)
         ;
     }
