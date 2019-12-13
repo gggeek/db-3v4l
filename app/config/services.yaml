@@ -225,12 +225,22 @@ services:
 
     # manual 'aliasing' of autoconfigured console commands, for the custom console
 
-    # @todo finish... extra svcs and constructor args
-
     db3v4l.dbconsole.collation_list:
         autoconfigure: false
         autowire: true
         class: Db3v4l\Command\CollationList
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.database_create:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\DatabaseCreate
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.database_drop:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\DatabaseDrop
         tags: ['dbconsole.command']
 
     db3v4l.dbconsole.database_list:
@@ -243,6 +253,12 @@ services:
         autoconfigure: false
         autowire: true
         class: Db3v4l\Command\InstanceList
+        tags: ['dbconsole.command']
+
+    db3v4l.dbconsole.sql_execute:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\SqlExecute
         tags: ['dbconsole.command']
 
     db3v4l.dbconsole.user_list:

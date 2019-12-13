@@ -8,6 +8,29 @@ networks:
 
 services:
 
+    admin:
+        build:
+            context: images/admin
+            args:
+                debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: admin
+        container_name: "${COMPOSE_PROJECT_NAME}_admin"
+        # No ports exposed by default: we use the 'web' container as reverse proxy
+        #ports:
+        #    - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTP}:80"
+        #    - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTPS}:443"
+        volumes:
+            - ../app:/var/www/db3v4l
+            - ./logs/admin/nginx:/var/log/nginx
+            - ./logs/admin/php:/var/log/php
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
     web:
         build:
             context: images/web
@@ -31,28 +54,6 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    admin:
-        build:
-            context: images/admin
-            args:
-                debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: admin
-        container_name: "${COMPOSE_PROJECT_NAME}_admin"
-        # No ports exposed by default: we use the 'web' container as reverse proxy
-        #ports:
-        #    - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTP}:80"
-        #    - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTPS}:443"
-        volumes:
-            - ../app:/var/www/db3v4l
-            - ./logs/admin/nginx:/var/log/nginx
-            - ./logs/admin/php:/var/log/php
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
     worker:
         build:
             context: images/worker

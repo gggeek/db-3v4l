@@ -31,8 +31,8 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -g "${CONTAINER_USER_GID}" www-data
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" www-data
 
-    # @todo we should do chown based on current perms of the dirs, not on  ORIG_UID != CONTAINER_USER_GID
-    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
+    # @todo we should do chown based on current perms of the dirs, not on  ORIG_UID != CONTAINER_USER_GID - or plain remove /var/www/html
+    # note: perms on /var/www/db3v4l and /var/www/doc are managed by the worker container
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}/html"
 fi
 

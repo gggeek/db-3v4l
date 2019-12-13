@@ -35,10 +35,11 @@ if [ -d /var/lib/postgresql ]; then
     fi
 fi
 # @todo we always do this for safety, but is it really necessary ?
-# Altered as we mount volumes inside here
-#chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
+#       Note that the '$HOME/app' and '$HOME/doc' dirs are mounted as well by the web and admin containers
+# Can not use "${ORIG_HOME}"/.* as we mount volumes inside here
 chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
 
+# In case we want to allow ssh connections across containers...
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost ]; then cat /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost > /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys ]; then chown ${CONTAINER_USER}:${CONTAINER_USER} /home/${CONTAINER_USER}/.ssh/authorized_keys; fi
 
