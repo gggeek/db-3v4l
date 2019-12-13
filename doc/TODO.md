@@ -1,5 +1,7 @@
 ## Fixes
 
+- temp db creation (or usage ?) fails for pgsql 9.4
+
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?
@@ -14,6 +16,10 @@
 ## Major features
 
 - add travis testing
+
+- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
+  native functions, not sql code...)
+  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
@@ -76,11 +82,6 @@
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
-
-
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
-  native functions, not sql code...)
-  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
 
 - build:
   + while setting up symfony, have the web site show up a courtesy page

@@ -184,7 +184,8 @@ case "${COMMAND}" in
 
     dbconsole)
         shift
-        docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- /usr/bin/php app/bin/dbconsole $@
+        # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
+        docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"
     ;;
 
     images)
@@ -214,7 +215,6 @@ case "${COMMAND}" in
     run)
         shift
         docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
-        # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
         #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
     ;;
 
