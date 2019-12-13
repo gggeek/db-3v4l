@@ -5,27 +5,30 @@ dist: bionic
 env:
     - DOCKER_COMPOSE_VERSION=1.10.0
 
-before_install:
+#before_install:
+
+install:
     # install docker-compose
     - sudo rm /usr/local/bin/docker-compose
     - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
     - chmod +x docker-compose
     - sudo mv docker-compose /usr/local/bin
+    - docker-compose --version
 
-    # update to latest docker ?
+    # update to latest docker ? currently we have 18.06 on the Bionic vm
     #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     #- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     #- sudo apt-get update
     #- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-
-    - docker --version
-    - docker-compose --version
-
-#install:
+    #- docker --version
 
 #before_script:
 
-#script:
+script:
+    - ./tests/01_smoketest.sh
+    - ./tests/02_dbconsole.sh
+
+#after_success:
 
 #after_failure:
 
