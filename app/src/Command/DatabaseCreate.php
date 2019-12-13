@@ -94,5 +94,7 @@ class DatabaseCreate extends DatabaseManagingCommand
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
+
+        return (int)$results['failed'];
     }
 }
