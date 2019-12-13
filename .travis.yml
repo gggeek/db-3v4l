@@ -1,5 +1,7 @@
 language: bash
 
+dist: bionic
+
 env:
     - DOCKER_COMPOSE_VERSION=1.10.0
 
