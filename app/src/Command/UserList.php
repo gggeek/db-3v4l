@@ -59,6 +59,8 @@ class UserList extends DatabaseManagingCommand
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
+
+        return (int)$results['failed'];
     }
 
     protected function listUsers($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)

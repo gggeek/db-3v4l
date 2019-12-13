@@ -141,11 +141,15 @@ class SqlExecute extends DatabaseManagingCommand
 
                 $this->dropDatabases($dbConnectionSpecs, $maxParallel);
             }
+        } else {
+            $results = ['succeeded' => 0,  'failed' => 0, 'data' => null];
         }
 
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
+
+        return (int)$results['failed'];
     }
 
     /**

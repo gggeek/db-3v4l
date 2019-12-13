@@ -59,6 +59,8 @@ class DatabaseList extends DatabaseManagingCommand
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
+
+        return (int)$results['failed'];
     }
 
     protected function listDatabases($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)

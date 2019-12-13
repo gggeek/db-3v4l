@@ -60,6 +60,8 @@ class CollationList extends DatabaseManagingCommand
         $time = microtime(true) - $start;
 
         $this->writeResults($results, $time, $format);
+
+        return (int)$results['failed'];
     }
 
     protected function listCollations($instanceList, $maxParallel, $timeout, $format = self::DEFAULT_OUTPUT_FORMAT)
