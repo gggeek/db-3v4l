@@ -94,6 +94,9 @@
 
 - host: improve cli scripts:
   + move cleanup scripts to stack.sh
+  + also: allow cleaning up of docker logs for own images - eg.
+    echo "" > $(docker inspect --format='{{.LogPath}}' <container_name_or_id>)
+    nb: needs root perms
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh
 
