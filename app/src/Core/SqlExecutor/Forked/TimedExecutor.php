@@ -52,7 +52,8 @@ class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedE
 
         $timingData = file_get_contents($this->timingFile);
         if ($timingData != '') {
-            $timingData = explode(' ', $timingData, 2);
+            $timingData = preg_replace('/Command exited with non-zero status [0-9]+/', '', $timingData);
+            $timingData = explode(' ', trim($timingData), 2);
             $results['time'] = $timingData[1];
             $results['memory'] = $timingData[0];
         } else {
