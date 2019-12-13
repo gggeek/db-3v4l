@@ -13,8 +13,6 @@
 
 ## Major features
 
-- add travis testing
-
 - worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
   native functions, not sql code...)
   mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
@@ -72,6 +70,8 @@
 
 
 ## Improvements
+
+- improve travis testing: add tests
 
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
