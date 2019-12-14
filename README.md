@@ -48,7 +48,7 @@ NB: if you have no bash shell interpreter on your host computer, scroll to the e
 
 ### Installation
 
-    ./bin/stack.sh build
+    ./bin/stack.sh -w build
 
 *NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help.
 

@@ -28,6 +28,8 @@ Version 0.8 (unreleased)
 
 - Improved: `stack.sh` has a new `-p` option for parallel builds. Existing option `-p` has been renamed to `-s`
 
+- Improved: `stack.sh` has a new `-w` option for waiting for completion of app set up on build and start
+
 - Improved: The MariaDB and MySQL databases will now properly update to the latest available minor version during the
   build of the containers
 
