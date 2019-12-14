@@ -27,6 +27,8 @@ install:
 script:
     - ./tests/01_smoketest.sh
     - ./tests/02_dbconsole.sh
+    #- ./tests/03_web.sh
+    #- ./tests/04_admin.sh
 
 #after_success:
 

@@ -103,6 +103,7 @@
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
   + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
+  + when listing users/instances/dbs, parse the output of sql clients and return arrays with data instead of texts
 
 - web gui:
   + keep icons visible when collapsing left menu
