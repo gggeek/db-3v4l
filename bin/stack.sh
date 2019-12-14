@@ -164,15 +164,18 @@ setup_app() {
 wait_for_bootstrap() {
     echo "Waiting for Worker container bootstrap to finish..."
     BOOTSTRAP_OK=false
-    for i in {1..${BOOTSTRAP_TIMEOUT}}; do
+
+     i=0
+     while [ $i -le ${BOOTSTRAP_TIMEOUT} ]; do
         if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
             BOOTSTRAP_OK=true
             break
         fi
         sleep 1
         printf .
+        i=$(( i + 1 ))
     done
-    echo
+    if [ $i -gt 0 ]; then echo; fi
 
     if [ ${BOOTSTRAP_OK} != 'true' ]; then
         printf "\n\e[31mWorker bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
