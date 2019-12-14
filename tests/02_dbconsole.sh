@@ -13,7 +13,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/stack.sh dbconsole
 
-./bin/stack.sh dbconsole collation:list
+# The collation list is huge. Let's not pollute test logs...
+./bin/stack.sh dbconsole collation:list >/dev/null
 
 ./bin/stack.sh dbconsole database:list
 

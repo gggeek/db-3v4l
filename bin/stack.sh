@@ -18,7 +18,7 @@ DOCKER_NO_CACHE=
 PARALLEL_BUILD=
 REBUILD=false
 RECREATE=false
-SETUP_APP=true
+SETUP_APP_ON_BUILD=true
 VERBOSITY=
 WORKER_USER=
 
@@ -122,8 +122,8 @@ build() {
 
     docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
 
-    if [ ${SETUP_APP} = 'false' ]; then
-        export COMPOSE_SETUP_APP_ON_BUILD=false
+    if [ ${SETUP_APP_ON_BUILD} = 'false' ]; then
+        export COMPOSE_SETUP_APP_ON_BOOT=false
     fi
 
     if [ ${RECREATE} = 'true' ]; then
@@ -148,7 +148,7 @@ setup_app() {
     echo "[`date`] Starting the Worker container..."
 
     # avoid automatic app setup being triggered here
-    export COMPOSE_SETUP_APP_ON_BUILD=false
+    export COMPOSE_SETUP_APP_ON_BOOT=false
 
     docker-compose ${VERBOSITY} up -d ${WORKER_SERVICE}
 
@@ -166,12 +166,12 @@ wait_for_bootstrap() {
     BOOTSTRAP_OK=false
 
      i=0
-     while [ $i -le ${BOOTSTRAP_TIMEOUT} ]; do
+     while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
+         sleep 1
         if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
             BOOTSTRAP_OK=true
             break
         fi
-        sleep 1
         printf .
         i=$(( i + 1 ))
     done
@@ -195,7 +195,7 @@ do
             exit 0
         ;;
         n)
-            SETUP_APP=false
+            SETUP_APP_ON_BUILD=false
         ;;
         p)
             PARALLEL_BUILD=--parallel
@@ -210,7 +210,7 @@ do
             VERBOSITY=--verbose
         ;;
         w)
-            BOOTSTRAP_TIMEOUT=true
+            BOOTSTRAP_TIMEOUT=${OPTARG}
         ;;
         z)
             DOCKER_NO_CACHE=--no-cache

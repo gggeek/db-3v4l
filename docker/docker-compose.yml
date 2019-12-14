@@ -72,7 +72,7 @@ services:
             - "./data/sqlite/:/home/${CONTAINER_USER}/data/sqlite"
         environment:
             - CONTAINER_USER
-            - COMPOSE_SETUP_APP_ON_BUILD
+            - COMPOSE_SETUP_APP_ON_BOOT
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"

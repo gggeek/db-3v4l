@@ -45,7 +45,7 @@ chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
 
 # Set up the application
 
-echo "[`date`] Setting up the application..."
+echo "[`date`] Setting up the application: config file .env.local..."
 
 # If current values for env vars different from the ones stored in app/.env.local:
 # overwrite the file and clear symfony caches
@@ -74,13 +74,18 @@ fi
 # @todo move execution of yarn encore to composer.json
 if [ -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     if [ ${CLEAR_CACHE} = true ]; then
+        echo "[`date`] Setting up the application: clearing caches..."
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear && yarn encore ${ENCORE_CMD}"
     fi
 else
-    if [ "${COMPOSE_SETUP_APP_ON_BUILD}" != false ]; then
+    if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != false ]; then
+        echo "[`date`] Setting up the application: composer install..."
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${ENCORE_CMD}"
     fi
 fi
+
+### debugging travis
+set | sort
 
 echo "[`date`] Bootstrap finished" | tee "${BS_OK}"
 
