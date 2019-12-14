@@ -8,6 +8,7 @@
 
 # consts
 WORKER_SERVICE=worker
+WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok
 # vars
 WORKER_USER=
 RECREATE=false
@@ -17,6 +18,7 @@ SETUP_APP=true
 CLEANUP_IMAGES=false
 DOCKER_NO_CACHE=
 VERBOSITY=
+WAIT_FOR_SETUP=false
 
 function help() {
     echo -e "Usage: stack.sh [OPTIONS] COMMAND [OPTARG]
@@ -47,8 +49,30 @@ Options:
     -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
     -v              verbose mode
+    -w              wait for completion of app and container set up - when running 'build' and 'start'
     -z              avoid using docker cache - when running 'build -r'
 "
+}
+
+# Wait until worker has booted
+function wait_for_bootstrap() {
+    echo "Waiting for Worker container bootstrap to finish..."
+    BOOTSTRAP_OK=false
+    # @todo make timeout configurable
+    for i in {1..300}; do
+        if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
+            BOOTSTRAP_OK=true
+            break
+        fi
+        sleep 1
+        printf .
+    done
+    echo
+
+    if [ ${BOOTSTRAP_OK} != 'true' ]; then
+        echo "Worker bootstrap process did not finish within 300 seconds" >&2
+        exit 1
+    fi
 }
 
 function build() {
@@ -77,6 +101,10 @@ function build() {
         docker-compose ${VERBOSITY} up -d
     fi
 
+    if [ ${WAIT_FOR_SETUP} = 'true' ]; then
+        wait_for_bootstrap
+    fi
+
     if [ ${CLEANUP_IMAGES} = 'true' ]; then
         echo "[`date`] Removing dead Docker images from disk, again..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
@@ -86,22 +114,26 @@ function build() {
 }
 
 function setup() {
-    echo "[`date`] Starting all Containers..."
+    echo "[`date`] Starting the Worker container..."
 
-    # @todo avoid automatic app setup being triggered here
-    docker-compose ${VERBOSITY} up -d
+    # avoid automatic app setup being triggered here
+    export COMPOSE_SETUP_APP_ON_BUILD=false
 
-    until docker exec ${WORKER_CONTAINER} cat /var/run/bootstrap_ok 2>/dev/null; do
-        echo "[`date`] Waiting for the Worker container to be fully set up..."
-        sleep 5
-    done
+    docker-compose ${VERBOSITY} up -d ${WORKER_SERVICE}
+
+    wait_for_bootstrap
+    #until docker exec ${WORKER_CONTAINER} cat /var/run/bootstrap_ok 2>/dev/null; do
+    #    echo "[`date`] Waiting for the Worker container to be fully set up..."
+    #    sleep 5
+    #done
 
     echo "[`date`] Setting up the app (from inside the Worker container)..."
-    docker exec ${WORKER_CONTAINER} su ${WORKER_USER} -c "cd app && composer install"
+    # @todo the APP_ENV env var is available to root but not to the WORKER_USER... does it parse the sf .env file automatically ?
+    docker exec ${WORKER_CONTAINER} su ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install && yarn install && yarn encore \$APP_ENV"
     echo "[`date`] Setup finished"
 }
 
-while getopts ":chnprsvz" opt
+while getopts ":chnprsvwz" opt
 do
     case $opt in
         c)
@@ -125,6 +157,9 @@ do
         ;;
         v)
             VERBOSITY=--verbose
+        ;;
+        w)
+            WAIT_FOR_SETUP=true
         ;;
         z)
             DOCKER_NO_CACHE=--no-cache
@@ -225,6 +260,9 @@ case "${COMMAND}" in
 
     start)
         docker-compose ${VERBOSITY} up -d
+        if [ ${WAIT_FOR_SETUP} = 'true' ]; then
+            wait_for_bootstrap
+        fi
     ;;
 
     stop)

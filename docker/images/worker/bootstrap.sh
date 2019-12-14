@@ -82,9 +82,7 @@ else
     fi
 fi
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
-
-touch "${BS_OK}"
+echo "[`date`] Bootstrap finished" | tee "${BS_OK}"
 
 trap clean_up TERM
 
