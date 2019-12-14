@@ -7,14 +7,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/stack.sh start
-
-# Wait until worker has booted
-# @todo add a time limit...
-while [ ! -f ./app/var/bootstrap_ok ]; do
-  sleep 1
-  echo .
-done
+./bin/stack.sh -w start
 
 # DBConsole commands
 

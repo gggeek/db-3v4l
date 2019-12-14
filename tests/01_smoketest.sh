@@ -7,20 +7,13 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Build the stack
 
-./bin/stack.sh -p build
-
-# Wait until worker has booted
-# @todo add a time limit...
-while [ ! -f ./app/var/bootstrap_ok ]; do
-  sleep 1
-  echo .
-done
+./bin/stack.sh -w -p build
 
 # Stack status
 
-# @todo check that all images are up and running by parsing output
 ./bin/stack.sh images
 
+# @todo check that all images are up and running by parsing output of this
 ./bin/stack.sh ps
 
 ./bin/stack.sh top
