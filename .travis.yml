@@ -32,6 +32,7 @@ script:
 
 #after_success:
 
-#after_failure:
+after_failure:
+    - ./bin/stack.sh logs worker
 
 #after_script:

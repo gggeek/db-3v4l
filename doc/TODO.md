@@ -71,7 +71,9 @@
 
 ## Improvements
 
-- improve travis testing: add tests
+- improve travis testing:
+  + add tests: ...
+  + use 'bats' for shell-driven tests?
 
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
@@ -105,6 +107,7 @@
     - test with rows containing multiple cols, newlines, ...
   + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
   + when listing users/instances/dbs, parse the output of sql clients and return arrays with data instead of texts
+  + log by default php errors to /var/log/php and mount that dir on host ?
 
 - web gui:
   + keep icons visible when collapsing left menu

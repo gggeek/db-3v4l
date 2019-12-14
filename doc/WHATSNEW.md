@@ -30,6 +30,8 @@ Version 0.8 (unreleased)
 
 - Improved: `stack.sh` has a new `-w` option for waiting for completion of app set up on build and start
 
+- Improved: `stack.sh logs` now accepts an argument, eg. `stack.sh logs worker`
+
 - Improved: The MariaDB and MySQL databases will now properly update to the latest available minor version during the
   build of the containers
 

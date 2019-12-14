@@ -227,7 +227,7 @@ case "${COMMAND}" in
     ;;
 
     logs)
-        docker-compose ${VERBOSITY} logs
+        docker-compose ${VERBOSITY} logs ${2}
     ;;
 
     ps)
