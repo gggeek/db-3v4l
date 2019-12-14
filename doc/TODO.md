@@ -99,6 +99,7 @@
     nb: needs root perms
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
+  + add shell completion for commands of stack.sh
 
 - worker: improve cli scripts
   + either remove ./vendor/bin/doctrine-dbal or make it actually work

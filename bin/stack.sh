@@ -163,6 +163,7 @@ setup_app() {
 # Wait until worker has booted
 wait_for_bootstrap() {
     echo "Waiting for Worker container bootstrap to finish..."
+    BOOTSTRAP_OK=false
     for i in {1..${BOOTSTRAP_TIMEOUT}}; do
         if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
             BOOTSTRAP_OK=true

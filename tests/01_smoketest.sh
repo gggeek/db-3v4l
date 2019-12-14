@@ -8,13 +8,15 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # Build the stack
 
 # q: shall we force a rebuild every time?
-./bin/stack.sh -n -p build
+# @todo enable parallel builds for docker-compose >= 1.23.0
+./bin/stack.sh -n build
 
 ./bin/stack.sh setup
 
 # Stack status
 
-./bin/stack.sh images
+# @todo enable this for docker-compose >= 1.23.0
+#./bin/stack.sh images
 
 # @todo check that all images are up and running by parsing output of this
 ./bin/stack.sh ps

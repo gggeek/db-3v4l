@@ -3,7 +3,11 @@ language: bash
 dist: bionic
 
 env:
-    - DOCKER_COMPOSE_VERSION=1.10.0
+    # Test (in parallel):
+    # - with oldest supported docker & docker-compose
+    # - with most recent docker & docker-compose
+    - DOCKER_COMPOSE_VERSION=1.10.0 DOCKER_VERSION=native
+    - DOCKER_COMPOSE_VERSION=1.25.0 DOCKER_VERSION=latest
 
 #before_install:
 
@@ -15,12 +19,12 @@ install:
     - sudo mv docker-compose /usr/local/bin
     - docker-compose --version
 
-    # update to latest docker ? currently we have 18.06 on the Bionic vm
-    #- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    #- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    #- sudo apt-get update
-    #- sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-    #- docker --version
+    # update to latest docker if required (currently we have 18.06 on the Bionic vm)
+    - if [ $DOCKER_VERSION = latest ]; then curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; fi
+    - if [ $DOCKER_VERSION = latest ]; then sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"; fi
+    - if [ $DOCKER_VERSION = latest ]; then sudo apt-get update; fi
+    - if [ $DOCKER_VERSION = latest ]; then sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce; fi
+    - if [ $DOCKER_VERSION = latest ]; then docker --version; fi
 
 #before_script:
 
