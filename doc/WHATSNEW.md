@@ -28,7 +28,8 @@ Version 0.8 (unreleased)
 
 - Improved: `stack.sh` has a new `-p` option for parallel builds. Existing option `-p` has been renamed to `-s`
 
-- Improved: `stack.sh` has a new `-w` option for waiting for completion of app set up on build and start
+- Improved: `stack.sh` has a new `-w` option for waiting for completion of app set up on build and start.
+  It is recommended to use it at least on the 1st build of the stack.
 
 - Improved: `stack.sh logs` now accepts an argument, eg. `stack.sh logs worker`
 
