@@ -160,14 +160,14 @@ setup_app() {
     echo "[`date`] Setup finished"
 }
 
-# Wait until worker has booted
+# Wait until worker has fully booted
 wait_for_bootstrap() {
     echo "Waiting for Worker container bootstrap to finish..."
     BOOTSTRAP_OK=false
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
-         sleep 1
+        sleep 1
         if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
             BOOTSTRAP_OK=true
             break
@@ -224,9 +224,9 @@ do
 done
 shift $((OPTIND-1))
 
-check_requirements
-
 COMMAND=$1
+
+check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/../docker
 
@@ -304,6 +304,9 @@ case "${COMMAND}" in
     unpause)
         docker-compose ${VERBOSITY} unpause
     ;;
+
+    #update)
+    #;;
 
     *)
         printf "\n\e[31mERROR: unknown command '${COMMAND}'\e[0m\n\n" >&2

@@ -40,7 +40,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/stack.sh dbconsole sql:execute --only-instances='sqlite_*' --sql='select current_date'
 
-# execution of sql from file (using a per-db-vendor sql file)
+# Execution of sql from file (using a per-db-vendor sql file)
 
 cp -R ./tests/sql ./shared/
 

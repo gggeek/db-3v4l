@@ -16,13 +16,18 @@ PASSWD_LINE=$(cat /etc/passwd | grep ${CONTAINER_USER})
 ORIG_UID=$(echo $PASSWD_LINE | cut -f3 -d:)
 ORIG_GID=$(echo $PASSWD_LINE | cut -f4 -d:)
 ORIG_HOME=$(echo $PASSWD_LINE | cut -f6 -d:)
-BS_OK=${ORIG_HOME}/app/var/bootstrap_ok
+BS_OK_DIR=${ORIG_HOME}/app/var
+BS_OK=${BS_OK_DIR}/bootstrap_ok
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
 # Allow any process to see if bootstrap finished by looking up this file
-if [ -f "${BS_OK}" ]; then
-    rm "${BS_OK}"
+if [ ! -d ${BS_OK_DIR} ]; then
+    mkdir -p ${BS_OK_DIR}
+else
+    if [ -f "${BS_OK}" ]; then
+        rm "${BS_OK}"
+    fi
 fi
 
 if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
@@ -83,9 +88,6 @@ else
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${ENCORE_CMD}"
     fi
 fi
-
-### debugging travis
-set | sort
 
 echo "[`date`] Bootstrap finished" | tee "${BS_OK}"
 
