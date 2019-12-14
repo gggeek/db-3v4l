@@ -37,18 +37,18 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 * Docker-compose: version 1.10 or later
 
-* Recommended: bash shell
+* Recommended: bash shell and commands: awk, date, dirname, grep, id, printf, sed
 
 * minimum RAM, CPU, Disk space: these have not been measured, but you probably want something better than a raspberry pi...
 
 
 ## Quick Start
 
-NB: if you have no bash shell interpreter on your host computer, scroll to the end for alternative instructions
+NB: if you have no bash shell interpreter on your host computer, look at the end of this document for alternative instructions
 
 ### Installation
 
-    ./bin/stack.sh -w build
+    ./bin/stack.sh build
 
 *NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help.
 

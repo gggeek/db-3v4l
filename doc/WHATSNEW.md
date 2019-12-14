@@ -1,20 +1,20 @@
 Version 0.8 (unreleased)
 ------------------------
 
-- New: it is now possible to specify the collation (character set) used when creating new databases.
+- New: it is now possible to specify the collation / character set used when creating new databases.
   Please note that this is supported with many limitations:
-  - 'utf8' as character set name is accepted by all databases except ms sql server 2017
+  - 'utf8' as collation name is accepted by all databases except ms sql server 2017
   - sqllite databases are always created with utf8 character set and will not respect the one specified on the command line
-  - 'utf8' is the only character set name which seems to be usable across all databases
+  - 'utf8' is the only character set name which is known to be usable across all databases (with the limitations above)
   - you can use database-specific naming to specify a collation/character set, but it will not be converted to be
     useable by other databases. Use the `only-instances` option to limit your commands to be executed on a single type
-    of database at a time when you are passing in a specific collation name
+    of database at a time when you are passing in a database-specific collation name
 
-- New cli command: `collation:list`, to list available collations for each instance
+- New: console command: `collation:list`, to list available collations for each instance
 
 - New: a `dbconsole` command is available, that can be used instead of the existing `console` one.
   It is simpler, as it does not list any actions which come from Symfony platform code, and it lets you do less typing,
-  as it removes the prefix in action names.
+  as it removes the prefix in its command names.
 
   Before:
 
@@ -26,12 +26,17 @@ Version 0.8 (unreleased)
 
   Note: the standard `console` command is still available.
 
-- Improved: `stack.sh` has a new `-p` option for parallel builds. Existing option `-p` has been renamed to `-s`
+- Improved: `stack.sh` will now set up automatically user id and group id in file `docker/containers.env.local` when
+  first building the images, in cse they differ from the default ones declared in `docker/containers.env`
 
-- Improved: `stack.sh` has a new `-w` option for waiting for completion of app set up on build and start.
-  It is recommended to use it at least on the 1st build of the stack.
+- Improved: `stack.sh` has a new `-p` option for building containers in parallel. The pre-existing option `-p` has been
+  renamed to `-s`
 
-- Improved: `stack.sh logs` now accepts an argument, eg. `stack.sh logs worker`
+- Improved: `stack.sh` now waits for completion of app set up on build and start (for max 600 secs by default).
+  A new `-w SECS` option has been added for using a custom waiting timeout
+
+- Improved: `stack.sh logs` now accepts an argument, which is the name of a docker service, to only show its logs.
+  eg. `stack.sh logs worker`
 
 - Improved: The MariaDB and MySQL databases will now properly update to the latest available minor version during the
   build of the containers
