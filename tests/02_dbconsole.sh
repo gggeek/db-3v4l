@@ -7,7 +7,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/stack.sh -w start
+./bin/stack.sh start
 
 # DBConsole commands
 
