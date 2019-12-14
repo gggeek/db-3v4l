@@ -3,7 +3,6 @@
 # Shortcuts to manage the whole set of containers
 
 # @todo move to separate actions of this command the clean up of dead images as well as data and logs (currently separate commands)
-# @todo allow to separate app setup from container start
 # @todo allow end user to enter pwd for root db accounts on build. If not interactive, generate a random one
 
 # consts
@@ -129,7 +128,7 @@ function setup() {
 
     echo "[`date`] Setting up the app (from inside the Worker container)..."
     # @todo the APP_ENV env var is available to root but not to the WORKER_USER... does it parse the sf .env file automatically ?
-    docker exec ${WORKER_CONTAINER} su ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install && yarn install && yarn encore \$APP_ENV"
+    docker exec ${WORKER_CONTAINER} su - ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install && yarn install && yarn encore \$APP_ENV"
     echo "[`date`] Setup finished"
 }
 
@@ -235,10 +234,6 @@ case "${COMMAND}" in
         docker-compose ${VERBOSITY} ps
     ;;
 
-    #run)
-    #    docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
-    #;;
-
     pause)
         docker-compose ${VERBOSITY} pause
     ;;
@@ -249,6 +244,7 @@ case "${COMMAND}" in
 
     run)
         shift
+        # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
         docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
         #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
     ;;

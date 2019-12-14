@@ -8,7 +8,9 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # Build the stack
 
 # q: shall we force a rebuild every time?
-./bin/stack.sh -w -p build
+./bin/stack.sh -w -n -p build
+
+./bin/stack.sh setup
 
 # Stack status
 
