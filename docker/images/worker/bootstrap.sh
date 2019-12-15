@@ -24,6 +24,7 @@ CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 # Allow any process to see if bootstrap finished by looking up this file
 if [ ! -d ${BS_OK_DIR} ]; then
     mkdir -p ${BS_OK_DIR}
+    #chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${BS_OK_DIR}
 else
     if [ -f "${BS_OK}" ]; then
         rm "${BS_OK}"
@@ -34,15 +35,16 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" ${CONTAINER_USER}
 fi
-if [ -d /var/lib/postgresql ]; then
-    if [ $(stat -c '%u' "/var/lib/postgresql") != "${DEV_UID}" -o $(stat -c '%g' "/var/lib/postgresql") != "${DEV_GID}" ]; then
-        chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
-    fi
-fi
+#if [ -d /var/lib/postgresql ]; then
+#    if [ $(stat -c '%u' "/var/lib/postgresql") != "${DEV_UID}" -o $(stat -c '%g' "/var/lib/postgresql") != "${DEV_GID}" ]; then
+#        chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
+#    fi
+#fi
 # @todo we always do this for safety, but is it really necessary ?
-#       Note that the '$HOME/app' and '$HOME/doc' dirs are mounted as well by the web and admin containers
-# Can not use "${ORIG_HOME}"/.* as we mount volumes inside here
+# Note that the '$HOME/app' and '$HOME/doc' dirs are mounted as well by the web and admin containers
+# Could we use simply "${ORIG_HOME}" ? Note tha we mount volumes inside there...
 chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.[!.]*
+chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/*
 
 # In case we want to allow ssh connections across containers...
 #if [ -f /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost ]; then cat /home/${CONTAINER_USER}/.ssh/authorized_keys_fromhost > /home/${CONTAINER_USER}/.ssh/authorized_keys; fi

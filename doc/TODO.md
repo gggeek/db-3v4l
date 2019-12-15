@@ -72,6 +72,7 @@
   + add tests: ...
   + use 'bats' for shell-driven tests?
   + check if there is anything that we can cache between test runs on travis to speed up the execution
+  + add xdebug and enable code coverage while running tests
 
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
