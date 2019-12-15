@@ -88,7 +88,7 @@
 - build:
   + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
-  + also: run `yarn install` as part of composer post-upgrade scripts
+  + also: when running `yarn encore` as part of composer post-upgrade scripts, transform 'test' sf env to 'dev' cmd
   + also: run security-checker as part of composer post-install and post-upgrade?
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + stack.sh: add 'upgrade' command

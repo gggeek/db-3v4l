@@ -5,6 +5,8 @@ set -ev
 
 cd $(dirname ${BASH_SOURCE[0]})/..
 
+#DC_VERSION=$(docker-compose -v | sed 's/docker-compose version //')
+
 # Build the stack
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...

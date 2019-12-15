@@ -74,20 +74,20 @@ fi
 mv /tmp/.env.local ${ORIG_HOME}/app/.env.local
 chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
 
-ENCORE_CMD=${APP_ENV}
-if [ "${ENCORE_CMD}" = test ]; then
-    ENCORE_CMD=dev
-fi
-# @todo move execution of yarn encore to composer.json
+#ENCORE_CMD=${APP_ENV}
+#if [ "${ENCORE_CMD}" = test ]; then
+#    ENCORE_CMD=dev
+#fi
+
 if [ -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     if [ ${CLEAR_CACHE} = true ]; then
         echo "[`date`] Setting up the application: clearing caches..."
-        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear && yarn encore ${ENCORE_CMD}"
+        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear"
     fi
 else
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != false ]; then
         echo "[`date`] Setting up the application: composer install..."
-        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install && yarn install && yarn encore ${ENCORE_CMD}"
+        su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install"
     fi
 fi
 
