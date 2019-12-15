@@ -155,7 +155,7 @@ setup_app() {
     wait_for_bootstrap
 
     echo "[`date`] Setting up the app (from inside the Worker container)..."
-    # @todo the APP_ENV env var is available to root but not to the WORKER_USER... does 'encore' parse the sf .env file automatically ?
+    # @todo the APP_ENV env var is available to root but not to the WORKER_USER... can we parse the sf .env file to retrieve it ? or use a different SU call style?
     docker exec ${WORKER_CONTAINER} su - ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install && yarn install && yarn encore \$APP_ENV"
     echo "[`date`] Setup finished"
 }

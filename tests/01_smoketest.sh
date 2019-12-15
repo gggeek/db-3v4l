@@ -21,7 +21,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # @todo check that all images are up and running by parsing the output of this
 ./bin/stack.sh ps
 
-./bin/stack.sh top
+# @todo enable this for docker-compose >= 1.23.0
+#./bin/stack.sh top
 
 ./bin/stack.sh logs
 
