@@ -69,8 +69,8 @@ parameters:
             #server_version: mariadb-10.4
             vendor: mariadb
             version: '10.4'
-        mssql_2017_cu17:
-            host: mssqlserver_2017_cu17
+        mssql_2017_cu18:
+            host: mssqlserver_2017_cu18
             port: 1433
             user: sa
             password: '%env(SA_PASSWORD)%'
@@ -78,7 +78,7 @@ parameters:
             #driver: pdo_sqlsrv
             #server_version: ''
             vendor: mssql
-            version: '2017.cu17'
+            version: '2017.cu18'
         mssql_2019_ga:
             host: mssqlserver_2019_ga
             port: 1433
