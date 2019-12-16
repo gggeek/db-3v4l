@@ -1,5 +1,7 @@
-Version 0.8 (unreleased)
-------------------------
+Version 0.8
+-----------
+
+- Changed: moved MS SQL Server 2017 version from cu17 to cu18
 
 - New: it is now possible to specify the collation / character set used when creating new databases.
   Please note that this is supported with many limitations:
@@ -26,8 +28,12 @@ Version 0.8 (unreleased)
 
   Note: the standard `console` command is still available.
 
+- Improved: all console/dbconsole commands report a non-zero exit code when a database action fails
+
+- Improved: better reporting of time spent and memory used by console/dbconsole commands when a database action fails
+
 - Improved: `stack.sh` will now set up automatically user id and group id in file `docker/containers.env.local` when
-  first building the images, in cse they differ from the default ones declared in `docker/containers.env`
+  building the images for the first time, in case they differ from the default ones declared in `docker/containers.env`
 
 - Improved: `stack.sh` has a new `-p` option for building containers in parallel. The pre-existing option `-p` has been
   renamed to `-s`
@@ -38,12 +44,13 @@ Version 0.8 (unreleased)
 - Improved: `stack.sh logs` now accepts an argument, which is the name of a docker service, to only show its logs.
   eg. `stack.sh logs worker`
 
-- Improved: The MariaDB and MySQL databases will now properly update to the latest available minor version during the
+- Improved: the MariaDB and MySQL databases will now properly update to the latest available minor version during the
   build of the containers
 
-- Improved: the application is now tested on Travis. Tests are still quite basic and do not cover all functionality
+- Improved: all non-database containers are now based on the same upstream image (buster-slim); this should speed up
+  build time as well as produce slightly smaller container images
 
-- Changed: moved MS SQL Server 2017 version from cu17 to cu18
+- Improved: the application is now tested on Travis. Tests are still quite basic and do not cover all functionality
 
 
 Version 0.7.1

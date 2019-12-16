@@ -11,10 +11,9 @@ b) allow doing full-fledged performance testing, comparing results across many d
 *** Work In Progress ***
 
 Broad advancement status:
-- command-line interface to execute SQL snippets on multiple databases and compare results: mostly done.
-  Major missing features: proper support for character sets
+- command-line interface to execute SQL snippets on multiple databases and compare results: basically done
 - database support: good coverage. Of the 'well-known players', only Oracle is missing
-- GUI interface: displays documentation and the list of databases. It also includes Adminer for db management, but
+- GUI interface: displays documentation and the list of databases. It also includes Adminer for db management, but it
   does not allow parallel execution of queries
 
 See the [TODO](./doc/TODO.md) and [CHANGELOG](./doc/WHATSNEW.md) files for more details on recent improvements and future plans.
@@ -44,7 +43,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 ## Quick Start
 
-NB: if you have no bash shell interpreter on your host computer, look at the end of this document for alternative instructions
+NB: if you don't have a bash shell interpreter on your host computer, look at the end of this document for alternative instructions
 
 ### Installation
 
@@ -52,12 +51,10 @@ NB: if you have no bash shell interpreter on your host computer, look at the end
 
 *NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help.
 
-*NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
-the file  docker/containers.env.local _before_ running the `build` command, and add in there correct values for
-the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
-
 *NB*: the containers by default expose a web application on ports 80 and 443. If any of those ports are in use on
-the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMPOSE_WEB_LISTEN_PORT_HTTPS in file .env
+the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMPOSE_WEB_LISTEN_PORT_HTTPS in file
+docker/.env
+
 
 ### Usage
 
@@ -109,12 +106,16 @@ Last but not least, you have access to other command-line tools which can be use
 
 ### Troubleshooting
 
-After starting the containers via `docker-compose up -d`, you can:
+After starting the containers via `./bin/stack.sh build`, you can:
 
-- check if they are all running: `docker-compose ps`
-- check if they all bootstrapped correctly: `docker-compose logs`
-- check if one container bootstrapped correctly, eg: `docker-compose logs db3v4l_postgresql_9_4`
+- check if they are all running: `./bin/stack.sh ps`
+- check if they all bootstrapped correctly: `./bin/stack.sh logs`
+- check if a specific container bootstrapped correctly, eg: `./bin/stack.sh logs postgresql_9_4`
 - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
+
+*NB*: if the `stack.sh` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.
+See the section 'Alternative commands to stack.sh' below for examples.
+
 
 ### Maintenance
 
@@ -128,6 +129,10 @@ See the [FAQ](./doc/FAQ.md) for more details
 
 ## Alternative commands to stack.sh
 
+The `stack.sh` command requires a working bash shell interpreter as well as a few, common unix command-line tools.
+In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `stack.sh` fails
+you can run alternative commands, as detailed here:
+
     ./bin/stack.sh build => cd docker && touch containers.env.local && docker-compose build
     ./bin/stack.sh start => cd docker && docker-compose up -d
     ./bin/stack.sh shell => docker exec -ti db3v4l_worker su - db3v4l
@@ -136,6 +141,10 @@ See the [FAQ](./doc/FAQ.md) for more details
     ./bin/stack.sh dbconsole ... =>
         docker exec -ti db3v4l_worker su - db3v4l
         php bin/dbconsole ...
+
+*NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
+the file  docker/containers.env.local _before_ running the `build` command above, and add in there correct values for
+the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
 
 
 ## Thanks
