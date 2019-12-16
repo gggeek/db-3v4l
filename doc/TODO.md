@@ -85,6 +85,9 @@
   + add data dump capabilities
   + add schema dump capabilities
 
+- ms sql server: 'cuXX' should be treated as point release for other databases - there is no 'minor version' for it.
+  Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
+
 - build:
   + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it

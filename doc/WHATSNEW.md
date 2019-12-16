@@ -43,6 +43,8 @@ Version 0.8 (unreleased)
 
 - Improved: the application is now tested on Travis. Tests are still quite basic and do not cover all functionality
 
+- Changed: moved MS SQL Server 2017 version from cu17 to cu18
+
 
 Version 0.7.1
 -------------
