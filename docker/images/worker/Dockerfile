@@ -140,7 +140,8 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ buster main" > /etc/apt/sources.list.d/yarn.list
+# note: there is no yarn package attged with 'buster' release, only 'stable'...
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
 RUN apt-get -y install yarn
 

@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/mssql/server:2017-CU18-ubuntu
+# For available tags: see https://hub.docker.com/_/microsoft-mssql-server
+FROM mcr.microsoft.com/mssql/server:2017-CU18-ubuntu-16.04
 MAINTAINER gggeek
 LABEL mssqlserver.version=2017.cu18
 
