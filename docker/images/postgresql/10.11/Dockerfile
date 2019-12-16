@@ -1,5 +1,4 @@
 FROM postgres:10.11
-MAINTAINER gggeek
 LABEL postgresql.version=10.11
 
 ARG timezone=none

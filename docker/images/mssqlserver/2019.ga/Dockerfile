@@ -1,6 +1,5 @@
 # For available tags: see https://hub.docker.com/_/microsoft-mssql-server
 FROM mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
-MAINTAINER gggeek
 LABEL mssqlserver.version=2019.ga
 
 USER root

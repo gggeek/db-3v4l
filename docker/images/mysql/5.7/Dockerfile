@@ -1,5 +1,4 @@
 FROM mysql:5.7
-MAINTAINER gggeek
 LABEL mysql.version=5.7
 
 ARG timezone=none

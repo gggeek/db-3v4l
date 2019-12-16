@@ -1,5 +1,4 @@
 FROM mariadb:10.0
-MAINTAINER gggeek
 LABEL mysql.version=10.0
 
 ARG timezone=none

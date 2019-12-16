@@ -1,5 +1,4 @@
 FROM debian:buster-slim
-MAINTAINER gggeek
 
 ARG debian_mirror=none
 ARG timezone=none

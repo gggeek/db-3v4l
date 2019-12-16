@@ -1,5 +1,4 @@
 FROM postgres:9.4
-MAINTAINER gggeek
 LABEL postgresql.version=9.4
 
 ARG timezone=none
