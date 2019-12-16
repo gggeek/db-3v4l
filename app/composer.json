@@ -68,7 +68,7 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "yarn -v >/dev/null 2>/dev/null && yarn install || echo please install yarn": "script",
-            "yarn -v >/dev/null 2>/dev/null && ENCORE_ENV=$(grep -F APP_ENV .env.local | sed 's/APP_ENV=//') && yarn encore $ENCORE_ENV": "script"
+            "./bin/encore": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"

@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Determines the Webpack Encore command to run based on Symfony env
+ */
+
+use Symfony\Component\Console\Input\ArgvInput;
+
+if (false === in_array(\PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+    echo 'Warning: Encore should be invoked via the CLI version of PHP, not the '.\PHP_SAPI.' SAPI'.\PHP_EOL;
+}
+
+set_time_limit(0);
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+$input = new ArgvInput();
+if (null !== $env = $input->getParameterOption(['--env', '-e'], null, true)) {
+    putenv('APP_ENV='.$_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = $env);
+}
+
+require dirname(__DIR__).'/config/bootstrap.php';
+
+switch($_SERVER['APP_ENV']) {
+    case 'dev':
+    case 'test':
+        $command = 'yarn encore dev';
+        break;
+    default:
+        $command = 'yarn encore production';
+}
+
+/// @todo should we check that yarn is installed ? Note: passthru already splits correctly stderr and stdout
+
+passthru($command, $retcode);
+
+exit($retcode);
