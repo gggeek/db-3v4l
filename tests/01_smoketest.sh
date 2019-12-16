@@ -10,20 +10,20 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # Build the stack
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...
-# @todo enable parallel builds for docker-compose >= 1.23.0 ?
+# @todo enable parallel builds for docker-compose >= 1.23.0
 ./bin/stack.sh -n build
 
 ./bin/stack.sh setup
 
 # Stack status
 
-# @todo enable this for docker-compose >= 1.23.0
+# @todo enable this for docker-compose >= 1.12.0
 #./bin/stack.sh images
 
 # @todo check that all images are up and running by parsing the output of this
 ./bin/stack.sh ps
 
-# @todo enable this for docker-compose >= 1.23.0
+# @todo enable this for docker-compose >= 1.11.0
 #./bin/stack.sh top
 
 ./bin/stack.sh logs

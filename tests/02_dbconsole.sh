@@ -9,26 +9,26 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/stack.sh start
 
-# DBConsole commands
+# DBConsole commands (in increasing order of complexity / code usage)
 
 ./bin/stack.sh dbconsole
 
-# The collation list is huge. Let's not pollute test logs...
-./bin/stack.sh dbconsole collation:list >/dev/null
+./bin/stack.sh dbconsole instance:list
 
 ./bin/stack.sh dbconsole database:list
 
-./bin/stack.sh dbconsole instance:list
-
 ./bin/stack.sh dbconsole user:list
+
+# The collation:list output is huge. Let's not pollute test logs...
+./bin/stack.sh dbconsole collation:list >/dev/null
 
 ./bin/stack.sh dbconsole database:create --user=testuser --database=testdb
 
-# @todo run ./bin/stack.sh dbconsole database:list and check that we have 'testdb' listed the correct nr. of times
+# @todo run ./bin/stack.sh dbconsole database:list and check that we have 'testdb' listed the expected nr. of times
 
 ./bin/stack.sh dbconsole database:drop --user=testuser --database=testdb
 
-# Basic SELECT
+# Execution of a basic SELECT query
 
 ./bin/stack.sh dbconsole sql:execute --only-instances='mariadb_*' --sql='select current_date'
 
