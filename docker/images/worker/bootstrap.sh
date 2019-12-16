@@ -82,6 +82,7 @@ chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.loca
 if [ -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
     if [ ${CLEAR_CACHE} = true ]; then
         echo "[`date`] Setting up the application: clearing caches..."
+        # @todo if if APP_ENV changed, we should also regenerate assets
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear"
     fi
 else

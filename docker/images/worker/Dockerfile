@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-slim
 MAINTAINER gggeek
 
 ### NB: we strive to keep building admin and worker containers as close as possible, to save on disk space and build time
@@ -140,7 +140,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+RUN echo "deb https://dl.yarnpkg.com/debian/ buster main" > /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
 RUN apt-get -y install yarn
 

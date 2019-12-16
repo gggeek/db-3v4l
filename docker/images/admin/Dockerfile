@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-slim
 MAINTAINER gggeek
 
 ### NB: we strive to keep building admin and worker containers as close as possible, to save on disk space and build time
