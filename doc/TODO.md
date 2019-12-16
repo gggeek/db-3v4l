@@ -96,7 +96,7 @@
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + stack.sh: add 'upgrade' command
   + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
-  + remove more unused stuff from containers, such as man pages, fdisk?, etc...
+  + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
   + move cleanup scripts to stack.sh
