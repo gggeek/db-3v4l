@@ -17,7 +17,7 @@
 /docker/data/mariadb/10.2/*
 /docker/data/mariadb/10.3/*
 /docker/data/mariadb/10.4/*
-/docker/data/mssqlserver/2017.cu17/*
+/docker/data/mssqlserver/2017.cu18/*
 /docker/data/mssqlserver/2019.ga/*
 /docker/data/mysql/5.5/*
 /docker/data/mysql/5.6/*
@@ -37,7 +37,7 @@
 !/docker/data/mariadb/10.2/.gitkeep
 !/docker/data/mariadb/10.3/.gitkeep
 !/docker/data/mariadb/10.4/.gitkeep
-!/docker/data/mssqlserver/2017.cu17/.gitkeep
+!/docker/data/mssqlserver/2017.cu18/.gitkeep
 !/docker/data/mssqlserver/2019.ga/.gitkeep
 !/docker/data/mysql/5.5/.gitkeep
 !/docker/data/mysql/5.6/.gitkeep
@@ -61,7 +61,7 @@
 /docker/logs/mariadb/10.2/*
 /docker/logs/mariadb/10.3/*
 /docker/logs/mariadb/10.4/*
-/docker/logs/mssqlserver/2017.cu17/*
+/docker/logs/mssqlserver/2017.cu18/*
 /docker/logs/mssqlserver/2019.ga/*
 /docker/logs/mysql/5.5/*
 /docker/logs/mysql/5.6/*
@@ -84,7 +84,7 @@
 !/docker/logs/mariadb/10.2/.gitkeep
 !/docker/logs/mariadb/10.3/.gitkeep
 !/docker/logs/mariadb/10.4/.gitkeep
-!/docker/logs/mssqlserver/2017.cu17/.gitkeep
+!/docker/logs/mssqlserver/2017.cu18/.gitkeep
 !/docker/logs/mssqlserver/2019.ga/.gitkeep
 !/docker/logs/mysql/5.5/.gitkeep
 !/docker/logs/mysql/5.6/.gitkeep
