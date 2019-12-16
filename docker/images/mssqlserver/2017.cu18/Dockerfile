@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+FROM mcr.microsoft.com/mssql/server:2017-CU18-ubuntu
 MAINTAINER gggeek
-LABEL mssqlserver.version=2017.cu8
+LABEL mssqlserver.version=2017.cu18
 
 ARG timezone=none
 ARG do_update_os=true
