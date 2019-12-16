@@ -1,7 +1,5 @@
 ## Fixes
 
-- tests: execution of 'encore' fails because of missing environment (unless run duting bootstrap.sh)
-
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?
@@ -91,11 +89,12 @@
 - build:
   + while setting up symfony, have the web site show up a courtesy page
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
-  + also: when running `yarn encore` as part of composer post-upgrade scripts, transform 'test' sf env to 'dev' cmd
-  + also: run security-checker as part of composer post-install and post-upgrade?
+  + run security-checker as part of composer post-install and post-upgrade?
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
+  + stack.sh: check for ports conflict (80 and 443) on startup
   + stack.sh: add 'upgrade' command
-  + add portainer.io; opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
+  + add portainer.io
+  + add an opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
