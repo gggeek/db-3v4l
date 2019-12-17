@@ -29,7 +29,7 @@ class DatabaseSchemaManager
     }
 
     /**
-     * Returns the sql commands used to create a new db and accompanying user
+     * Returns the sql 'action' used to create a new db and accompanying user
      * @param string $userName used both for user and db if passed dbName is null. Max 16 chars for MySQL 5.5
      * @param string $password
      * @param string $dbName Max 63 chars for Postgres
@@ -90,7 +90,7 @@ class DatabaseSchemaManager
     }
 
     /**
-     * Returns the sql commands used to drop a db
+     * Returns the sql 'action' used to drop a db
      * @param string $userName
      * @param string $dbName
      * @return CommandAction
@@ -143,7 +143,7 @@ class DatabaseSchemaManager
     }
 
     /**
-     * List all available collations
+     * Returns the sql 'action' used to list all available collations
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
@@ -208,6 +208,7 @@ class DatabaseSchemaManager
     }
 
     /**
+     * Returns the sql 'action' used to list all available databases
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      * @todo for each database, retrieve the charset/collation
@@ -262,6 +263,7 @@ class DatabaseSchemaManager
     }
 
     /**
+     * Returns the sql 'action' used to list all existing db users
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
@@ -306,6 +308,10 @@ class DatabaseSchemaManager
         }
     }
 
+    /**
+     * Returns the sql 'action' used to retrieve the db instance version info
+     * @return Command
+     */
     public function getRetrieveVersionInfoSqlAction()
     {
         switch ($this->databaseConfiguration['vendor']) {

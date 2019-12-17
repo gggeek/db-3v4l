@@ -1,21 +1,20 @@
 ## Fixes
 
-- improve handling of character sets:
-  + should we we always create utf8 databases by default ? what about mssql 2017 ?
-  + make sure we always get back by default utf8 data from the clients ?
-
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
 
-- worker: some failures in (temp) db removal are not reported (eg on mysql, for non existing db)?
+- improve handling of character sets:
+  + should we we always create utf8 databases by default ? what about mssql 2017 ?
+  + make sure we always get back by default utf8 data from the clients ?
 
 
 ## Major features
 
-- worker+web: when listing instances, show the _real_ db version nr. (from a query, not config => Adminer does it via php
-  native functions, not sql code...)
-  mssql `select @@version` -- mysql `SHOW VARIABLES LIKE "%version%";` or `STATUS;` -- postgresql `SELECT version();` or `SHOW server_version;` -- `select sqlite_version();` or `PRAGMA user_version;` or `PRAGMA schema_version;`
+- test execution of a sql command which creates a table with a few cols (string, int, ...), inserts a couple of lines
+  (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
+
+- worker: when listing instances, show the _real_ db version nr. (from a query, not config)
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
@@ -23,6 +22,8 @@
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
+
+- web: when listing instances, show the _real_ db version nr.
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
@@ -78,12 +79,15 @@
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
   + add more support for 'universal' charset/collation naming
 
+- worker: some failures in (temp) db removal are not reported, some are (eg. on mysql, for non existing db).
+  make it more uniform ?
+
 - admin(er):
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
 
-- ms sql server: 'cuXX' should be treated as point release for other databases - there is no 'minor version' for it.
+- ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
 
 - build:
@@ -92,9 +96,9 @@
   + run security-checker as part of composer post-install and post-upgrade?
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + stack.sh: check for ports conflict (80 and 443) on startup
-  + stack.sh: add 'upgrade' command
-  + add portainer.io
-  + add an opcache control panel (reverse-proxying one from web)? (that and/or matthimatiker/opcache-bundle)
+  + stack.sh: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
+  + add portainer.io ?
+  + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
@@ -108,7 +112,6 @@
 
 - worker: improve cli scripts
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
-  + when listing users/instances/dbs, parse the output of sql clients and return arrays with data instead of texts
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
   + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
