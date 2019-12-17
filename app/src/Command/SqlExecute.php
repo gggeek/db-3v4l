@@ -114,10 +114,7 @@ class SqlExecute extends DatabaseManagingCommand
 
             $dbConnectionSpecs = [];
             foreach($instanceList as $instanceName => $instanceSpecs) {
-                $dbConnectionSpecs[$instanceName] = array_merge(
-                    //$this->dbManager->getConnectionSpecification($instanceName), $dbConfig
-                    $instanceSpecs, $dbConfig
-                );
+                $dbConnectionSpecs[$instanceName] = array_merge($instanceSpecs, $dbConfig);
             }
         }
 

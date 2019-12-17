@@ -187,8 +187,7 @@ abstract class SQLExecutingCommand extends BaseCommand
         } finally {
             // make sure that we clean up temp files, as they might contain sensitive data
             foreach($tempSQLFileNames as $tempSQLFileName) {
-                //unlink($tempSQLFileName);
-                echo "unlinking $tempSQLFileName...\n";
+                unlink($tempSQLFileName);
             }
         }
 
@@ -229,7 +228,7 @@ abstract class SQLExecutingCommand extends BaseCommand
         if ($this->outputFormat === 'text') {
             $this->writeln($results['succeeded'] . ' succeeded, ' . $results['failed'] . ' failed');
 
-            // since we use subprocesses, we can not measure max memory used
+            // since we use forked processes, we can not measure max memory used
             $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
         }
     }
