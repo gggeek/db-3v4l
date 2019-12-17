@@ -72,16 +72,16 @@ to a file and then execute it in parallel on all databases:
 
     ./bin/stack.sh dbconsole sql:execute --file=./shared/my_huge_script.sql
 
-*NB* to share files between the host computer and the container, put them in the `shared` folder.
+*NB*: to share files between the host computer and the container, put them in the `shared` folder.
 
-*NB* you can also execute different sql commands for each database type by saving them to separate files. The `sql:execute`
+*NB*: you can also execute different sql commands for each database type by saving them to separate files. The `sql:execute`
 command does replace some tokens in the values of the `--file` option. Eg:
 
     ./bin/stack.sh dbconsole sql:execute --file='./shared/test_{dbtype}.sql'
 
 will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
-*NB* by default a temporary database is created for each invocation of the `sql:execute` command, and disposed
+*NB*: by default a temporary database is created for each invocation of the `sql:execute` command, and disposed
 immediately afterwards. If you want to persist data in a more permanent way, to be able eg. to run multiple queries
 against the same data set, you have to follow a multiple-step process:
 
