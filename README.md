@@ -160,3 +160,6 @@ Many thanks to
 [![Latest version](https://img.shields.io/github/tag/gggeek/db-3v4l.svg?style=flat-square)](https://github.com/gggeek/db-3v4l/releases)
 [![License](https://img.shields.io/github/license/gggeek/db-3v4l.svg?style=flat-square)](LICENSE)
 ![Downloads](https://img.shields.io/github/downloads/gggeek/db-3v4l/total.svg?style=flat-square)
+
+[![Build Status](https://travis-ci.org/gggeek/db-3v4l.svg?branch=master)](https://travis-ci.org/gggeek/db-3v4l)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gggeek/db-3v4l/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/gggeek/db-3v4l/?branch=master)
