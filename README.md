@@ -58,29 +58,43 @@ docker/.env
 
 ### Usage
 
-Example: executing the sql snippet `select current_date` in parallel on all databases:
+Example: executing the sql statement `select current_date` in parallel on all databases:
 
     ./bin/stack.sh start
     ./bin/stack.sh dbconsole sql:execute --sql='select current_date'
     ./bin/stack.sh stop
 
-If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
+A slightly longer sql snippet:
+
+    ./bin/stack.sh dbconsole sql:execute --sql="create table persons(name varchar(255), age int); insert into persons values('significant other', 99); select name as person, age - 60 as conventional_age from persons;"
+
+If you have a bigger set of SQL statements to execute than it is practical to put in a command-line, you can save them
 to a file and then execute it in parallel on all databases:
 
     ./bin/stack.sh dbconsole sql:execute --file=./shared/my_huge_script.sql
 
 *NB* to share files between the host computer and the container, put them in the `shared` folder.
 
-*NB* you can also execute different sql commands based on database type by saving them to separate files. The `sql:execute`
+*NB* you can also execute different sql commands for each database type by saving them to separate files. The `sql:execute`
 command does replace some tokens in the values of the `--file` option. Eg:
 
     ./bin/stack.sh dbconsole sql:execute --file='./shared/test_{dbtype}.sql'
 
 will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
-You can also list all available database instances:
+*NB* by default a temporary database is created for each invocation of the `sql:execute` command, and disposed
+immediately afterwards. If you want to persist data in a more permanent way, to be able eg. to run multiple queries
+against the same data set, you have to follow a multiple-step process:
+
+- create a permanent database on each instance using the `database:create` dbconsole command
+- load the desired data into each database by using either the command line database client, or the Adminer web console
+- use the `--database`, `--user`, `--password` options when running `sql:execute`
+
+You can also list all available database instances and databases:
 
     ./bin/stack.sh dbconsole instance:list
+
+    ./bin/stack.sh dbconsole database:list
 
 As well as test connecting to them using the standard clients:
 
@@ -97,9 +111,9 @@ your browser is executing).
 
 Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-    ./vendor/bin/highlight-query
-    ./vendor/bin/lint-query
-    ./vendor/bin/tokenize-query
+    ./bin/stack.sh run ./app/vendor/bin/highlight-query 'and now'
+    ./bin/stack.sh run ./app/vendor/bin/lint-query 'for something'
+    ./bin/stack.sh run ./app/vendor/bin/tokenize-query 'completely different'
 
 
 ## Details
@@ -110,7 +124,7 @@ After starting the containers via `./bin/stack.sh build`, you can:
 
 - check if they are all running: `./bin/stack.sh ps`
 - check if they all bootstrapped correctly: `./bin/stack.sh logs`
-- check if a specific container bootstrapped correctly, eg: `./bin/stack.sh logs postgresql_9_4`
+- check if a specific container bootstrapped correctly, eg: `./bin/stack.sh logs worker`
 - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
 
 *NB*: if the `stack.sh` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.

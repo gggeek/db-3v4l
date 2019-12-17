@@ -5,8 +5,6 @@ namespace Db3v4l\Command;
 use Db3v4l\API\Interfaces\SqlAction\CommandAction;
 use Db3v4l\API\Interfaces\SqlAction\FileAction;
 use Db3v4l\Core\DatabaseSchemaManager;
-use Db3v4l\Core\SqlAction\Command;
-use Db3v4l\Core\SqlAction\File;
 use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Service\ProcessManager;
 use Db3v4l\Service\SqlExecutorFactory;

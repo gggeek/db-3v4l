@@ -276,6 +276,7 @@ case "${COMMAND}" in
     run)
         shift
         # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
+        # @todo should we try to start from the 'app' dir ?
         docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
         #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
     ;;
