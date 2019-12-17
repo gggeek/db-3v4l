@@ -5,9 +5,11 @@ Version 0.? (unreleased)
 
 - Improved: lots of refactoring under the hood, laying the groundwork for more functionality in the future
 
-- Improved: the `instance:list` command now returns database vendor and version for each defined db instance
+- Improved: the `instance:list` command now returns database vendor and version for each defined db instance.
+  NB: the database version is gotten from querying the databases themselves, rather than relying on configuration
+  (unlike the data shown in the web interface, which still relies on the values manually set in config files)
 
-- Improved: the `collation:list`, `database:list` and `user:list` command now returns a more structured output, which
+- Improved: the `collation:list`, `database:list` and `user:list` commands now return a more structured output, which
   is better for non-text output formats such as json
 
 

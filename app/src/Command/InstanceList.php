@@ -2,32 +2,22 @@
 
 namespace Db3v4l\Command;
 
+use Db3v4l\Core\DatabaseSchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Yaml\Yaml;
-use Db3v4l\Service\DatabaseConfigurationManager;
 
-class InstanceList extends BaseCommand
+class InstanceList extends SQLExecutingCommand
 {
     protected static $defaultName = 'db3v4l:instance:list';
-
-    /** @var DatabaseConfigurationManager $dbConfigurationManager */
-    protected $dbConfigurationManager;
-    protected $outputFormat;
-
-    public function __construct(DatabaseConfigurationManager $dbConfigurationManager)
-    {
-        $this->dbConfigurationManager = $dbConfigurationManager;
-
-        parent::__construct();
-    }
 
     protected function configure()
     {
         $this
             ->setDescription('Lists all configured database servers')
             ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
+            ->addCommonOptions()
         ;
     }
 
@@ -43,11 +33,16 @@ class InstanceList extends BaseCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $this->outputFormat = $input->getOption('output-type');
+        $instanceList = $this->parseCommonOptions($input);
 
-        $list = $this->dbConfigurationManager->listInstances();
+        $result = $this->listInstances($instanceList);
 
-        $result = $this->listInstances($list);
+        $extraResults = $this->listDatabasesVersion($instanceList)['data'];
+        foreach($result as $instanceName => $instanceDesc) {
+            if (isset($extraResults[$instanceName])) {
+                $result[$instanceName]['version'] = $extraResults[$instanceName];
+            }
+        }
 
         $this->writeResult($result);
 
@@ -56,20 +51,32 @@ class InstanceList extends BaseCommand
 
     /**
      * @todo allow to retrieve exact version number dynamically, see getRetrieveVersionInfoSqlAction
-     * @param string[] $instanceList
+     * @param string[][] $instanceList
      * @return string[][]
      */
     protected function listInstances($instanceList)
     {
         $out = [];
-        foreach($instanceList as $instanceName) {
-            $connectionSpec = $this->dbConfigurationManager->getInstanceConfiguration($instanceName);
+        foreach($instanceList as $instanceName => $connectionSpec) {
+            //$connectionSpec = $this->dbConfigurationManager->getInstanceConfiguration($instanceName);
             $out[$instanceName] = [
                 'vendor' => $connectionSpec['vendor'],
                 'version' => $connectionSpec['version']
             ];
         }
         return $out;
+    }
+
+    protected function listDatabasesVersion($instanceList)
+    {
+        return $this->executeSqlAction(
+            $instanceList,
+            'Getting database version information',
+            function ($schemaManager, $instanceName) {
+                /** @var DatabaseSchemaManager $schemaManager */
+                return $schemaManager->getRetrieveVersionInfoSqlAction();
+            }
+        );
     }
 
     protected function writeResult($result)

@@ -14,8 +14,6 @@
 - test execution of a sql command which creates a table with a few cols (string, int, ...), inserts a couple of lines
   (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
-- worker: when listing instances, show the _real_ db version nr. (from a query, not config)
-
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
 
@@ -63,6 +61,7 @@
 - db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/ibmcom/db2
   - https://hub.docker.com/r/cockroachdb/cockroach
+  - https://github.com/kripken/sql.js/
 
 - db: add clustered mysql/postgresql containers
 
@@ -96,9 +95,10 @@
   + run security-checker as part of composer post-install and post-upgrade?
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
   + stack.sh: check for ports conflict (80 and 443) on startup
+    + try to make the output of post-(update/install) composer scripts more visible by default
   + stack.sh: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
-  + add portainer.io ?
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
+  + add portainer.io ?
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
