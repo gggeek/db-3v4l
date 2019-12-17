@@ -82,7 +82,8 @@ abstract class SQLExecutingCommand extends BaseCommand
      * @param callable $getSqlActionCallable the method used to retrieve the desired SqlAction.
      *                                       It will be passed as arguments the SchemaManager and instance name, and should return a CommandAction or FileAction
      * @param callable $onForkedProcessOutput a callback invoked when forked processes produce output
-     * @return array
+     * @return array 'succeeded': int, 'failed': int, 'data': mixed[]
+     * @throws \Exception
      */
     protected function executeSqlAction($instanceList, $actionName, $getSqlActionCallable, $onForkedProcessOutput = null)
     {
@@ -101,17 +102,18 @@ abstract class SQLExecutingCommand extends BaseCommand
                 $sqlAction = call_user_func_array($getSqlActionCallable, [$schemaManager, $instanceName]);
 
                 if ($sqlAction instanceof CommandAction) {
-                    $fileName = null;
+                    $filename = null;
                     $sql = $sqlAction->getCommand();
-                } else {
-                    /// @todo test that we got a FileAction, and throw if not
-
-                    $fileName = $sqlAction->getFilename();
+                } else if ($sqlAction instanceof FileAction) {
+                    $filename = $sqlAction->getFilename();
                     $sql = null;
+                } else {
+                    // this is a coding error, not a sql execution error
+                    throw new \Exception("Unsupported action type: " . get_class($sqlAction));
                 }
                 $filterCallable = $sqlAction->getResultsFilterCallable();
 
-                if ($fileName === null && $sql === null) {
+                if ($filename === null && $sql === null) {
                     // no sql to execute as forked process - we run the 'filter' functions in a separate loop
                     $callables[$instanceName] = $filterCallable;
                 } else {
@@ -119,7 +121,7 @@ abstract class SQLExecutingCommand extends BaseCommand
 
                     $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
 
-                    if ($fileName === null) {
+                    if ($filename === null) {
                         if (!$sqlAction->isSingleStatement()) {
                             $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_') . '.sql';
                             file_put_contents($tempSQLFileName, $sql);
@@ -130,7 +132,7 @@ abstract class SQLExecutingCommand extends BaseCommand
                             $process = $executor->getExecuteStatementProcess($sql);
                         }
                     } else {
-                        $process = $executor->getExecuteFileProcess($fileName);
+                        $process = $executor->getExecuteFileProcess($filename);
                     }
 
                     if ($this->outputFormat === 'text') {

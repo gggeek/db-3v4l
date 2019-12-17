@@ -2,6 +2,7 @@
 
 namespace Db3v4l\API\Interfaces;
 
+/// @rename no need to have 'Executor' in this interface...
 interface TimedExecutor
 {
     /**

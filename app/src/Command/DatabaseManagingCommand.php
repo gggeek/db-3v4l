@@ -3,7 +3,6 @@
 namespace Db3v4l\Command;
 
 use Db3v4l\Core\DatabaseSchemaManager;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class DatabaseManagingCommand extends SQLExecutingCommand
 {

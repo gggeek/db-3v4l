@@ -6,18 +6,16 @@ use Db3v4l\API\Interfaces\SqlAction\FileAction;
 
 class File implements FileAction
 {
-    protected $fileName;
+    protected $filename;
     protected $callable;
-    protected $sqlToFile;
 
     /**
-     * @param string $fileName
+     * @param string $filename
      * @param callable|null $callable
-     * @param bool $sqlToFile
      */
-    public function __construct($fileName, $callable = null)
+    public function __construct($filename, $callable = null)
     {
-        $this->fileName = $fileName;
+        $this->filename = $filename;
         $this->callable = $callable;
     }
 
@@ -26,7 +24,7 @@ class File implements FileAction
      */
     public function getFilename()
     {
-        return $this->fileName;
+        return $this->filename;
     }
 
     /**

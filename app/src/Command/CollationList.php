@@ -19,10 +19,9 @@ class CollationList extends DatabaseManagingCommand
     }
 
     /**
-     * @todo allow to dump full configuration, not just db name
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -26,21 +26,21 @@ class DocController extends AbstractController
     /**
      * @Route("/view/{fileName}", name="doc_view")
      *
-     * @param string $fileName
+     * @param string $filename
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function displayFile($fileName)
+    public function displayFile($filename)
     {
         // sanitize
-        $fileName = basename($fileName);
+        $filename = basename($filename);
 
-        $fileName = $this->docRoot . '/' . $fileName;
+        $filename = $this->docRoot . '/' . $filename;
 
-        if (!is_file($fileName)) {
-            throw $this->createNotFoundException("The doc file '$fileName' does not exist");
+        if (!is_file($filename)) {
+            throw $this->createNotFoundException("The doc file '$filename' does not exist");
         }
 
         /// @todo allow different types of doc format
-        return $this->render('Doc/File/markdown.html.twig', ['file' => basename($fileName), 'markup' => file_get_contents($fileName)]);
+        return $this->render('Doc/File/markdown.html.twig', ['file' => basename($filename), 'markup' => file_get_contents($filename)]);
     }
 }

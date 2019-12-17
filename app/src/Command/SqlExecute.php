@@ -6,7 +6,6 @@ use Db3v4l\Core\DatabaseSchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Db3v4l\API\Interfaces\TimedExecutor;
 use Db3v4l\Util\Process;
 
 class SqlExecute extends DatabaseManagingCommand
@@ -32,7 +31,7 @@ class SqlExecute extends DatabaseManagingCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -149,100 +148,31 @@ class SqlExecute extends DatabaseManagingCommand
     /**
      * @param array $dbConnectionSpecs
      * @param string $sql
-     * @param string $fileName
+     * @param string $filename
      * @param string $format
      * @param int $maxParallel
      * @param int $timeout
      * @return array
-     *
-     * @todo check output in verbose and very-verbose mode and compare it to before refactoring
      */
-    protected function executeSQL(array $dbConnectionSpecs, $sql, $fileName = null)
+    protected function executeSQL(array $dbConnectionSpecs, $sql, $filename = null)
     {
         return $this->executeSqlAction(
             $dbConnectionSpecs,
             'Execution of SQL',
-            function ($schemaManager, $instanceName) use ($sql, $fileName) {
+            function ($schemaManager, $instanceName) use ($sql, $filename) {
                 /** @var DatabaseSchemaManager $schemaManager */
                 if ($sql != null) {
-                    return $schemaManager->getExecuteSqlCommandAction($sql);
+                    return $schemaManager->getExecuteCommandSqlAction($sql);
                 } else {
-                    $realFileName = $this->replaceDBSpecTokens($fileName, $instanceName, $schemaManager->getDatabaseConfiguration());
+                    $realFileName = $this->replaceDBSpecTokens($filename, $instanceName, $schemaManager->getDatabaseConfiguration());
                     if (!is_file($realFileName)) {
                         throw new \RuntimeException("Can not find sql file for execution: '$realFileName'");
                     }
-                    return $schemaManager->getExecuteSqlFileAction($realFileName);
+                    return $schemaManager->getExecuteFileSqlAction($realFileName);
                 }
             },
             array($this, 'onSubProcessOutput')
         );
-
-        /*if ($this->outputFormat === 'text') {
-            $this->writeln('<info>Preparing commands...</info>', OutputInterface::VERBOSITY_VERBOSE);
-        }
-
-        /** @var Process[] $processes * /
-        $processes = [];
-        $executors = [];
-        $filePattern = $file;
-        foreach ($dbConnectionSpecs as $instanceName => $dbConnectionSpec) {
-
-            $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
-
-            if ($sql != null) {
-                $process = $executor->getExecuteStatementProcess($sql);
-            } else {
-                $file = $this->replaceDBSpecTokens($filePattern, $instanceName, $dbConnectionSpec);
-                if (!is_file($file)) {
-                    throw new \RuntimeException("Can not find sql file for execution: '$file'");
-                }
-                $process = $executor->getExecuteFileProcess($file);
-            }
-
-            if ($this->outputFormat === 'text') {
-                $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
-            }
-
-            $process->setTimeout($timeout);
-
-            $executors[$instanceName] = $executor;
-            $processes[$instanceName] = $process;
-        }
-
-        if ($this->outputFormat === 'text') {
-            $this->writeln('<info>Starting parallel execution...</info>');
-        }
-
-        $this->processManager->runParallel($processes, $maxParallel, 100, array($this, 'onSubProcessOutput'));
-
-        $succeeded = 0;
-        $failed = 0;
-        $results = array();
-        foreach ($processes as $instanceName => $process) {
-            $results[$instanceName] = array(
-                'stdout' => rtrim($process->getOutput()),
-                'stderr' => trim($process->getErrorOutput()),
-                'exitcode' => $process->getExitCode()
-            );
-
-            if ($executors[$instanceName] instanceof TimedExecutor) {
-                $timingData = $executors[$instanceName]->getTimingData();
-                $results[$instanceName] = array_merge($results[$instanceName], $timingData);
-            }
-
-            if ($process->isSuccessful()) {
-                $succeeded++;
-            } else {
-                $this->writeErrorln("\n<error>Execution on database '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
-                $failed++;
-            }
-        }
-
-        return [
-            'succeeded' => $succeeded,
-            'failed' => $failed,
-            'data' => $results
-        ];*/
     }
 
     /**

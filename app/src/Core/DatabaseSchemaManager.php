@@ -28,24 +28,6 @@ class DatabaseSchemaManager
     }
 
     /**
-     * @param string $sql
-     * @return Command
-     */
-    public function getExecuteSqlCommandAction($sql)
-    {
-        return new Command($sql);
-    }
-
-    /**
-     * @param string $fileName
-     * @return File
-     */
-    public function getExecuteSqlFileAction($fileName)
-    {
-        return new File($fileName);
-    }
-
-    /**
      * Returns the sql commands used to create a new db and accompanying user
      * @param string $userName used both for user and db if passed dbName is null. Max 16 chars for MySQL 5.5
      * @param string $password
@@ -74,12 +56,12 @@ class DatabaseSchemaManager
                 return new Command([
                     /// @see https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility
                     // When using sqlcmd, we are told _not_ to use GO as query terminator.
-                    // Also, by default connections ar in autocommit mode...
+                    // Also, by default connections are in autocommit mode...
                     // And yet, we need a GO to commit the db creation...
                     "SET QUOTED_IDENTIFIER ON;",
                     "CREATE DATABASE \"$dbName\"" . ($collation !== null ? " COLLATE $collation" : '') . ';',
-                    "CREATE LOGIN \"$userName\" WITH PASSWORD = '$password', DEFAULT_DATABASE = \"$dbName\", CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF;" .
-                    "\nGO\n",
+                    "CREATE LOGIN \"$userName\" WITH PASSWORD = '$password', DEFAULT_DATABASE = \"$dbName\", CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF;" ,
+                    "GO",
                     "USE \"$dbName\";",
                     "CREATE USER \"$userName\" FOR LOGIN \"$userName\";",
                     "ALTER ROLE db_owner ADD MEMBER \"$userName\";"
@@ -97,9 +79,9 @@ class DatabaseSchemaManager
             case 'sqlite':
                 /// @todo this does not support creation of the new db with a different character encoding...
                 ///       see https://stackoverflow.com/questions/21348459/set-pragma-encoding-utf-16-for-main-database-in-sqlite
-                $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
+                $filename = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
                 return new Command(
-                    "ATTACH '$fileName' AS \"$dbName\";"
+                    "ATTACH '$filename' AS \"$dbName\";"
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
@@ -143,16 +125,90 @@ class DatabaseSchemaManager
                     "DROP USER IF EXISTS \"$userName\";"
                 ]);
             case 'sqlite':
-                $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
+                $filename = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
                 return new Command(
                     null,
-                    function() use($fileName, $dbName) {
-                        if (is_file($fileName)) {
-                            unlink($fileName);
+                    function() use($filename, $dbName) {
+                        if (is_file($filename)) {
+                            unlink($filename);
                         } else {
                             throw new \Exception("Can not drop database '$dbName': file not found");
                         }
                     }
+                );
+            default:
+                throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
+        }
+    }
+
+    /**
+     * @param string $sql
+     * @return Command
+     */
+    public function getExecuteCommandSqlAction($sql)
+    {
+        return new Command($sql);
+    }
+
+    /**
+     * @param string $filename
+     * @return File
+     */
+    public function getExecuteFileSqlAction($filename)
+    {
+        return new File($filename);
+    }
+
+    /**
+     * List all available collations
+     * @return CommandAction
+     * @throws OutOfBoundsException for unsupported database types
+     */
+    public function getListCollationsSqlAction()
+    {
+        switch ($this->databaseConfiguration['vendor']) {
+            case 'mariadb':
+            case 'mysql':
+                return new Command(
+                    'SHOW COLLATION;',
+                    function ($output) {
+                        $out = [];
+                        foreach(explode("\n", $output) as $line) {
+                            $out[] = explode("\t", $line, 2)[0];
+                        }
+                        $title = array_shift($out);
+                        sort($out);
+                        array_unshift($out, $title);
+                        return implode("\n", $out);
+                    }
+                );
+            //case 'oci':
+            case 'postgresql':
+                return new Command(
+                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname'
+                );
+            case 'sqlite':
+                return new Command(
+                    null,
+                    function () {
+                        return '';
+                    }
+                );
+            /*return [
+                // q: are these comparable to other databases ? we probably should instead list the values for https://www.sqlite.org/pragma.html#pragma_encoding
+                'PRAGMA collation_list;',
+                function ($output) {
+                    $out = [];
+                    foreach(explode("\n", $output) as $line) {
+                        $out[] = explode("|", $line, 2)[1];
+                    }
+                    sort($out);
+                    return implode("\n", $out);
+                }
+            ];*/
+            case 'mssql':
+                return new Command(
+                    'SELECT name AS Collation FROM fn_helpcollations();'
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
@@ -189,8 +245,8 @@ class DatabaseSchemaManager
                     null,
                     function() use ($fileGlob) {
                         $out = "Database";
-                        foreach (glob($fileGlob) as $fileName) {
-                            $out .= "\n" . basename($fileName);
+                        foreach (glob($fileGlob) as $filename) {
+                            $out .= "\n" . basename($filename);
                         }
                         return $out;
                     }
@@ -233,33 +289,18 @@ class DatabaseSchemaManager
         }
     }
 
-    /**
-     * List all available collations
-     * @return CommandAction
-     * @throws OutOfBoundsException for unsupported database types
-     */
-    public function getListCollationsSqlAction()
+    public function getRetrieveVersionInfoSqlAction()
     {
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
                 return new Command(
-                    'SHOW COLLATION;',
-                    function ($output) {
-                        $out = [];
-                        foreach(explode("\n", $output) as $line) {
-                            $out[] = explode("\t", $line, 2)[0];
-                        }
-                        $title = array_shift($out);
-                        sort($out);
-                        array_unshift($out, $title);
-                        return implode("\n", $out);
-                    }
+                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;'
                 );
             //case 'oci':
             case 'postgresql':
                 return new Command(
-                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname'
+                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;'
                 );
             case 'sqlite':
                 return new Command(
@@ -268,21 +309,9 @@ class DatabaseSchemaManager
                         return '';
                     }
                 );
-                /*return [
-                    // q: are these comparable to other databases ? we probably should instead list the values for https://www.sqlite.org/pragma.html#pragma_encoding
-                    'PRAGMA collation_list;',
-                    function ($output) {
-                        $out = [];
-                        foreach(explode("\n", $output) as $line) {
-                            $out[] = explode("|", $line, 2)[1];
-                        }
-                        sort($out);
-                        return implode("\n", $out);
-                    }
-                ];*/
             case 'mssql':
                 return new Command(
-                    'SELECT name AS Collation FROM fn_helpcollations();'
+                    "SELECT @@version"
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");

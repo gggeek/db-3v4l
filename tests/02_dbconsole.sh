@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# To be run from host, not from within the worker
+
 # Fail on any error
 set -ev
 
