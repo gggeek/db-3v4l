@@ -5,6 +5,8 @@ namespace Db3v4l\Command;
 use Db3v4l\API\Interfaces\SqlAction\CommandAction;
 use Db3v4l\API\Interfaces\SqlAction\FileAction;
 use Db3v4l\Core\DatabaseSchemaManager;
+use Db3v4l\Core\SqlAction\Command;
+use Db3v4l\Core\SqlAction\File;
 use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Service\ProcessManager;
 use Db3v4l\Service\SqlExecutorFactory;
@@ -16,8 +18,8 @@ use Symfony\Component\Yaml\Yaml;
 
 abstract class SQLExecutingCommand extends BaseCommand
 {
-    /** @var DatabaseConfigurationManager $dbManager */
-    protected $dbManager;
+    /** @var DatabaseConfigurationManager $dbConfigurationManager */
+    protected $dbConfigurationManager;
     /** @var SqlExecutorFactory $executorFactory */
     protected $executorFactory;
     protected $processManager;
@@ -31,11 +33,11 @@ abstract class SQLExecutingCommand extends BaseCommand
     protected $processTimeout;
 
     public function __construct(
-        DatabaseConfigurationManager $dbManager,
+        DatabaseConfigurationManager $dbConfigurationManager,
         SqlExecutorFactory $executorFactory,
         ProcessManager $processManager)
     {
-        $this->dbManager = $dbManager;
+        $this->dbConfigurationManager = $dbConfigurationManager;
         $this->executorFactory = $executorFactory;
         $this->processManager = $processManager;
 
@@ -71,8 +73,8 @@ abstract class SQLExecutingCommand extends BaseCommand
             Process::forceSigchildEnabled(true);
         }
 
-        return $this->dbManager->getConnectionsSpecifications(
-            $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'))
+        return $this->dbConfigurationManager->getInstancesConfiguration(
+            $this->dbConfigurationManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'))
         );
     }
 
@@ -91,6 +93,7 @@ abstract class SQLExecutingCommand extends BaseCommand
         $callables = [];
         $outputFilters = [];
         $tempSQLFileNames = [];
+        $executors = [];
 
         try {
 
@@ -120,6 +123,7 @@ abstract class SQLExecutingCommand extends BaseCommand
                     $outputFilters[$instanceName] = $filterCallable;
 
                     $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+                    $executors[$instanceName] = $executor;
 
                     if ($filename === null) {
                         if (!$sqlAction->isSingleStatement()) {
@@ -170,7 +174,7 @@ abstract class SQLExecutingCommand extends BaseCommand
                         $result = rtrim($process->getOutput());
                         if (isset($outputFilters[$instanceName])) {
                             try {
-                                $result = call_user_func_array($outputFilters[$instanceName], [$result]);
+                                $result = call_user_func_array($outputFilters[$instanceName], [$result, $executors[$instanceName]]);
                             } catch (\Throwable $t) {
                                 /// @todo shall we reset $result to null or not?
                                 //$result = null;

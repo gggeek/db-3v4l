@@ -148,8 +148,45 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
         );
     }
 
-    protected function getEnv()
+    /**
+     * Transforms a resultSet string, formatted as per the default way of the db client, into an array
+     * @todo tested on single-column SELECTs so far
+     * @param $string
+     * @return string[]
+     */
+    public function resultSetToArray($string)
     {
-        return array();
+        switch ($this->databaseConfiguration['vendor']) {
+            case 'mariadb':
+            case 'mysql':
+                $output = explode("\n", $string);
+                array_shift($output);
+                return $output;
+            //case 'oci':
+            case 'postgresql':
+                $output = explode("\n", $string);
+                array_shift($output);
+                array_shift($output); // '---'
+                array_pop($output); // '(N rows)'
+                foreach($output as &$line) {
+                    $line = trim($line);
+                }
+                return $output;
+            case 'sqlite':
+                $output = explode("\n", $string);
+                return $output;
+            case 'mssql':
+                $output = explode("\n", $string);
+                array_shift($output);
+                array_shift($output); // '---'
+                array_pop($output); // blank line
+                array_pop($output); // '(N rows affected)'
+                foreach($output as &$line) {
+                    $line = trim($line);
+                }
+                return $output;
+            default:
+                throw new \OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
+        }
     }
 }

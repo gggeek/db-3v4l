@@ -3,6 +3,13 @@ Version 0.? (unreleased)
 
 - Improved: `stack.sh start` and `stack.sh stop` can now start/stop a single container
 
+- Improved: lots of refactoring under the hood, laying the groundwork for more functionality in the future
+
+- Improved: the `instance:list` command now returns database vendor and version for each defined db instance
+
+- Improved: the `collation:list`, `database:list` and `user:list` command now returns a more structured output, which
+  is better for non-text output formats such as json
+
 
 Version 0.8
 -----------

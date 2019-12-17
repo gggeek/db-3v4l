@@ -8,14 +8,16 @@ use Db3v4l\Util\Process;
 /**
  * Executes sql queries via a symfony console command based on Doctrine
  */
-class PDO extends ForkedExecutor implements ForkedCommandExecutor
+class PDO extends ForkedExecutor implements CommandExecutor
 {
-    /**
-     * @param string|string[] $sql
-     * @return Process
-     */
     public function getExecuteStatementProcess($sql)
     {
         throw new \RuntimeException('TO BE IMPLEMENTED');
+    }
+
+    public function resultSetToArray($data)
+    {
+        /// @todo
+        throw new \Exception('Not implemented yet');
     }
 }

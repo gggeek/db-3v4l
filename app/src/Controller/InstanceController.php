@@ -18,7 +18,7 @@ class InstanceController extends AbstractController
     {
         $instances = [];
         foreach($configurationManager->listInstances() as $instanceName) {
-            $instances[$instanceName] = $configurationManager->getConnectionSpecification($instanceName);
+            $instances[$instanceName] = $configurationManager->getInstanceConfiguration($instanceName);
         }
         return $this->render('Instance/list.html.twig', ['instances' => $instances]);
     }

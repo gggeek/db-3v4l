@@ -3,8 +3,9 @@
 namespace Db3v4l\Core;
 
 use Db3v4l\API\Interfaces\SqlAction\CommandAction;
+use Db3v4l\API\Interfaces\SqlExecutor\Executor;
 use Db3v4l\Core\SqlAction\Command;
-use Db3v4l\Core\SqlAction\File;
+
 use OutOfBoundsException;
 
 /**
@@ -142,24 +143,6 @@ class DatabaseSchemaManager
     }
 
     /**
-     * @param string $sql
-     * @return Command
-     */
-    public function getExecuteCommandSqlAction($sql)
-    {
-        return new Command($sql);
-    }
-
-    /**
-     * @param string $filename
-     * @return File
-     */
-    public function getExecuteFileSqlAction($filename)
-    {
-        return new File($filename);
-    }
-
-    /**
      * List all available collations
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
@@ -171,7 +154,8 @@ class DatabaseSchemaManager
             case 'mysql':
                 return new Command(
                     'SHOW COLLATION;',
-                    function ($output) {
+                    function ($output, $executor) {
+                        /// @todo move the initial split string->array to the executor
                         $out = [];
                         foreach(explode("\n", $output) as $line) {
                             $out[] = explode("\t", $line, 2)[0];
@@ -185,19 +169,23 @@ class DatabaseSchemaManager
             //case 'oci':
             case 'postgresql':
                 return new Command(
-                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname'
+                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             case 'sqlite':
                 return new Command(
                     null,
                     function () {
-                        return '';
+                        return [];
                     }
                 );
             /*return [
                 // q: are these comparable to other databases ? we probably should instead list the values for https://www.sqlite.org/pragma.html#pragma_encoding
                 'PRAGMA collation_list;',
-                function ($output) {
+                function ($output, $executor) {
                     $out = [];
                     foreach(explode("\n", $output) as $line) {
                         $out[] = explode("|", $line, 2)[1];
@@ -208,7 +196,11 @@ class DatabaseSchemaManager
             ];*/
             case 'mssql':
                 return new Command(
-                    'SELECT name AS Collation FROM fn_helpcollations();'
+                    'SELECT name AS Collation FROM fn_helpcollations();',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
@@ -218,6 +210,7 @@ class DatabaseSchemaManager
     /**
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
+     * @todo for each database, retrieve the charset/collation
      */
     public function getListDatabasesSqlAction()
     {
@@ -226,27 +219,39 @@ class DatabaseSchemaManager
             case 'mysql':
                 return new Command(
                     /// @todo use 'SHOW DATABASES' for versions < 5
-                    "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;"
+                    "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             case 'mssql':
                 return new Command(
                     // the way we create it, the user account is contained in the db
                     // @todo add "WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')" ?
-                    "SELECT name AS 'Database' FROM sys.databases ORDER BY name;"
+                    "SELECT name AS 'Database' FROM sys.databases ORDER BY name;",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             //case 'oracle':
             case 'postgresql':
                 return new Command(
-                    'SELECT datname AS "Database" FROM pg_database ORDER BY datname;'
+                    'SELECT datname AS "Database" FROM pg_database ORDER BY datname;',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             case 'sqlite':
                 $fileGlob = dirname($this->databaseConfiguration['path']) . '/*.sqlite';
                 return new Command(
                     null,
                     function() use ($fileGlob) {
-                        $out = "Database";
+                        $out = [];
                         foreach (glob($fileGlob) as $filename) {
-                            $out .= "\n" . basename($filename);
+                            $out[] =  basename($filename);
                         }
                         return $out;
                     }
@@ -266,23 +271,35 @@ class DatabaseSchemaManager
             case 'mariadb':
             case 'mysql':
                 return new Command(
-                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;'
+                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             //case 'oci':
             case 'postgresql':
                 return new Command(
-                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;'
+                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             case 'sqlite':
                 return new Command(
                     null,
                     function () {
-                        return '';
+                        return [];
                     }
                 );
             case 'mssql':
                 return new Command(
-                    "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name"
+                    "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
@@ -295,23 +312,42 @@ class DatabaseSchemaManager
             case 'mariadb':
             case 'mysql':
                 return new Command(
-                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;'
+                    'SHOW VARIABLES LIKE "version";',
+                    function ($output, $executor) {
+                        /// @todo move the initial split string->array to the executor
+                        $output = explode("\n", $output);
+                        $line = $output[1];
+                        preg_match('/version\t+([^ ]+)/', $line, $matches);
+                        return $matches[1];
+                    }
                 );
             //case 'oci':
             case 'postgresql':
                 return new Command(
-                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;'
+                    'SHOW server_version;',
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output)[0];
+                    }
                 );
             case 'sqlite':
                 return new Command(
-                    null,
-                    function () {
-                        return '';
+                    "select sqlite_version();",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output)[0];
                     }
                 );
             case 'mssql':
                 return new Command(
-                    "SELECT @@version"
+                    "SELECT @@version",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        $output = $executor->resultSetToArray($output);
+                        $line = $output[0];
+                        preg_match('/Microsoft SQL Server +([^ ]+) +([^ ]+) +/', $line, $matches);
+                        return $matches[1] . ' ' . $matches[2];
+                    }
                 );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");

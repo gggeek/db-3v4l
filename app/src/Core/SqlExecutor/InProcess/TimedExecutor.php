@@ -52,6 +52,11 @@ class TimedExecutor implements TimedExecutorInterface, CommandExecutor, FileExec
         };
     }
 
+    public function resultSetToArray($data)
+    {
+        return $this->wrappedExecutor->resultSetToArray($data);
+    }
+
     public function getTimingData($onceIsEnough = true)
     {
         return $this->timingData;

@@ -23,7 +23,7 @@ interface CommandAction
     public function isSingleStatement();
 
     /**
-     * The returned function should accept a single parameter, of type string
+     * The returned function should accept two parameters: execution-result and executor
      * @return callable|null
      */
     public function getResultsFilterCallable();

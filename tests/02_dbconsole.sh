@@ -2,6 +2,8 @@
 
 # To be run from host, not from within the worker
 
+# @todo use a random name for the temporary created dbs, in case test is run many times and fails here end there
+
 # Fail on any error
 set -ev
 

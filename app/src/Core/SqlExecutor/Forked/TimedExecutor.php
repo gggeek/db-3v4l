@@ -47,6 +47,11 @@ class TimedExecutor implements CommandExecutor, FileExecutor, TimedExecutorInter
         return $process;
     }
 
+    public function resultSetToArray($data)
+    {
+        return $this->wrappedExecutor->resultSetToArray($data);
+    }
+
     public function getTimingData($onceIsEnough = true)
     {
         if (!is_file($this->timingFile)) {

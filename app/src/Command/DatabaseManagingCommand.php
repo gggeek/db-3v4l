@@ -9,7 +9,7 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
     /**
      * @param string[][] $instanceList
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': optional, if unspecified assumed same as user)
-     * @return array 'succeeded': int, 'failed': int, 'results': same format as dbManager::getConnectionSpecification
+     * @return array 'succeeded': int, 'failed': int, 'results': same format as dbConfigurationManager::getInstanceConfiguration
      */
     protected function createDatabases($instanceList, $dbSpecList)
     {

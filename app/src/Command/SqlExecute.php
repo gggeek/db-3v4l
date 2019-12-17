@@ -3,6 +3,8 @@
 namespace Db3v4l\Command;
 
 use Db3v4l\Core\DatabaseSchemaManager;
+use Db3v4l\Core\SqlAction\Command;
+use Db3v4l\Core\SqlAction\File;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -153,6 +155,7 @@ class SqlExecute extends DatabaseManagingCommand
      * @param int $maxParallel
      * @param int $timeout
      * @return array
+     * @throws \Exception
      */
     protected function executeSQL(array $dbConnectionSpecs, $sql, $filename = null)
     {
@@ -160,15 +163,15 @@ class SqlExecute extends DatabaseManagingCommand
             $dbConnectionSpecs,
             'Execution of SQL',
             function ($schemaManager, $instanceName) use ($sql, $filename) {
-                /** @var DatabaseSchemaManager $schemaManager */
                 if ($sql != null) {
-                    return $schemaManager->getExecuteCommandSqlAction($sql);
+                    return new Command($sql);
                 } else {
+                    /** @var DatabaseSchemaManager $schemaManager */
                     $realFileName = $this->replaceDBSpecTokens($filename, $instanceName, $schemaManager->getDatabaseConfiguration());
                     if (!is_file($realFileName)) {
                         throw new \RuntimeException("Can not find sql file for execution: '$realFileName'");
                     }
-                    return $schemaManager->getExecuteFileSqlAction($realFileName);
+                    return new File($realFileName);
                 }
             },
             array($this, 'onSubProcessOutput')

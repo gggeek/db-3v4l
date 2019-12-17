@@ -6,6 +6,9 @@ class DatabaseConfigurationManager
 {
     protected $instanceList = [];
 
+    /**
+     * @param string[][] $instanceList key: instance name, values: connection specification
+     */
     public function __construct(array $instanceList)
     {
         $this->instanceList = $instanceList;
@@ -31,7 +34,7 @@ class DatabaseConfigurationManager
      * @return string[]
      * @throws \OutOfBoundsException
      */
-    public function getConnectionSpecification($instanceName)
+    public function getInstanceConfiguration($instanceName)
     {
         if (isset($this->instanceList[$instanceName])) {
             return $this->instanceList[$instanceName];
@@ -45,12 +48,12 @@ class DatabaseConfigurationManager
      * @return string[][]
      * @throws \OutOfBoundsException
      */
-    public function getConnectionsSpecifications(array $instanceNames)
+    public function getInstancesConfiguration(array $instanceNames)
     {
         $instancesDefinitions = [];
         foreach($instanceNames as $instanceName)
         {
-            $instancesDefinitions[$instanceName] = $this->getConnectionSpecification($instanceName);
+            $instancesDefinitions[$instanceName] = $this->getInstanceConfiguration($instanceName);
         }
         return $instancesDefinitions;
     }

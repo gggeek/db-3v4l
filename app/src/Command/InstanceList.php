@@ -12,12 +12,13 @@ class InstanceList extends BaseCommand
 {
     protected static $defaultName = 'db3v4l:instance:list';
 
-    /** @var DatabaseConfigurationManager $dbManager */
-    protected $dbManager;
+    /** @var DatabaseConfigurationManager $dbConfigurationManager */
+    protected $dbConfigurationManager;
+    protected $outputFormat;
 
-    public function __construct(DatabaseConfigurationManager $dbManager)
+    public function __construct(DatabaseConfigurationManager $dbConfigurationManager)
     {
-        $this->dbManager = $dbManager;
+        $this->dbConfigurationManager = $dbConfigurationManager;
 
         parent::__construct();
     }
@@ -31,10 +32,10 @@ class InstanceList extends BaseCommand
     }
 
     /**
-     * @todo allow to dump full configuration, not just db name
+     * @todo allow to dump full configuration, not just db vendor + version
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -42,26 +43,54 @@ class InstanceList extends BaseCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $list = $this->dbManager->listInstances();
+        $this->outputFormat = $input->getOption('output-type');
 
-        $format = $input->getOption('output-type');
-        switch ($format) {
+        $list = $this->dbConfigurationManager->listInstances();
+
+        $result = $this->listInstances($list);
+
+        $this->writeResult($result);
+
+        return 0;
+    }
+
+    /**
+     * @todo allow to retrieve exact version number dynamically, see getRetrieveVersionInfoSqlAction
+     * @param string[] $instanceList
+     * @return string[][]
+     */
+    protected function listInstances($instanceList)
+    {
+        $out = [];
+        foreach($instanceList as $instanceName) {
+            $connectionSpec = $this->dbConfigurationManager->getInstanceConfiguration($instanceName);
+            $out[$instanceName] = [
+                'vendor' => $connectionSpec['vendor'],
+                'version' => $connectionSpec['version']
+            ];
+        }
+        return $out;
+    }
+
+    protected function writeResult($result)
+    {
+        switch ($this->outputFormat) {
             case 'json':
-                $result = json_encode($list, JSON_PRETTY_PRINT);
+                $data = json_encode($result, JSON_PRETTY_PRINT);
                 break;
             case 'php':
-                $result = var_export($list, true);
+                $data = var_export($result, true);
                 break;
             case 'text':
             case 'yml':
             case 'yaml':
-                $result = Yaml::dump($list);
+                $data = Yaml::dump($result);
                 break;
             default:
-                throw new \Exception("Unsupported output format: '$format'");
+                throw new \Exception("Unsupported output format: '{$this->outputFormat}'");
                 break;
         }
 
-        $output->writeln($result);
+        $this->writeln($data, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
     }
 }
