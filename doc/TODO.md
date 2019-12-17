@@ -22,7 +22,11 @@
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
-- worker+web?: allow custom init scripts for temp dbs (to load data and set session vars)
+- worker: add a php-based sql executor, so that we can return datasets in a fully structured way instead of relying
+  on stdout of cli tools
+  + investigate: are there good db-access libs written for nodejs that could be used instead/as well?
+
+- worker+web?: allow custom init/ddl scripts for temp dbs (to load data and set session vars)
 
 - pick up a library which allows to load db-agnostic schema defs and data (see what adminer can do...)
 
@@ -49,7 +53,7 @@
   - prevent usage of custom db schemas, allow only temp ones
   - rate-limit http requests
   - size-limit http requests
-  - add caching in nginx of static assets
+  - add caching in nginx of static assets (or add varnish for caching ?)
   - add firewall rules to the all containers to block access to outside world (at bootstrap ?)
   - make app code non-writeable by www-data user (and separate nginx user from php-fpm user)
   - harden php configuration
