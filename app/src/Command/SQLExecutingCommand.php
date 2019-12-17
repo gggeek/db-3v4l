@@ -104,7 +104,8 @@ abstract class SQLExecutingCommand extends BaseCommand
                     $fileName = null;
                     $sql = $sqlAction->getCommand();
                 } else {
-                    // FileAction
+                    /// @todo test that we got a FileAction, and throw if not
+
                     $fileName = $sqlAction->getFilename();
                     $sql = null;
                 }

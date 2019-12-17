@@ -19,16 +19,27 @@ class DatabaseSchemaManager
         $this->databaseConfiguration = $databaseConfiguration;
     }
 
+    /**
+     * @return string[]
+     */
     public function getDatabaseConfiguration()
     {
         return $this->databaseConfiguration;
     }
 
+    /**
+     * @param string $sql
+     * @return Command
+     */
     public function getExecuteSqlCommandAction($sql)
     {
         return new Command($sql);
     }
 
+    /**
+     * @param string $fileName
+     * @return File
+     */
     public function getExecuteSqlFileAction($fileName)
     {
         return new File($fileName);
@@ -225,6 +236,7 @@ class DatabaseSchemaManager
     /**
      * List all available collations
      * @return CommandAction
+     * @throws OutOfBoundsException for unsupported database types
      */
     public function getListCollationsSqlAction()
     {
@@ -278,11 +290,10 @@ class DatabaseSchemaManager
     }
 
     /**
-     * Transform ccollation name into a supported one
+     * Transform collation name into a supported one
      * @param null|string $charset so far only 'utf8' is supported...
      * @return null|string
-     * @throws OutOfBoundsException
-     * @todo implement
+     * @throws OutOfBoundsException for unsupported database types
      * @todo what shall we accept as valid input, ie. 'generic' charset names ? maybe do 2 passes: known-db-charset => generic => specific for each db ?
      *       see: https://www.iana.org/assignments/character-sets/character-sets.xhtml for IANA names
      */
