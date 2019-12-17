@@ -2,9 +2,18 @@
 
 namespace Db3v4l\Core\SqlExecutor\InProcess;
 
+use Db3v4l\API\Interfaces\SqlExecutor\InProcess\StatementExecutor;
 use Db3v4l\Core\SqlExecutor\BaseExecutor;
 
-class PDO extends BaseExecutor
+class PDO extends BaseExecutor implements StatementExecutor
 {
-
+    /**
+     * @param string $sql
+     * @return Callable
+     */
+    public function getExecuteCommandCallable($sql)
+    {
+        /// @todo
+        throw new \Exception('Not implemented yet');
+    }
 }

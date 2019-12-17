@@ -6,7 +6,7 @@ interface TimedExecutor
 {
     /**
      * Returns time/memory/cpu consumption of last execution
-     * @return array
+     * @return array keys: 'time', 'memory'
      */
     public function getTimingData();
 }

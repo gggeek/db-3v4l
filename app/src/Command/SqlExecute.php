@@ -2,6 +2,7 @@
 
 namespace Db3v4l\Command;
 
+use Db3v4l\Core\DatabaseSchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,16 +46,13 @@ class SqlExecute extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->parseCommonOptions($input);
+
         $sql = $input->getOption('sql');
         $file = $input->getOption('file');
         $dbName = $input->getOption('database');
         $userName = $input->getOption('user');
         $password = $input->getOption('password');
-        $timeout = $input->getOption('timeout');
-        $maxParallel = $input->getOption('max-parallel');
-        $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
-        $format = $input->getOption('output-type');
 
         if ($sql == null && $file == null) {
             throw new \Exception("Please provide an sql command or file to be executed");
@@ -70,17 +68,10 @@ class SqlExecute extends DatabaseManagingCommand
 
         $createDB = ($dbName == null);
 
-        // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
-        // We thus force it, but give end users an option to disable this
-        // For more details, see comment 12 at https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
-        if (!$dontForceSigchildEnabled) {
-            Process::forceSigchildEnabled(true);
-        }
-
         if ($createDB) {
             // create temp databases
 
-            if ($format === 'text') {
+            if ($this->outputFormat === 'text') {
                 $this->writeln('<info>Creating temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
             }
 
@@ -91,7 +82,7 @@ class SqlExecute extends DatabaseManagingCommand
             $dbName = null; // $userName will be used as db name
 
             $tempDbSpecs = [];
-            foreach($instanceList as $instanceName) {
+            foreach($instanceList as $instanceName => $instanceSpecs) {
                 $tempDbSpecs[$instanceName] = [
                     'user' => $userName,
                     'password' => $password,
@@ -105,13 +96,13 @@ class SqlExecute extends DatabaseManagingCommand
                 }
             }
 
-            $creationResults = $this->createDatabases($tempDbSpecs, $maxParallel, $timeout);
+            $creationResults = $this->createDatabases($instanceList, $tempDbSpecs);
             $dbConnectionSpecs = $creationResults['data'];
 
         } else {
             // use existing databases
 
-            if ($format === 'text') {
+            if ($this->outputFormat === 'text') {
                 $this->writeln('<info>Using existing databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
             }
 
@@ -122,24 +113,30 @@ class SqlExecute extends DatabaseManagingCommand
             ];
 
             $dbConnectionSpecs = [];
-            foreach($instanceList as $instanceName) {
+            foreach($instanceList as $instanceName => $instanceSpecs) {
                 $dbConnectionSpecs[$instanceName] = array_merge(
-                    $this->dbManager->getConnectionSpecification($instanceName), $dbConfig
+                    //$this->dbManager->getConnectionSpecification($instanceName), $dbConfig
+                    $instanceSpecs, $dbConfig
                 );
             }
         }
 
         if (count($dbConnectionSpecs)) {
-            $results = $this->executeSQL($dbConnectionSpecs, $sql, $file, $format, $maxParallel, $timeout);
+            $results = $this->executeSQL($dbConnectionSpecs, $sql, $file);
 
-            if ($format === 'text') {
+            if ($this->outputFormat === 'text') {
                 $this->writeln('<info>Dropping temporary databases...</info>', OutputInterface::VERBOSITY_VERBOSE);
             }
 
             if ($createDB) {
                 $results['failed'] += $creationResults['failed'];
 
-                $this->dropDatabases($dbConnectionSpecs, $maxParallel);
+                foreach($instanceList as $instanceName  => $instanceSpecs) {
+                    if (!isset($dbConnectionSpecs[$instanceName])) {
+                        unset($instanceList[$instanceName]);
+                    }
+                }
+                $this->dropDatabases($instanceList, $dbConnectionSpecs);
             }
         } else {
             $results = ['succeeded' => 0,  'failed' => 0, 'data' => null];
@@ -147,7 +144,7 @@ class SqlExecute extends DatabaseManagingCommand
 
         $time = microtime(true) - $start;
 
-        $this->writeResults($results, $time, $format);
+        $this->writeResults($results, $time);
 
         return (int)$results['failed'];
     }
@@ -155,19 +152,39 @@ class SqlExecute extends DatabaseManagingCommand
     /**
      * @param array $dbConnectionSpecs
      * @param string $sql
-     * @param string $file
+     * @param string $fileName
      * @param string $format
      * @param int $maxParallel
      * @param int $timeout
      * @return array
+     *
+     * @todo check output in verbose and very-verbose mode and compare it to before refactoring
      */
-    protected function executeSQL(array $dbConnectionSpecs, $sql, $file = null, $format = self::DEFAULT_OUTPUT_FORMAT, $maxParallel = self::DEFAULT_PARALLEL_PROCESSES, $timeout = self::DEFAULT_PROCESS_TIMEOUT)
+    protected function executeSQL(array $dbConnectionSpecs, $sql, $fileName = null)
     {
-        if ($format === 'text') {
+        return $this->executeSqlAction(
+            $dbConnectionSpecs,
+            'Execution of SQL',
+            function ($schemaManager, $instanceName) use ($sql, $fileName) {
+                /** @var DatabaseSchemaManager $schemaManager */
+                if ($sql != null) {
+                    return $schemaManager->getExecuteSqlCommandAction($sql);
+                } else {
+                    $realFileName = $this->replaceDBSpecTokens($fileName, $instanceName, $schemaManager->getDatabaseConfiguration());
+                    if (!is_file($realFileName)) {
+                        throw new \RuntimeException("Can not find sql file for execution: '$realFileName'");
+                    }
+                    return $schemaManager->getExecuteSqlFileAction($realFileName);
+                }
+            },
+            array($this, 'onSubProcessOutput')
+        );
+
+        /*if ($this->outputFormat === 'text') {
             $this->writeln('<info>Preparing commands...</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
-        /** @var Process[] $processes */
+        /** @var Process[] $processes * /
         $processes = [];
         $executors = [];
         $filePattern = $file;
@@ -176,7 +193,7 @@ class SqlExecute extends DatabaseManagingCommand
             $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec);
 
             if ($sql != null) {
-                $process = $executor->getExecuteCommandProcess($sql);
+                $process = $executor->getExecuteStatementProcess($sql);
             } else {
                 $file = $this->replaceDBSpecTokens($filePattern, $instanceName, $dbConnectionSpec);
                 if (!is_file($file)) {
@@ -185,7 +202,7 @@ class SqlExecute extends DatabaseManagingCommand
                 $process = $executor->getExecuteFileProcess($file);
             }
 
-            if ($format === 'text') {
+            if ($this->outputFormat === 'text') {
                 $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
             }
 
@@ -195,7 +212,7 @@ class SqlExecute extends DatabaseManagingCommand
             $processes[$instanceName] = $process;
         }
 
-        if ($format === 'text') {
+        if ($this->outputFormat === 'text') {
             $this->writeln('<info>Starting parallel execution...</info>');
         }
 
@@ -228,7 +245,7 @@ class SqlExecute extends DatabaseManagingCommand
             'succeeded' => $succeeded,
             'failed' => $failed,
             'data' => $results
-        ];
+        ];*/
     }
 
     /**

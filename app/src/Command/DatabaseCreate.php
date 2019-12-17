@@ -40,15 +40,11 @@ class DatabaseCreate extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->parseCommonOptions($input);
+
         $userName = $input->getOption('user');
         $password = $input->getOption('password');
         $dbName = $input->getOption('database');
-
-        $timeout = $input->getOption('timeout');
-        $maxParallel = $input->getOption('max-parallel');
-        $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
-        $format = $input->getOption('output-type');
 
         /// @todo some dbs are actually fine with this (eg. SQLite)
         if ($userName == null) {
@@ -63,19 +59,12 @@ class DatabaseCreate extends DatabaseManagingCommand
             //$this->writeErrorln("<info>Assigned password to the user: $password</info>");
         }
 
-        // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
-        // We thus force it, but give end users an option to disable this
-        // For more details, see comment 12 at https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
-        if (!$dontForceSigchildEnabled) {
-            Process::forceSigchildEnabled(true);
-        }
-
-        if ($format === 'text') {
+        if ($this->outputFormat === 'text') {
             $this->writeln('<info>Creating databases...</info>');
         }
 
         $newDbSpecs = [];
-        foreach($instanceList as $instanceName) {
+        foreach($instanceList as $instanceName => $instanceSpecs) {
             $newDbSpecs[$instanceName] = [
                 'user' => $userName,
                 'password' => $password,
@@ -89,11 +78,11 @@ class DatabaseCreate extends DatabaseManagingCommand
             }
         }
 
-        $results = $this->createDatabases($newDbSpecs, $maxParallel, $timeout, $format);
+        $results = $this->createDatabases($instanceList, $newDbSpecs);
 
         $time = microtime(true) - $start;
 
-        $this->writeResults($results, $time, $format);
+        $this->writeResults($results, $time);
 
         return (int)$results['failed'];
     }

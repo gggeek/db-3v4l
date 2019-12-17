@@ -2,26 +2,29 @@
 
 namespace Db3v4l\Core\SqlExecutor\Forked;
 
-use Db3v4l\API\Interfaces\ForkedCommandExecutor;
-use Db3v4l\API\Interfaces\ForkedFileExecutor;
+use Db3v4l\API\Interfaces\SqlExecutor\Forked\CommandExecutor;
+use Db3v4l\API\Interfaces\SqlExecutor\Forked\FileExecutor;
 use Db3v4l\API\Interfaces\TimedExecutor as TimedExecutorInterface;
 
-class TimedExecutor implements ForkedCommandExecutor, ForkedFileExecutor, TimedExecutorInterface
+class TimedExecutor implements CommandExecutor, FileExecutor, TimedExecutorInterface
 {
-    /** @var ForkedCommandExecutor */
+    /** @var CommandExecutor|FileExecutor */
     protected $wrappedExecutor;
     protected $timingFile;
 
     protected $timeCmd = '/usr/bin/time';
 
-    public function __construct(ForkedCommandExecutor $wrappedExecutor)
+    /**
+     * @param CommandExecutor|FileExecutor $wrappedExecutor
+     */
+    public function __construct($wrappedExecutor)
     {
         $this->wrappedExecutor = $wrappedExecutor;
     }
 
-    public function getExecuteCommandProcess($sql)
+    public function getExecuteStatementProcess($sql)
     {
-        $process = $this->wrappedExecutor->getExecuteCommandProcess($sql);
+        $process = $this->wrappedExecutor->getExecuteStatementProcess($sql);
 
         // wrap in a `time` call
         $this->timingFile = tempnam(sys_get_temp_dir(), 'db3v4l_');

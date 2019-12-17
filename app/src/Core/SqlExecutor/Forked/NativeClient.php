@@ -2,20 +2,20 @@
 
 namespace Db3v4l\Core\SqlExecutor\Forked;
 
-use Db3v4l\API\Interfaces\ForkedCommandExecutor;
-use Db3v4l\API\Interfaces\ForkedFileExecutor;
+use Db3v4l\API\Interfaces\SqlExecutor\Forked\CommandExecutor;
+use Db3v4l\API\Interfaces\SqlExecutor\Forked\FileExecutor;
 use Db3v4l\Util\Process;
 
 /**
  * @todo allow to inject path of db clients via setter/constructor
  */
-class NativeClient extends ForkedExecutor implements ForkedCommandExecutor, ForkedFileExecutor
+class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecutor
 {
     /**
      * @param string $sql
      * @return Process
      */
-    public function getExecuteCommandProcess($sql)
+    public function getExecuteStatementProcess($sql)
     {
         return $this->getProcess($sql);
     }

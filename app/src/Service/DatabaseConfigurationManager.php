@@ -39,4 +39,19 @@ class DatabaseConfigurationManager
 
         throw new \OutOfBoundsException("Unknown database instance '$instanceName'");
     }
+
+    /**
+     * @param string[] $instanceNames
+     * @return string[][]
+     * @throws \OutOfBoundsException
+     */
+    public function getConnectionsSpecifications(array $instanceNames)
+    {
+        $instancesDefinitions = [];
+        foreach($instanceNames as $instanceName)
+        {
+            $instancesDefinitions[$instanceName] = $this->getConnectionSpecification($instanceName);
+        }
+        return $instancesDefinitions;
+    }
 }

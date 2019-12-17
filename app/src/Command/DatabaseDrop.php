@@ -38,42 +38,34 @@ class DatabaseDrop extends DatabaseManagingCommand
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        $instanceList = $this->dbManager->listInstances($input->getOption('only-instances'), $input->getOption('except-instances'));
+        $instanceList = $this->parseCommonOptions($input);
+
         $userName = $input->getOption('user');
         $dbName = $input->getOption('database');
-
-        $timeout = $input->getOption('timeout');
-        $maxParallel = $input->getOption('max-parallel');
-        $dontForceSigchildEnabled = $input->getOption('dont-force-enabled-sigchild');
-        $format = $input->getOption('output-type');
 
         if ($userName == null) {
             throw new \Exception("Please provide a username");
         }
 
-        // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
-        // We thus force it, but give end users an option to disable this
-        // For more details, see comment 12 at https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
-        if (!$dontForceSigchildEnabled) {
-            Process::forceSigchildEnabled(true);
-        }
-
-        if ($format === 'text') {
+        if ($this->outputFormat === 'text') {
             $this->writeln('<info>Dropping databases...</info>');
         }
 
         $dbToDropSpecs = [];
-        foreach($instanceList as $instanceName) {
+        foreach($instanceList as $instanceName => $instanceSpecs) {
             $dbToDropSpecs[$instanceName] = [
                 'user' => $userName,
                 'dbname' => $dbName
             ];
         }
-        $results = $this->dropDatabases($dbToDropSpecs, $maxParallel, $timeout, $format);
+        $results = $this->dropDatabases($instanceList, $dbToDropSpecs);
+
+        // BC with versions < 0.8
+        $results['data'] = null;
 
         $time = microtime(true) - $start;
 
-        $this->writeResults($results, $time, $format);
+        $this->writeResults($results, $time);
 
         return (int)$results['failed'];
     }

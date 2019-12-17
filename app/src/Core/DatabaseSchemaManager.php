@@ -2,8 +2,14 @@
 
 namespace Db3v4l\Core;
 
-use \OutOfBoundsException;
+use Db3v4l\API\Interfaces\SqlAction\CommandAction;
+use Db3v4l\Core\SqlAction\Command;
+use Db3v4l\Core\SqlAction\File;
+use OutOfBoundsException;
 
+/**
+ * @see \Doctrine\DBAL\Platforms for more comprehensive abstractions of per-platform sql
+ */
 class DatabaseSchemaManager
 {
     protected $databaseConfiguration;
@@ -13,16 +19,31 @@ class DatabaseSchemaManager
         $this->databaseConfiguration = $databaseConfiguration;
     }
 
+    public function getDatabaseConfiguration()
+    {
+        return $this->databaseConfiguration;
+    }
+
+    public function getExecuteSqlCommandAction($sql)
+    {
+        return new Command($sql);
+    }
+
+    public function getExecuteSqlFileAction($fileName)
+    {
+        return new File($fileName);
+    }
+
     /**
      * Returns the sql commands used to create a new db and accompanying user
      * @param string $userName used both for user and db if passed dbName is null. Max 16 chars for MySQL 5.5
      * @param string $password
      * @param string $dbName Max 63 chars for Postgres
      * @param string $charset charset/collation name
-     * @return string
+     * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
-    public function getCreateDatabaseSQL($userName, $password, $dbName = null, $charset = null)
+    public function getCreateDatabaseSqlAction($userName, $password, $dbName = null, $charset = null)
     {
         if ($dbName === null) {
             $dbName = $userName;
@@ -33,39 +54,42 @@ class DatabaseSchemaManager
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
-                return
-                    "CREATE DATABASE `$dbName`" .
-                    ($collation !== null ? " CHARACTER SET $collation" : '') .
-                    "; CREATE USER '$userName'@'%' IDENTIFIED BY '$password'" .
-                    "; GRANT ALL PRIVILEGES ON `$dbName`.* TO '$userName'@'%';";
+                return new Command([
+                    "CREATE DATABASE `$dbName`" . ($collation !== null ? " CHARACTER SET $collation" : '') . ';',
+                    "CREATE USER '$userName'@'%' IDENTIFIED BY '$password';",
+                    "GRANT ALL PRIVILEGES ON `$dbName`.* TO '$userName'@'%';"
+                ]);
             case 'mssql':
-                return
+                return new Command([
                     /// @see https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility
                     // When using sqlcmd, we are told _not_ to use GO as query terminator.
                     // Also, by default connections ar in autocommit mode...
                     // And yet, we need a GO to commit the db creation...
-                    "SET QUOTED_IDENTIFIER ON; CREATE DATABASE \"$dbName\"" .
-                    ($collation !== null ? " COLLATE $collation" : '') .
-                    "; CREATE LOGIN \"$userName\" WITH PASSWORD = '$password', DEFAULT_DATABASE = \"$dbName\", CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF" .
-                    ";\nGO\n" .
-                    "USE \"$dbName\"" .
-                    "; CREATE USER \"$userName\" FOR LOGIN \"$userName\"" .
-                    ";  ALTER ROLE db_owner ADD MEMBER \"$userName\"";
+                    "SET QUOTED_IDENTIFIER ON;",
+                    "CREATE DATABASE \"$dbName\"" . ($collation !== null ? " COLLATE $collation" : '') . ';',
+                    "CREATE LOGIN \"$userName\" WITH PASSWORD = '$password', DEFAULT_DATABASE = \"$dbName\", CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF;" .
+                    "\nGO\n",
+                    "USE \"$dbName\";",
+                    "CREATE USER \"$userName\" FOR LOGIN \"$userName\";",
+                    "ALTER ROLE db_owner ADD MEMBER \"$userName\";"
+                ]);
             //case 'oracle':
             case 'postgresql':
-                return
-                    "CREATE DATABASE \"$dbName\"" .
+                return  new Command([
                     // q: do we need to add 'TEMPLATE template0' ?
                     //    see f.e. https://www.vertabelo.com/blog/collations-in-postgresql/
-                    ($collation !== null ? " ENCODING $collation" : '') .
-                        "; COMMIT; CREATE USER \"$userName\" WITH PASSWORD '$password'" .
-                        "; GRANT ALL ON DATABASE \"$dbName\" TO \"$userName\""; // q: should we avoid granting CREATE?
+                    "CREATE DATABASE \"$dbName\"" . ($collation !== null ? " ENCODING $collation" : '') . ';',
+                    "COMMIT;",
+                    "CREATE USER \"$userName\" WITH PASSWORD '$password'" . ';',
+                    "GRANT ALL ON DATABASE \"$dbName\" TO \"$userName\"" // q: should we avoid granting CREATE?
+                ]);
             case 'sqlite':
                 /// @todo this does not support creation of the new db with a different character encoding...
                 ///       see https://stackoverflow.com/questions/21348459/set-pragma-encoding-utf-16-for-main-database-in-sqlite
                 $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
-                return
-                    "ATTACH '$fileName' AS \"$dbName\";";
+                return new Command(
+                    "ATTACH '$fileName' AS \"$dbName\";"
+                );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
         }
@@ -75,10 +99,11 @@ class DatabaseSchemaManager
      * Returns the sql commands used to drop a db
      * @param string $userName
      * @param string $dbName
-     * @return string|Callable a function when the only way to drop a database is to do something more complex than a sql query
+     * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
+     * @todo currently some DBs report failures for non-existing user/db, some do not...
      */
-    public function getDropDatabaseQL($userName, $dbName = null)
+    public function getDropDatabaseSqlAction($userName, $dbName = null)
     {
         if ($dbName === null) {
             $dbName = $userName;
@@ -88,81 +113,110 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
-                return
-                    "DROP USER '$userName'@'%'; DROP DATABASE IF EXISTS `$dbName`;";
+                /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
+                return new Command([
+                    "DROP DATABASE IF EXISTS `$dbName`;",
+                    "DROP USER '$userName'@'%';"
+                ]);
             case 'mssql':
-                return
-                    "SET QUOTED_IDENTIFIER ON; DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\"; DROP LOGIN \"$userName\";";
+                return new Command([
+                    "SET QUOTED_IDENTIFIER ON;",
+                    "DROP DATABASE IF EXISTS \"$dbName\";",
+                    "DROP USER IF EXISTS \"$userName\";",
+                    "DROP LOGIN \"$userName\";"
+                ]);
             //case 'oracle':
             case 'postgresql':
-                return
-                    "DROP DATABASE IF EXISTS \"$dbName\"; DROP USER IF EXISTS \"$userName\";";
+                return new Command([
+                    "DROP DATABASE IF EXISTS \"$dbName\";",
+                    "DROP USER IF EXISTS \"$userName\";"
+                ]);
             case 'sqlite':
                 $fileName = dirname($this->databaseConfiguration['path']) . '/' . $dbName . '.sqlite';
-                return function() use($fileName) {
-                    unlink($fileName);
-                };
+                return new Command(
+                    null,
+                    function() use($fileName, $dbName) {
+                        if (is_file($fileName)) {
+                            unlink($fileName);
+                        } else {
+                            throw new \Exception("Can not drop database '$dbName': file not found");
+                        }
+                    }
+                );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
         }
     }
 
     /**
-     * @return string|Callable a function when the only way to list databases is to do something more complex than a sql query
+     * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
-    public function getListDatabasesSQL()
+    public function getListDatabasesSqlAction()
     {
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
-                return
+                return new Command(
                     /// @todo use 'SHOW DATABASES' for versions < 5
-                    "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;";
+                    "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;"
+                );
             case 'mssql':
-                return
+                return new Command(
                     // the way we create it, the user account is contained in the db
                     // @todo add "WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')" ?
-                    "SELECT name AS 'Database' FROM sys.databases ORDER BY name;";
+                    "SELECT name AS 'Database' FROM sys.databases ORDER BY name;"
+                );
             //case 'oracle':
             case 'postgresql':
-                return
-                    'SELECT datname AS "Database" FROM pg_database ORDER BY datname;';
+                return new Command(
+                    'SELECT datname AS "Database" FROM pg_database ORDER BY datname;'
+                );
             case 'sqlite':
                 $fileGlob = dirname($this->databaseConfiguration['path']) . '/*.sqlite';
-                return function() use ($fileGlob) {
-                    $out = "Database";
-                    foreach (glob($fileGlob) as $fileName) {
-                        $out .= "\n" . basename($fileName);
+                return new Command(
+                    null,
+                    function() use ($fileGlob) {
+                        $out = "Database";
+                        foreach (glob($fileGlob) as $fileName) {
+                            $out .= "\n" . basename($fileName);
+                        }
+                        return $out;
                     }
-                    return $out;
-                };
+                );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
         }
     }
 
     /**
-     * @return string|Callable when the only way to list users is to do something more complex than a sql query
+     * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
-    public function getListUsersSQL()
+    public function getListUsersSqlAction()
     {
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
-                return
-                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;';
+                return new Command(
+                    'SELECT DISTINCT User FROM mysql.user ORDER BY User;'
+                );
             //case 'oci':
             case 'postgresql':
-                return
-                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;';
+                return new Command(
+                    'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;'
+                );
             case 'sqlite':
-                return function () {
-                    return '';
-                };
+                return new Command(
+                    null,
+                    function () {
+                        return '';
+                    }
+                );
             case 'mssql':
-                return "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name";
+                return new Command(
+                    "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name"
+                );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
         }
@@ -170,16 +224,14 @@ class DatabaseSchemaManager
 
     /**
      * List all available collations
-     * @return \Closure|string|array string: plain sql to execute
-     *                               array: [string, \Closure] execute some sql and filter the results with a function
-     *                               \Closure: execute the closure
+     * @return CommandAction
      */
-    public function getListCollationsSQL()
+    public function getListCollationsSqlAction()
     {
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
-                return [
+                return new Command(
                     'SHOW COLLATION;',
                     function ($output) {
                         $out = [];
@@ -191,15 +243,19 @@ class DatabaseSchemaManager
                         array_unshift($out, $title);
                         return implode("\n", $out);
                     }
-                ];
+                );
             //case 'oci':
             case 'postgresql':
-                return
-                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname';
+                return new Command(
+                    'SELECT collname AS Collation FROM pg_collation ORDER BY collname'
+                );
             case 'sqlite':
-                return function () {
-                    return '';
-                };
+                return new Command(
+                    null,
+                    function () {
+                        return '';
+                    }
+                );
                 /*return [
                     // q: are these comparable to other databases ? we probably should instead list the values for https://www.sqlite.org/pragma.html#pragma_encoding
                     'PRAGMA collation_list;',
@@ -213,8 +269,9 @@ class DatabaseSchemaManager
                     }
                 ];*/
             case 'mssql':
-                return
-                    'SELECT name AS Collation FROM fn_helpcollations();';
+                return new Command(
+                    'SELECT name AS Collation FROM fn_helpcollations();'
+                );
             default:
                 throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
         }
