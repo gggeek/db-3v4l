@@ -1,3 +1,9 @@
+Version 0.? (unreleased)
+------------------------
+
+- Improved: `stack.sh start` and `stack.sh stop` can now start/stop a single container
+
+
 Version 0.8
 -----------
 
@@ -38,7 +44,7 @@ Version 0.8
 - Improved: `stack.sh` has a new `-p` option for building containers in parallel. The pre-existing option `-p` has been
   renamed to `-s`
 
-- Improved: `stack.sh` now waits for completion of app set up on build and start (for max 600 secs by default).
+- Improved: `stack.sh` now waits for completion of app set up on build and start (for max 300 seconds by default).
   A new `-w SECS` option has been added for using a custom waiting timeout
 
 - Improved: `stack.sh logs` now accepts an argument, which is the name of a docker service, to only show its logs.
