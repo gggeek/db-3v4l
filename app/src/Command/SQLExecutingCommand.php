@@ -83,11 +83,12 @@ abstract class SQLExecutingCommand extends BaseCommand
      * @param string $actionName used to build error messages
      * @param callable $getSqlActionCallable the method used to retrieve the desired SqlAction.
      *                                       It will be passed as arguments the SchemaManager and instance name, and should return a CommandAction or FileAction
+     * @param bool $timed whether to use a timed executor
      * @param callable $onForkedProcessOutput a callback invoked when forked processes produce output
      * @return array 'succeeded': int, 'failed': int, 'data': mixed[]
      * @throws \Exception
      */
-    protected function executeSqlAction($instanceList, $actionName, $getSqlActionCallable, $onForkedProcessOutput = null)
+    protected function executeSqlAction($instanceList, $actionName, $getSqlActionCallable, $timed = false, $onForkedProcessOutput = null)
     {
         $processes = [];
         $callables = [];
@@ -122,7 +123,7 @@ abstract class SQLExecutingCommand extends BaseCommand
                 } else {
                     $outputFilters[$instanceName] = $filterCallable;
 
-                    $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+                    $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', $timed);
                     $executors[$instanceName] = $executor;
 
                     if ($filename === null) {
@@ -171,20 +172,26 @@ abstract class SQLExecutingCommand extends BaseCommand
 
                 foreach ($processes as $instanceName => $process) {
                     if ($process->isSuccessful()) {
-                        $result = rtrim($process->getOutput());
+                        /// @todo is it necessary to have rtrim here ? shall we maybe move it to the executor ?
+                        $output = rtrim($process->getOutput());
                         if (isset($outputFilters[$instanceName])) {
                             try {
-                                $result = call_user_func_array($outputFilters[$instanceName], [$result, $executors[$instanceName]]);
+                                $output = call_user_func_array($outputFilters[$instanceName], [$output, $executors[$instanceName]]);
                             } catch (\Throwable $t) {
                                 /// @todo shall we reset $result to null or not?
                                 //$result = null;
                                 $failed++;
+                                $succeeded--;
                                 $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                             }
                         }
-                        $results[$instanceName] = $result;
+                        $results[$instanceName] = $output;
                         $succeeded++;
                     } else {
+                        $results[$instanceName] = [
+                            'stderr' => trim($process->getErrorOutput()),
+                            'exitcode' => $process->getExitCode()
+                        ];
                         $failed++;
                         $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                     }

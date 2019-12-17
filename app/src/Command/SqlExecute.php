@@ -5,6 +5,7 @@ namespace Db3v4l\Command;
 use Db3v4l\Core\DatabaseSchemaManager;
 use Db3v4l\Core\SqlAction\Command;
 use Db3v4l\Core\SqlAction\File;
+use Db3v4l\Core\SqlExecutor\Forked\TimedExecutor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -164,16 +165,29 @@ class SqlExecute extends DatabaseManagingCommand
             'Execution of SQL',
             function ($schemaManager, $instanceName) use ($sql, $filename) {
                 if ($sql != null) {
-                    return new Command($sql);
+                    return new Command(
+                        $sql,
+                        function ($output, $executor) {
+                            /** @var TimedExecutor $executor */
+                            return array_merge(['stdout' => $output], $executor->getTimingData());
+                        }
+                    );
                 } else {
                     /** @var DatabaseSchemaManager $schemaManager */
                     $realFileName = $this->replaceDBSpecTokens($filename, $instanceName, $schemaManager->getDatabaseConfiguration());
                     if (!is_file($realFileName)) {
                         throw new \RuntimeException("Can not find sql file for execution: '$realFileName'");
                     }
-                    return new File($realFileName);
+                    return new File(
+                        $realFileName,
+                        function ($output, $executor) {
+                            /** @var TimedExecutor $executor */
+                            return array_merge(['stdout' => $output], $executor->getTimingData());
+                        }
+                    );
                 }
             },
+            true,
             array($this, 'onSubProcessOutput')
         );
     }
