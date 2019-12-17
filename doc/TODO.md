@@ -11,9 +11,6 @@
 
 ## Major features
 
-- test execution of a sql command which creates a table with a few cols (string, int, ...), inserts a couple of lines
-  (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
-
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
 
@@ -68,6 +65,9 @@
 
 ## Improvements
 
+- use '-t' options for mysql client ?
+  + investigate the possibility of having the clients emitting directly json results instead of plaintext
+
 - improve travis testing:
   + add tests: ...
   + use 'bats' for shell-driven tests?
@@ -77,6 +77,8 @@
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
   + add more support for 'universal' charset/collation naming
+ + test execution of a sql command which creates a table with a few cols (string, int, ...), inserts a couple of lines
+   (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
 - worker: some failures in (temp) db removal are not reported, some are (eg. on mysql, for non existing db).
   make it more uniform ?

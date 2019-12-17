@@ -5,7 +5,7 @@ A platform dedicated to ease comparison of databases:
 
 a) allow testing compatibility of SQL snippets across many different databases and versions
 
-b) allow doing full-fledged performance testing, comparing results across many db versions
+b) allow doing full-fledged performance testing, comparing resource usage across many db versions
 
 
 *** Work In Progress ***
@@ -54,7 +54,6 @@ NB: if you don't have a bash shell interpreter on your host computer, look at th
 *NB*: the containers by default expose a web application on ports 80 and 443. If any of those ports are in use on
 the host computer, please change variables COMPOSE_WEB_LISTEN_PORT_HTTP and COMPOSE_WEB_LISTEN_PORT_HTTPS in file
 docker/.env
-
 
 ### Usage
 
@@ -130,15 +129,46 @@ After starting the containers via `./bin/stack.sh build`, you can:
 *NB*: if the `stack.sh` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.
 See the section 'Alternative commands to stack.sh' below for examples.
 
-
 ### Maintenance
 
 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
 
+### How does this work?
+
+The command-line tool `dbconsole`, as well as the web interface are built in php, using the Symfony framework.
+
+Docker is used to run the app:
+
+- each db instance runs in a dedicated container (except SQLite)
+- one container runs the web interface
+- one container runs the command-line tools which connect to the databases
+- one container runs Adminer, a separate, self-contained db administration app, also written in php
+
+Docker-compose is used to orchestrate the execution of the containers, ie. start, stop and connect them.
+
+The data files and logs of all the database instances are stored on the disk of the host computer, and mounted as
+volumes into the containers running the databases.
+
+All the interactions between `dbconsole` and the databases happen, at the moment, through execution of the native
+command-line database client (`psql`, `sqlcmd`, etc...). Those clients are executed in parallel as independent processes
+from the `dbconsole`.
+
+This design has the following advantages:
+
+- parallel execution of queries across all database instances to reduce the total execution time
+- it does not let the warts of php database-connectors influence the results of query execution
+- it can easily expand to run queries on multiple database types, even those not supported by php
+
+On the other hand it comes with some serious drawbacks as well, notably:
+
+- parsing the data sets which result from a SELECT query from the output of a command-line tool is an exercise in pointlessness
+
+More details about advanced use cases are given in the section below.
+
 
 ## FAQ
 
-See the [FAQ](./doc/FAQ.md) for more details
+See the separate [FAQ](./doc/FAQ.md) document.
 
 
 ## Alternative commands to stack.sh
