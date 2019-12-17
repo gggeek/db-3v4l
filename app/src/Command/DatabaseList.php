@@ -57,7 +57,7 @@ class DatabaseList extends SQLExecutingCommand
             'Listing of databases',
             function ($schemaManager, $instanceName) {
                 /** @var DatabaseSchemaManager $schemaManager */
-                return $schemaManager->getRetrieveVersionInfoSqlAction();
+                return $schemaManager->getListDatabasesSqlAction();
             }
         );
     }
