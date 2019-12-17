@@ -286,14 +286,16 @@ case "${COMMAND}" in
     ;;
 
     start)
-        docker-compose ${VERBOSITY} up -d
-        if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
-            wait_for_bootstrap
+        docker-compose ${VERBOSITY} up -d ${2}
+        if [ -z "${2}" -o "${2}" = "worker" ]; then
+            if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
+                wait_for_bootstrap
+            fi
         fi
     ;;
 
     stop)
-        docker-compose ${VERBOSITY} stop
+        docker-compose ${VERBOSITY} stop ${2}
     ;;
 
     top)
