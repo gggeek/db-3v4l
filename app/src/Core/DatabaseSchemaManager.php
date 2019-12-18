@@ -119,13 +119,13 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
-                /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
-                $statements = [];
-                /// @todo test: does dropping the db first have an impact on dropping the user ?
+                $statements = [
+                    "DROP DATABASE {$ifClause} `$dbName`;"
+                ];
                 if ($userName != '') {
+                    /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
                     $statements[] = "DROP USER '$userName'@'%';";
                 }
-                $statements[] = "DROP DATABASE {$ifClause} `$dbName`;";
                 return new Command($statements);
 
             case 'mssql':
@@ -259,6 +259,7 @@ class DatabaseSchemaManager
             case 'sqlite':
                 return new Command(
                     null,
+                    /// @todo list the supported utf16 variants as soon as allow using them
                     function () {
                         return [];
                     }
@@ -394,7 +395,8 @@ class DatabaseSchemaManager
                 return new Command(
                     null,
                     function () {
-                        return [];
+                        // since sqlite does not support users, null seems more appropriate than an empty array...
+                        return null;
                     }
                 );
 
@@ -419,8 +421,6 @@ class DatabaseSchemaManager
                         /** @var Executor $executor */
                         $line = $executor->resultSetToArray($output)[0];
                         $parts = explode('|', $line);
-                        //preg_match('/version +\| +([^ ]+)/', $line, $matches);
-                        //return $matches[1];
                         return trim($parts[1]);
                     }
                 );

@@ -4,7 +4,7 @@ Version ?? (unreleased)
 - New: added dbconsole command: `user:drop`
 
 - Improved: results of SELECT commands are now displayed using table formatting for MariaDB and MySQL databases
-  when running dbconsole command `sql:execute`
+  when running dbconsole command `sql:execute`. Also, results for PostgeSQL databases are more terse (no more footer)
 
 - Improved: the `database:drop` command reports failures more consistently when trying to drop non-existing databases
 

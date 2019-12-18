@@ -1,7 +1,5 @@
 ## Fixes
 
-- check: regression w. mysql (& others) auto drop of users ? does it happen if sql execution fails ?
-
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
@@ -75,9 +73,10 @@
   + test selecting a string with a | character in it =>
     + no client quotes it: to reliably parse columns we have to rely on tabular format, ie. measure header width...
     + sqllite in default output mode is even worse... (see below)
-  + test selecting string with length > 200 chars: ok
+  + try to have mssql use a smaller (but dynamic) col width for varchar results
   + investigate the possibility of having the clients emitting directly json results instead of plaintext
     + also: sqlite 3 has a more 'tabular' mode to display results, but it seems not to be able to calculate col. width automatically...
+  + test selecting string with length > 200 chars: ok
 
 - improve travis testing:
   + add tests:
@@ -104,6 +103,8 @@
 
 - build:
   + while setting up symfony, have the web site show up a courtesy page
+  + when there are no db data files, stack.sh should wait for the db instances to be fully ready...
+    (use docker native status monitoring to achieve this?)
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
   + run security-checker as part of composer post-install and post-upgrade?
   + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
@@ -122,15 +123,18 @@
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of stack.sh
+  + add ./bin/dbconsole as alternative to './bin/stack.sh dbconsole' ?
 
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands
+  + add a user:create command which takes as option the list of dbs to grant access to
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
     - sqlite might be problematic
   + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postgresql_9
   + log by default php errors to /var/log/php and mount that dir on host ?
+  + add shell completion for commands of dbconsole
 
 - worker: sanitize sql execution cmd:
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)

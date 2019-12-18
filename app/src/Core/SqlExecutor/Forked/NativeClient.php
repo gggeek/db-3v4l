@@ -71,7 +71,8 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     $connectString .= $this->databaseConfiguration['dbname'];
                 }
                 $options = [
-                    $connectString
+                    $connectString,
+                    '-Pfooter=off'
                 ];
                 // NB: this triggers a different behaviour that piping multiple commands to stdin, namely
                 // it wraps all of the commands in a transaction and allows either sql commands or a single meta-command
@@ -176,7 +177,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 $output = explode("\n", $string);
                 array_shift($output); // headers
                 array_shift($output); // '---'
-                array_pop($output); // '(N rows)'
+                //array_pop($output); // '(N rows)'
                 foreach($output as &$line) {
                     $line = trim($line);
                 }
