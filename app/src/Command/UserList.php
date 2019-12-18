@@ -50,6 +50,11 @@ class UserList extends DatabaseManagingCommand
         return (int)$results['failed'];
     }
 
+    /**
+     * @param string[][] $instanceList
+     * @return array
+     * @throws \Exception
+     */
     protected function listUsers($instanceList)
     {
         return $this->executeSqlAction(

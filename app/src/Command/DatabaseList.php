@@ -50,6 +50,11 @@ class DatabaseList extends SQLExecutingCommand
         return (int)$results['failed'];
     }
 
+    /**
+     * @param string[][] $instanceList
+     * @return array
+     * @throws \Exception
+     */
     protected function listDatabases($instanceList)
     {
         return $this->executeSqlAction(

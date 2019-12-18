@@ -67,16 +67,24 @@ class UserDrop extends DatabaseManagingCommand
         return (int)$results['failed'];
     }
 
-    protected function dropUsers($instanceList, $userToDropSpecs)
+    /**
+     * @param $instanceList
+     * @param $userToDropSpecs
+     * @param bool $ifExists
+     * @return array
+     * @throws \Exception
+     */
+    protected function dropUsers($instanceList, $userToDropSpecs, $ifExists = false)
     {
         return $this->executeSqlAction(
             $instanceList,
             'Dropping of user',
-            function ($schemaManager, $instanceName) use ($userToDropSpecs) {
+            function ($schemaManager, $instanceName) use ($userToDropSpecs, $ifExists) {
                 $dbConnectionSpec = $userToDropSpecs[$instanceName];
                 /** @var DatabaseSchemaManager $schemaManager */
                 return $schemaManager->getDropUserSqlAction(
-                    $dbConnectionSpec['user']
+                    $dbConnectionSpec['user'],
+                    $ifExists
                 );
             }
         );

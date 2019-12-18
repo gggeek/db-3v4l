@@ -22,7 +22,7 @@ class SqlExecute extends DatabaseManagingCommand
             ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
             ->addOption('file', null, InputOption::VALUE_REQUIRED, "A file with sql commands to execute. The tokens '{dbtype}' and '{instancename}' will be replaced with actual values")
 
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing the database to use. If omitted a dedicated temporary database will be created on the fly and disposed after use')
+            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing database to use. If omitted, a dedicated temporary database will be created on the fly and disposed after use')
             ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to use for connecting to the existing database. Temporary databases get created with a temp user and random password')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The user password')
             ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use, _only_ for the dedicated temporary database. If omitted, the default collation for the instance will be used')
@@ -64,6 +64,8 @@ class SqlExecute extends DatabaseManagingCommand
         }
 
         if (($dbName == null) xor ($userName == null)) {
+
+            /// @todo is it possible to let the user log in to the 'root' db, regardless of db type ?
 
             throw new \Exception("Please provide both a custom database name and associated user account");
         }
@@ -136,7 +138,7 @@ class SqlExecute extends DatabaseManagingCommand
                         unset($instanceList[$instanceName]);
                     }
                 }
-                $this->dropDatabases($instanceList, $dbConnectionSpecs);
+                $this->dropDatabases($instanceList, $dbConnectionSpecs, true);
             }
         } else {
             $results = ['succeeded' => 0,  'failed' => 0, 'data' => null];

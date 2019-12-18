@@ -16,7 +16,6 @@ class InstanceList extends SQLExecutingCommand
     {
         $this
             ->setDescription('Lists all configured database servers')
-            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', 'text')
             ->addCommonOptions()
         ;
     }

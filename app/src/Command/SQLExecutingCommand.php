@@ -45,12 +45,12 @@ abstract class SQLExecutingCommand extends BaseCommand
     protected function addCommonOptions()
     {
         $this
-            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', self::DEFAULT_OUTPUT_FORMAT)
-            ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for execution (secs)', self::DEFAULT_PROCESS_TIMEOUT)
-            ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of processes to run in parallel', self::DEFAULT_PARALLEL_PROCESSES)
-            ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate php process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
             ->addOption('only-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `instance:list`', null)
-            ->addOption('except-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against.', null)
+            ->addOption('except-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against', null)
+            ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', self::DEFAULT_OUTPUT_FORMAT)
+            ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for subprocess execution (secs)', self::DEFAULT_PROCESS_TIMEOUT)
+            ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of subprocesses to run in parallel', self::DEFAULT_PARALLEL_PROCESSES)
+            ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
         ;
     }
 
@@ -214,35 +214,43 @@ abstract class SQLExecutingCommand extends BaseCommand
     }
 
     /**
-     * @param array $results should contain elements: succeeded(int) failed(int), data(mixed)
-     * @param float $time execution time in seconds
-     * @throws \Exception for unsupported formats
+     * @param array $results
+     * @return string
+     * @throws \OutOfBoundsException for unsupported output formats
      */
-    protected function writeResults(array $results, $time)
+    protected function formatResults(array $results)
     {
         switch ($this->outputFormat) {
             case 'json':
-                $data = json_encode($results['data'], JSON_PRETTY_PRINT);
-                break;
+                return json_encode($results['data'], JSON_PRETTY_PRINT);
             case 'php':
-                $data = var_export($results['data'], true);
-                break;
+                return var_export($results['data'], true);
             case 'text':
             case 'yml':
             case 'yaml':
-                $data = Yaml::dump($results['data'], 2, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
-                break;
+                return Yaml::dump($results['data'], 2, 4, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
             default:
-                throw new \Exception("Unsupported output format: '{$this->outputFormat}'");
+                throw new \OutOfBoundsException("Unsupported output format: '{$this->outputFormat}'");
                 break;
         }
-        $this->writeln($data, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+    }
+
+    /**
+     * @param array $results should contain elements: succeeded(int) failed(int), data(mixed)
+     * @param float $time execution time in seconds
+     * @throws \Exception for unsupported formats
+     * @todo since we use could be using forked processes, we can not measure total memory used... is it worth measuring just ours?
+     */
+    protected function writeResults(array $results, $time = null)
+    {
+        $this->writeln($this->formatResults($results), OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
 
         if ($this->outputFormat === 'text') {
             $this->writeln($results['succeeded'] . ' succeeded, ' . $results['failed'] . ' failed');
 
-            // since we use forked processes, we can not measure max memory used
-            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+            if ($time !== null) {
+                $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+            }
         }
     }
 }

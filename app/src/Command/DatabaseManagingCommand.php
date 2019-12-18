@@ -10,6 +10,7 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
      * @param string[][] $instanceList
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, 'password': mandatory)
      * @return array 'succeeded': int, 'failed': int, 'results': same format as dbConfigurationManager::getInstanceConfiguration
+     * @throws \Exception
      */
     protected function createDatabases($instanceList, $dbSpecList)
     {
@@ -24,8 +25,8 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
                 /** @var DatabaseSchemaManager $schemaManager */
                 return $schemaManager->getCreateDatabaseSqlAction(
                     $dbConnectionSpec['dbname'],
-                    $dbConnectionSpec['user'],
-                    $dbConnectionSpec['password'],
+                    isset($dbConnectionSpec['user']) ? $dbConnectionSpec['user'] : null,
+                    isset($dbConnectionSpec['password']) ? $dbConnectionSpec['password'] : null,
                     (isset($dbConnectionSpec['charset']) && $dbConnectionSpec['charset'] != '') ? $dbConnectionSpec['charset'] : null
                 );
             }
@@ -34,14 +35,17 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
         $finalData = [];
         foreach($results['data'] as $instanceName => $data) {
             $dbConnectionSpec = $dbSpecList[$instanceName];
-            $finalData[$instanceName] = array_merge(
-                $instanceList[$instanceName],
-                [
-                    'user' => $dbConnectionSpec['user'],
-                    'password' => $dbConnectionSpec['password'],
-                    'dbname' => (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : $dbConnectionSpec['user']
-                ]
-            );
+            $finalData[$instanceName] = $instanceList[$instanceName];
+            $finalData[$instanceName]['dbname'] = $dbConnectionSpec['dbname'];
+            if (isset($dbConnectionSpec['user'])) {
+                $finalData[$instanceName]['user'] = $dbConnectionSpec['user'];
+            }
+            if (isset($dbConnectionSpec['password'])) {
+                $finalData[$instanceName]['password'] = $dbConnectionSpec['password'];
+            }
+            if (isset($dbConnectionSpec['charset'])) {
+                $finalData[$instanceName]['charset'] = $dbConnectionSpec['charset'];
+            }
         }
 
         $results['data'] = $finalData;
@@ -51,19 +55,22 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
     /**
      * @param string[][] $instanceList
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, if unspecified assumed same as user)
+     * @param bool $ifExists
      * @return array 'succeeded': int, 'failed': int, 'results': string[]
+     * @throws \Exception
      */
-    protected function dropDatabases($instanceList, $dbSpecList)
+    protected function dropDatabases($instanceList, $dbSpecList, $ifExists = false)
     {
         return $this->executeSqlAction(
             $instanceList,
             'Dropping of database & user',
-            function ($schemaManager, $instanceName) use ($dbSpecList) {
+            function ($schemaManager, $instanceName) use ($dbSpecList, $ifExists) {
                 $dbConnectionSpec = $dbSpecList[$instanceName];
                 /** @var DatabaseSchemaManager $schemaManager */
                 return $schemaManager->getDropDatabaseSqlAction(
                     $dbConnectionSpec['dbname'],
-                    $dbConnectionSpec['user']
+                    isset($dbConnectionSpec['user']) ? $dbConnectionSpec['user'] : null,
+                    $ifExists
                 );
             }
         );

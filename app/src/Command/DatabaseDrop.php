@@ -14,8 +14,8 @@ class DatabaseDrop extends DatabaseManagingCommand
     {
         $this
             ->setDescription('Drops a database & associated user in parallel on all configured database instances')
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to drop.')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to drop. If omitted, the database name will be used as user name')
+            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to drop')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of a user to drop. If omitted, no user will be dropped')
             ->addCommonOptions()
         ;
     }
@@ -42,6 +42,11 @@ class DatabaseDrop extends DatabaseManagingCommand
         $userName = $input->getOption('user');
         $dbName = $input->getOption('database');
 
+        // BC api
+        if ($dbName == null && $userName != null) {
+            $dbName = $userName;
+        }
+
         if ($dbName == null) {
             throw new \Exception("Please provide a database name");
         }
@@ -53,13 +58,16 @@ class DatabaseDrop extends DatabaseManagingCommand
         $dbToDropSpecs = [];
         foreach($instanceList as $instanceName => $instanceSpecs) {
             $dbToDropSpecs[$instanceName] = [
-                'user' => $userName,
                 'dbname' => $dbName
             ];
+            if ($userName != null) {
+                $dbToDropSpecs[$instanceName]['user'] = $userName;
+            }
         }
+
         $results = $this->dropDatabases($instanceList, $dbToDropSpecs);
 
-        // BC with versions < 0.8
+        // q: shall we print something more useful?
         $results['data'] = null;
 
         $time = microtime(true) - $start;

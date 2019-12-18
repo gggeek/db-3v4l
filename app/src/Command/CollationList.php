@@ -50,6 +50,11 @@ class CollationList extends DatabaseManagingCommand
         return (int)$results['failed'];
     }
 
+    /**
+     * @param string[][] $instanceList
+     * @return array
+     * @throws \Exception
+     */
     protected function listCollations($instanceList)
     {
         return $this->executeSqlAction(

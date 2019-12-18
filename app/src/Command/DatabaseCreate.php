@@ -15,8 +15,8 @@ class DatabaseCreate extends DatabaseManagingCommand
         $this
             ->setDescription('Creates a database & associated user in parallel on all configured database instances')
             ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to create')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to create. If omitted, the database name will be used as user name')
-            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed to stderr')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of a user to create with r/w access to the new database. If omitted, no user will be created')
+            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed as part of results')
             ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use for the database. If omitted, the default collation for the instance will be used')
             ->addCommonOptions()
         ;
@@ -41,24 +41,32 @@ class DatabaseCreate extends DatabaseManagingCommand
 
         $instanceList = $this->parseCommonOptions($input);
 
+        $dbName = $input->getOption('database');
         $userName = $input->getOption('user');
         $password = $input->getOption('password');
-        $dbName = $input->getOption('database');
+        $charset = $input->getOption('charset');
+
+        // BC api
+        if ($dbName == null && $userName != null) {
+            $dbName = $userName;
+        }
 
         if ($dbName == null) {
             throw new \Exception("Please provide a database name");
         }
 
         if ($userName == null) {
-            $userName = $dbName;
-        }
+            if ($password != null) {
+                throw new \Exception("Option 'password' is only valid together with option 'user'");
+            }
+        } else {
+            if ($password == null) {
+                $password = bin2hex(random_bytes(16));
 
-        if ($password == null) {
-            $password = bin2hex(random_bytes(16));
-
-            // Should we warn the user always? To avoid breaking non-text-format, we can send it to stderr...
-            // Otoh we give the password in the structured output that we produce
-            //$this->writeErrorln("<info>Assigned password to the user: $password</info>");
+                // Should we warn the user always? To avoid breaking non-text-format, we can send it to stderr...
+                // Otoh we give the password in the structured output that we produce
+                //$this->writeErrorln("<info>Assigned password to the user: $password</info>");
+            }
         }
 
         if ($this->outputFormat === 'text') {
@@ -68,14 +76,13 @@ class DatabaseCreate extends DatabaseManagingCommand
         $newDbSpecs = [];
         foreach($instanceList as $instanceName => $instanceSpecs) {
             $newDbSpecs[$instanceName] = [
-                'dbname' => $dbName,
-                'user' => $userName,
-                'password' => $password,
+                'dbname' => $dbName
             ];
-        }
-
-        if (($charset = $input->getOption('charset')) != '') {
-            foreach($instanceList as $instanceName) {
+            if ($userName != null) {
+                $newDbSpecs[$instanceName]['user'] = $userName;
+                $newDbSpecs[$instanceName]['password'] = $password;
+            }
+            if ($charset != '') {
                 $newDbSpecs[$instanceName]['charset'] = $charset;
             }
         }

@@ -37,8 +37,8 @@ abstract class BaseCommand extends Command
 
             // When verbosity is set to quiet, SF swallows the error message in the writeln call
             // (unlike for other verbosity levels, which are left for us to handle...)
-            // We resort to a hackish workaround to _always_ print errors to stdout, even in quiet mode.
-            // If the end user does not want any error echoed, he can just 2>/dev/null
+            // We resort to a hackish workaround to _always_ print errors to stderr, even in quiet mode.
+            // If the end user does not want any error echoed, she can just 2>/dev/null
             if ($this->errorOutput->getVerbosity() == OutputInterface::VERBOSITY_QUIET) {
                 $this->errorOutput->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
                 $this->errorOutput->writeln($message, $type);
