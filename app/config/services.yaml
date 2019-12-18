@@ -261,6 +261,12 @@ services:
         class: Db3v4l\Command\SqlExecute
         tags: ['dbconsole.command']
 
+    db3v4l.dbconsole.user_drop:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\UserDrop
+        tags: ['dbconsole.command']
+
     db3v4l.dbconsole.user_list:
         autoconfigure: false
         autowire: true

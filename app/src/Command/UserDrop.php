@@ -2,20 +2,20 @@
 
 namespace Db3v4l\Command;
 
+use Db3v4l\Core\DatabaseSchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DatabaseDrop extends DatabaseManagingCommand
+class UserDrop extends DatabaseManagingCommand
 {
-    protected static $defaultName = 'db3v4l:database:drop';
+    protected static $defaultName = 'db3v4l:user:drop';
 
     protected function configure()
     {
         $this
-            ->setDescription('Drops a database & associated user in parallel on all configured database instances')
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to drop.')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to drop. If omitted, the database name will be used as user name')
+            ->setDescription('Drops a database user in parallel on all configured database instances')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to drop')
             ->addCommonOptions()
         ;
     }
@@ -40,24 +40,22 @@ class DatabaseDrop extends DatabaseManagingCommand
         $instanceList = $this->parseCommonOptions($input);
 
         $userName = $input->getOption('user');
-        $dbName = $input->getOption('database');
 
-        if ($dbName == null) {
-            throw new \Exception("Please provide a database name");
+        if ($userName == null) {
+            throw new \Exception("Please provide a username");
         }
 
         if ($this->outputFormat === 'text') {
-            $this->writeln('<info>Dropping databases...</info>');
+            $this->writeln('<info>Dropping users...</info>');
         }
 
-        $dbToDropSpecs = [];
+        $userToDropSpecs = [];
         foreach($instanceList as $instanceName => $instanceSpecs) {
-            $dbToDropSpecs[$instanceName] = [
-                'user' => $userName,
-                'dbname' => $dbName
+            $userToDropSpecs[$instanceName] = [
+                'user' => $userName
             ];
         }
-        $results = $this->dropDatabases($instanceList, $dbToDropSpecs);
+        $results = $this->dropUsers($instanceList, $userToDropSpecs);
 
         // BC with versions < 0.8
         $results['data'] = null;
@@ -67,5 +65,20 @@ class DatabaseDrop extends DatabaseManagingCommand
         $this->writeResults($results, $time);
 
         return (int)$results['failed'];
+    }
+
+    protected function dropUsers($instanceList, $userToDropSpecs)
+    {
+        return $this->executeSqlAction(
+            $instanceList,
+            'Dropping of user',
+            function ($schemaManager, $instanceName) use ($userToDropSpecs) {
+                $dbConnectionSpec = $userToDropSpecs[$instanceName];
+                /** @var DatabaseSchemaManager $schemaManager */
+                return $schemaManager->getDropUserSqlAction(
+                    $dbConnectionSpec['user']
+                );
+            }
+        );
     }
 }

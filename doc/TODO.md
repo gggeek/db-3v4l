@@ -1,5 +1,9 @@
 ## Fixes
 
+- check if db:create does echo passwords to stderr instead of stdout
+
+- check: regression w. mysql auto drop of users ?
+
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
@@ -69,8 +73,9 @@
 
 ## Improvements
 
-- use '-t' options for mysql client ?
-  + investigate the possibility of having the clients emitting directly json results instead of plaintext
+- allow creating and dropping of a db without associated user
+
+- investigate the possibility of having the clients emitting directly json results instead of plaintext
 
 - improve travis testing:
   + add tests: ...

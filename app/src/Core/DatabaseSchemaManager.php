@@ -37,11 +37,11 @@ class DatabaseSchemaManager
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      */
-    public function getCreateDatabaseSqlAction($userName, $password, $dbName = null, $charset = null)
+    public function getCreateDatabaseSqlAction($dbName, $userName, $password, $charset = null)
     {
-        if ($dbName === null) {
-            $dbName = $userName;
-        }
+        //if ($dbName === null) {
+        //    $dbName = $userName;
+        //}
 
         $collation = $this->getCollationName($charset);
 
@@ -90,18 +90,18 @@ class DatabaseSchemaManager
     }
 
     /**
-     * Returns the sql 'action' used to drop a db
-     * @param string $userName
+     * Returns the sql 'action' used to drop a db and associated user account
      * @param string $dbName
+     * @param string $userName
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
      * @todo currently some DBs report failures for non-existing user/db, some do not...
      */
-    public function getDropDatabaseSqlAction($userName, $dbName = null)
+    public function getDropDatabaseSqlAction($dbName, $userName)
     {
-        if ($dbName === null) {
-            $dbName = $userName;
-        }
+        //if ($dbName === null) {
+        //    $dbName = $userName;
+        //}
 
         switch ($this->databaseConfiguration['vendor']) {
 
@@ -109,8 +109,9 @@ class DatabaseSchemaManager
             case 'mysql':
                 /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
                 return new Command([
-                    "DROP DATABASE IF EXISTS `$dbName`;",
-                    "DROP USER '$userName'@'%';"
+                    // NB: it seems that dropping the db first makes dopping of the user fail ?
+                    "DROP USER '$userName'@'%';",
+                    "DROP DATABASE IF EXISTS `$dbName`;"
                 ]);
             case 'mssql':
                 return new Command([
@@ -135,6 +136,43 @@ class DatabaseSchemaManager
                         } else {
                             throw new \Exception("Can not drop database '$dbName': file not found");
                         }
+                    }
+                );
+            default:
+                throw new OutOfBoundsException("Unsupported database type '{$this->databaseConfiguration['vendor']}'");
+        }
+    }
+
+    public function getDropUserSqlAction($userName)
+    {
+        //if ($dbName === null) {
+        //    $dbName = $userName;
+        //}
+
+        switch ($this->databaseConfiguration['vendor']) {
+
+            case 'mariadb':
+            case 'mysql':
+                /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
+                return new Command([
+                    "DROP USER '$userName'@'%';"
+                ]);
+            case 'mssql':
+                return new Command([
+                    "SET QUOTED_IDENTIFIER ON;",
+                    "DROP USER IF EXISTS \"$userName\";",
+                    "DROP LOGIN \"$userName\";"
+                ]);
+            //case 'oracle':
+            case 'postgresql':
+                return new Command([
+                    "DROP USER IF EXISTS \"$userName\";"
+                ]);
+            case 'sqlite':
+                return new Command(
+                    null,
+                    function() {
+                        /// @todo should we return something ?
                     }
                 );
             default:

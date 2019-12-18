@@ -215,6 +215,7 @@ abstract class SQLExecutingCommand extends BaseCommand
 
     /**
      * @param array $results should contain elements: succeeded(int) failed(int), data(mixed)
+     * @param float $time execution time in seconds
      * @throws \Exception for unsupported formats
      */
     protected function writeResults(array $results, $time)

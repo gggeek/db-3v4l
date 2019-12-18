@@ -8,7 +8,7 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
 {
     /**
      * @param string[][] $instanceList
-     * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': optional, if unspecified assumed same as user)
+     * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, 'password': mandatory)
      * @return array 'succeeded': int, 'failed': int, 'results': same format as dbConfigurationManager::getInstanceConfiguration
      */
     protected function createDatabases($instanceList, $dbSpecList)
@@ -23,9 +23,9 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
                 $dbConnectionSpec = $dbSpecList[$instanceName];
                 /** @var DatabaseSchemaManager $schemaManager */
                 return $schemaManager->getCreateDatabaseSqlAction(
+                    $dbConnectionSpec['dbname'],
                     $dbConnectionSpec['user'],
                     $dbConnectionSpec['password'],
-                    (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null,
                     (isset($dbConnectionSpec['charset']) && $dbConnectionSpec['charset'] != '') ? $dbConnectionSpec['charset'] : null
                 );
             }
@@ -50,20 +50,20 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
 
     /**
      * @param string[][] $instanceList
-     * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': optional, if unspecified assumed same as user)
+     * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, if unspecified assumed same as user)
      * @return array 'succeeded': int, 'failed': int, 'results': string[]
      */
     protected function dropDatabases($instanceList, $dbSpecList)
     {
         return $this->executeSqlAction(
             $instanceList,
-            'Dropping of new database & user',
+            'Dropping of database & user',
             function ($schemaManager, $instanceName) use ($dbSpecList) {
                 $dbConnectionSpec = $dbSpecList[$instanceName];
                 /** @var DatabaseSchemaManager $schemaManager */
                 return $schemaManager->getDropDatabaseSqlAction(
-                    $dbConnectionSpec['user'],
-                    (isset($dbConnectionSpec['dbname']) && $dbConnectionSpec['dbname'] != '') ? $dbConnectionSpec['dbname'] : null
+                    $dbConnectionSpec['dbname'],
+                    $dbConnectionSpec['user']
                 );
             }
         );

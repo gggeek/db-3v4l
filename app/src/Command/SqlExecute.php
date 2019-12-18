@@ -78,17 +78,18 @@ class SqlExecute extends DatabaseManagingCommand
             }
 
             /// @todo inject more randomness in the username, by allowing more chars than bin2hex produces
+
             $userName = 'db3v4l_' . substr(bin2hex(random_bytes(5)), 0, 9); // some mysql versions have a limitation of 16 chars for usernames
             $password = bin2hex(random_bytes(16));
             //$dbName = bin2hex(random_bytes(31));
-            $dbName = null; // $userName will be used as db name
+            $dbName = $userName; // $userName will be used as db name
 
             $tempDbSpecs = [];
             foreach($instanceList as $instanceName => $instanceSpecs) {
                 $tempDbSpecs[$instanceName] = [
+                    'dbname' => $dbName,
                     'user' => $userName,
-                    'password' => $password,
-                    'dbname' => $dbName
+                    'password' => $password
                 ];
             }
 

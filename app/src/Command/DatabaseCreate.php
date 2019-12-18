@@ -13,10 +13,10 @@ class DatabaseCreate extends DatabaseManagingCommand
     protected function configure()
     {
         $this
-            ->setDescription('Creates a user+database in parallel on all configured database instances')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to create')
+            ->setDescription('Creates a database & associated user in parallel on all configured database instances')
+            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to create')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to create. If omitted, the database name will be used as user name')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed to stderr')
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database. If omitted, the user name will be used as database name')
             ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use for the database. If omitted, the default collation for the instance will be used')
             ->addCommonOptions()
         ;
@@ -45,9 +45,12 @@ class DatabaseCreate extends DatabaseManagingCommand
         $password = $input->getOption('password');
         $dbName = $input->getOption('database');
 
-        /// @todo some dbs are actually fine with this (eg. SQLite)
+        if ($dbName == null) {
+            throw new \Exception("Please provide a database name");
+        }
+
         if ($userName == null) {
-            throw new \Exception("Please provide a username");
+            $userName = $dbName;
         }
 
         if ($password == null) {
@@ -65,9 +68,9 @@ class DatabaseCreate extends DatabaseManagingCommand
         $newDbSpecs = [];
         foreach($instanceList as $instanceName => $instanceSpecs) {
             $newDbSpecs[$instanceName] = [
+                'dbname' => $dbName,
                 'user' => $userName,
                 'password' => $password,
-                'dbname' => $dbName
             ];
         }
 
