@@ -1,3 +1,10 @@
+Version ?? (unreleased)
+-----------------------
+
+- Improved: results of SELECT commands are now displayed using table formatting for MariaDB and MySQL databases
+  when running dbconsole command `sql:execute`
+
+
 Version 0.9
 -----------
 

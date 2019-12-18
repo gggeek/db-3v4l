@@ -114,6 +114,11 @@ Last but not least, you have access to other command-line tools which can be use
     ./bin/stack.sh run ./app/vendor/bin/lint-query 'for something'
     ./bin/stack.sh run ./app/vendor/bin/tokenize-query 'completely different'
 
+Or you can just log in to the container where all the command-line tools are, and execute any command you like from there
+
+    ./bin/stack.sh shell
+        php bin/console --help
+
 
 ## Details
 

@@ -155,18 +155,17 @@ class DatabaseSchemaManager
                 return new Command(
                     'SHOW COLLATION;',
                     function ($output, $executor) {
-                        /// @todo move the initial split string->array to the executor
+                        /** @var Executor $executor */
+                        $lines = $executor->resultSetToArray($output);
                         $out = [];
-                        foreach(explode("\n", $output) as $line) {
-                            $out[] = explode("\t", $line, 2)[0];
+                        foreach($lines as $line) {
+                            $parts = explode("|", $line, 3);
+                            $out[] = trim($parts[0]) . ' (' . trim($parts[1]) .')';
                         }
-                        $title = array_shift($out);
-                        sort($out);
-                        array_unshift($out, $title);
-                        return implode("\n", $out);
+                        return $out;
                     }
                 );
-            //case 'oci':
+            //case 'oracle':
             case 'postgresql':
                 return new Command(
                     'SELECT collname AS Collation FROM pg_collation ORDER BY collname',
@@ -279,7 +278,7 @@ class DatabaseSchemaManager
                         return $executor->resultSetToArray($output);
                     }
                 );
-            //case 'oci':
+            //case 'oracle':
             case 'postgresql':
                 return new Command(
                     'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;',
@@ -320,14 +319,15 @@ class DatabaseSchemaManager
                 return new Command(
                     'SHOW VARIABLES LIKE "version";',
                     function ($output, $executor) {
-                        /// @todo move the initial split string->array to the executor
-                        $output = explode("\n", $output);
-                        $line = $output[1];
-                        preg_match('/version\t+([^ ]+)/', $line, $matches);
-                        return $matches[1];
+                        /** @var Executor $executor */
+                        $line = $executor->resultSetToArray($output)[0];
+                        $parts = explode('|', $line);
+                        //preg_match('/version +\| +([^ ]+)/', $line, $matches);
+                        //return $matches[1];
+                        return trim($parts[1]);
                     }
                 );
-            //case 'oci':
+            //case 'oracle':
             case 'postgresql':
                 return new Command(
                     'SHOW server_version;',
@@ -402,7 +402,7 @@ class DatabaseSchemaManager
                 }
                 break;
 
-            //case 'oci':
+            //case 'oracle':
             //    break;
 
             case 'postgresql':

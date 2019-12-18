@@ -50,6 +50,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     '--user=' . $this->databaseConfiguration['user'],
                     '-p' . $this->databaseConfiguration['password'],
                     '--binary-mode', // 'It also disables all mysql commands except charset and delimiter in non-interactive mode (for input piped to mysql or loaded using the source command)'
+                    '-t',
                 ];
                 if (isset($this->databaseConfiguration['dbname'])) {
                     $options[] = $this->databaseConfiguration['dbname'];
@@ -159,13 +160,21 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
+                // 'table format', triggered by using the -t option for the client
                 $output = explode("\n", $string);
-                array_shift($output);
+                array_shift($output); // '+--+'
+                array_shift($output); // headers
+                array_shift($output); // '+--+'
+                array_pop($output); // '+--+'
+                foreach($output as &$line) {
+                    $line = trim($line, '|');
+                    $line = trim($line);
+                }
                 return $output;
-            //case 'oci':
+            //case 'oracle':
             case 'postgresql':
                 $output = explode("\n", $string);
-                array_shift($output);
+                array_shift($output); // headers
                 array_shift($output); // '---'
                 array_pop($output); // '(N rows)'
                 foreach($output as &$line) {
