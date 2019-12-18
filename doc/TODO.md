@@ -1,8 +1,6 @@
 ## Fixes
 
-- check if db:create does echo passwords to stderr instead of stdout
-
-- check: regression w. mysql auto drop of users ?
+- check: regression w. mysql (& others) auto drop of users ? does it happen if sql execution fails ?
 
 - adminer:
   + can not connect to mariadb 5.5
@@ -22,7 +20,7 @@
 
 - worker+web: add a queued-task implementation, using sf messenger and a db
 
-- web: when listing instances, show the _real_ db version nr.
+- web: when listing instances, show the _real_ db version nr, as done by cli.
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
@@ -73,12 +71,19 @@
 
 ## Improvements
 
-- allow creating and dropping of a db without associated user
-
-- investigate the possibility of having the clients emitting directly json results instead of plaintext
+- improve handling of 'select' queries output
+  + test selecting a string with a | character in it =>
+    + no client quotes it: to reliably parse columns we have to rely on tabular format, ie. measure header width...
+    + sqllite in default output mode is even worse... (see below)
+  + test selecting string with length > 200 chars: ok
+  + investigate the possibility of having the clients emitting directly json results instead of plaintext
+    + also: sqlite 3 has a more 'tabular' mode to display results, but it seems not to be able to calculate col. width automatically...
 
 - improve travis testing:
-  + add tests: ...
+  + add tests:
+    + make sure after query execution there are no leftover users
+    + same but with an invalid query
+    + ...
   + use 'bats' for shell-driven tests?
   + check if there is anything that we can cache between test runs on travis to speed up the execution
   + add xdebug and enable code coverage while running tests
@@ -86,11 +91,8 @@
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
   + add more support for 'universal' charset/collation naming
- + test execution of a sql command which creates a table with a few cols (string, int, ...), inserts a couple of lines
-   (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
-
-- worker: some failures in (temp) db removal are not reported, some are (eg. on mysql, for non existing db).
-  make it more uniform ?
+  + test execution of a sql command which creates a table with a few cols, inserts a couple of lines
+    (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
 - admin(er):
   + add sql log file
@@ -122,10 +124,12 @@
   + add shell completion for commands of stack.sh
 
 - worker: improve cli scripts
+  + allow to drop many dbs, users in single commands
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
-  + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postrgesql_9
+    - sqlite might be problematic
+  + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postgresql_9
   + log by default php errors to /var/log/php and mount that dir on host ?
 
 - worker: sanitize sql execution cmd:
