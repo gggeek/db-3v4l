@@ -14,10 +14,10 @@ class DatabaseCreate extends DatabaseManagingCommand
     {
         $this
             ->setDescription('Creates a database & associated user in parallel on all configured database instances')
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to create')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of a user to create with r/w access to the new database. If omitted, no user will be created')
-            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed as part of results')
-            ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use for the database. If omitted, the default collation for the instance will be used')
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'The name of the database to create')
+            ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'The name of a user to create with r/w access to the new database. If omitted, no user will be created')
+            ->addOption('password', 'p', InputOption::VALUE_REQUIRED, 'The password. If omitted, a random one will be generated and echoed as part of results')
+            ->addOption('charset', 'c', InputOption::VALUE_REQUIRED, 'The collation/character-set to use for the database. If omitted, the default collation for the instance will be used')
             ->addCommonOptions()
         ;
     }

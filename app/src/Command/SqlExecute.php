@@ -19,13 +19,13 @@ class SqlExecute extends DatabaseManagingCommand
     {
         $this
             ->setDescription('Executes an SQL command in parallel on all configured database instances, by default in a dedicated temporary database/user')
-            ->addOption('sql', null, InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
+            ->addOption('sql', 's', InputOption::VALUE_REQUIRED, 'The sql command(s) string to execute')
             ->addOption('file', null, InputOption::VALUE_REQUIRED, "A file with sql commands to execute. The tokens '{dbtype}' and '{instancename}' will be replaced with actual values")
 
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing database to use. If omitted, a dedicated temporary database will be created on the fly and disposed after use')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to use for connecting to the existing database. Temporary databases get created with a temp user and random password')
-            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'The user password')
-            ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The collation/character-set to use, _only_ for the dedicated temporary database. If omitted, the default collation for the instance will be used')
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'The name of an existing database to use. If omitted, a dedicated temporary database will be created on the fly and disposed after use')
+            ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'The name of the user to use for connecting to the existing database. Temporary databases get created with a temp user and random password')
+            ->addOption('password', 'p', InputOption::VALUE_REQUIRED, 'The user password')
+            ->addOption('charset', 'c', InputOption::VALUE_REQUIRED, 'The collation/character-set to use, _only_ for the dedicated temporary database. If omitted, the default collation for the instance will be used')
 
             ->addCommonOptions()
         ;

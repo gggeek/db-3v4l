@@ -14,8 +14,8 @@ class DatabaseDrop extends DatabaseManagingCommand
     {
         $this
             ->setDescription('Drops a database & associated user in parallel on all configured database instances')
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of the database to drop')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of a user to drop. If omitted, no user will be dropped')
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'The name of the database to drop')
+            ->addOption('user', 'c', InputOption::VALUE_REQUIRED, 'The name of a user to drop. If omitted, no user will be dropped')
             ->addCommonOptions()
         ;
     }

@@ -25,11 +25,14 @@ abstract class SQLExecutingCommand extends BaseCommand
     const DEFAULT_OUTPUT_FORMAT = 'text';
     const DEFAULT_PARALLEL_PROCESSES = 16;
     const DEFAULT_PROCESS_TIMEOUT = 600;
+    const DEFAULT_EXECUTOR_TYPE = 'NativeClient';
 
     protected $outputFormat;
     protected $outputFile;
     protected $maxParallelProcesses;
     protected $processTimeout;
+    protected $executionStrategy;
+    protected $executeInProcess;
 
     public function __construct(
         DatabaseConfigurationManager $dbConfigurationManager,
@@ -46,13 +49,15 @@ abstract class SQLExecutingCommand extends BaseCommand
     protected function addCommonOptions()
     {
         $this
-            ->addOption('only-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `instance:list`', null)
-            ->addOption('except-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against', null)
+            ->addOption('only-instances', 'o', InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `instance:list`', null)
+            ->addOption('except-instances', 'x', InputOption::VALUE_REQUIRED|InputOption::VALUE_IS_ARRAY, 'Filter the database servers to run this command against', null)
             ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', self::DEFAULT_OUTPUT_FORMAT)
             ->addOption('output-file', null, InputOption::VALUE_REQUIRED, 'Save output to a file instead of writing it to stdout. NB: take care that dbconsole runs in a container, which has a different view of the filesystem. A good dir for output is ./shared')
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for subprocess execution (secs)', self::DEFAULT_PROCESS_TIMEOUT)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of subprocesses to run in parallel', self::DEFAULT_PARALLEL_PROCESSES)
             ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
+            ->addOption('execution-strategy', null, InputOption::VALUE_REQUIRED, "EXPERIMENTAL. Internal usage", self::DEFAULT_EXECUTOR_TYPE)
+            ->addOption('execute-in-process', null, InputOption::VALUE_NONE, "EXPERIMENTAL. Internal usage")
         ;
     }
 
@@ -66,6 +71,8 @@ abstract class SQLExecutingCommand extends BaseCommand
         $this->outputFile = $input->getOption('output-file');
         $this->processTimeout = $input->getOption('timeout');
         $this->maxParallelProcesses = $input->getOption('max-parallel');
+        $this->executionStrategy = $input->getOption('execution-strategy');
+        $this->executeInProcess = $input->getOption('execute-in-process');
 
         // On Debian, which we use by default, SF has troubles understanding that php was compiled with --enable-sigchild
         // We thus force it, but give end users an option to disable this
@@ -124,32 +131,41 @@ abstract class SQLExecutingCommand extends BaseCommand
                 } else {
                     $outputFilters[$instanceName] = $filterCallable;
 
-                    $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', $timed);
-                    $executors[$instanceName] = $executor;
+                    if ($filename === null && !$sqlAction->isSingleStatement()) {
+                        $filename = tempnam(sys_get_temp_dir(), 'db3v4l_') . '.sql';
+                        file_put_contents($filename, $sql);
+                        $tempSQLFileNames[] = $filename;
+                    }
 
-                    if ($filename === null) {
-                        if (!$sqlAction->isSingleStatement()) {
-                            $tempSQLFileName = tempnam(sys_get_temp_dir(), 'db3v4l_') . '.sql';
-                            file_put_contents($tempSQLFileName, $sql);
-                            $tempSQLFileNames[] = $tempSQLFileName;
-
-                            $process = $executor->getExecuteFileProcess($tempSQLFileName);
+                    if ($this->executeInProcess) {
+                        $executor = $this->executorFactory->createInProcessExecutor($dbConnectionSpec, $this->executionStrategy, $timed);
+                        if ($filename === null) {
+                            $callables[$instanceName] = $executor->getExecuteCommandCallable($sql);
                         } else {
-                            $process = $executor->getExecuteStatementProcess($sql);
+                            $callables[$instanceName] = $executor->getExecuteFileCallable($filename);
                         }
                     } else {
-                        $process = $executor->getExecuteFileProcess($filename);
+                        $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, $this->executionStrategy, $timed);
+                        $executors[$instanceName] = $executor;
+
+                        if ($filename === null) {
+                            $process = $executor->getExecuteStatementProcess($sql);
+                        } else {
+                            $process = $executor->getExecuteFileProcess($filename);
+                        }
+
+                        if ($this->outputFormat === 'text') {
+                            $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
+                        }
+
+                        $process->setTimeout($this->processTimeout);
+
+                        $processes[$instanceName] = $process;
                     }
-
-                    if ($this->outputFormat === 'text') {
-                        $this->writeln('Command line: ' . $process->getCommandLine(), OutputInterface::VERBOSITY_VERY_VERBOSE);
-                    }
-
-                    $process->setTimeout($this->processTimeout);
-
-                    $processes[$instanceName] = $process;
                 }
             }
+
+            /// @todo refactor the filtering loop so that filters can be applied as well to inProcess executors
 
             $succeeded = 0;
             $failed = 0;
@@ -252,7 +268,6 @@ abstract class SQLExecutingCommand extends BaseCommand
         } else {
             $this->writeln($formattedResults, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
         }
-
 
         if ($this->outputFormat === 'text' || $this->outputFile != null) {
             $this->writeln($results['succeeded'] . ' succeeded, ' . $results['failed'] . ' failed');

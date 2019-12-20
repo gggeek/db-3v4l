@@ -36,7 +36,7 @@ class SqlExecutorFactory
                 $executor = new ForkedPDO($databaseConnectionConfiguration);
                 break;
             default:
-                throw new \OutOfBoundsException("Unsupported executor strategy '$executionStrategy'");
+                throw new \OutOfBoundsException("Unsupported execution strategy '$executionStrategy'");
         }
 
         if ($timed) {
@@ -63,7 +63,7 @@ class SqlExecutorFactory
                 $executor = new InProcessPDO($databaseConnectionConfiguration);
                 break;
             default:
-                throw new \OutOfBoundsException("Unsupported executor strategy '$executionStrategy'");
+                throw new \OutOfBoundsException("Unsupported execution strategy '$executionStrategy'");
         }
 
         if ($timed) {

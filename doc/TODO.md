@@ -8,6 +8,8 @@
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?
 
+- script `./bin/dbconsole sql:shell` not working from host - it only works from worker
+
 
 ## Major features
 
@@ -117,7 +119,6 @@
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
-  + `./bin/dbconsole sql:shell` not working from host - it only works from worker
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of dbstack
@@ -125,7 +126,6 @@
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands
   + add a user:create command which takes as option the list of dbs to grant access to
-  + add --database option to database:shell command
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...

@@ -32,8 +32,8 @@ class SqlShell extends BaseCommand
     {
         $this
             ->setDescription('Connects to one of the configured database instances, using the appropriate native sql client')
-            ->addOption('instance', null, InputOption::VALUE_REQUIRED, 'The instance to connect to', null)
-            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing database to use')
+            ->addOption('instance', 'i', InputOption::VALUE_REQUIRED, 'The instance to connect to', null)
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'The name of an existing database to use')
         ;
     }
 

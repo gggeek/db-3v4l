@@ -15,7 +15,7 @@ class UserDrop extends DatabaseManagingCommand
     {
         $this
             ->setDescription('Drops a database user in parallel on all configured database instances')
-            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'The name of the user to drop')
+            ->addOption('user', 'u', InputOption::VALUE_REQUIRED, 'The name of the user to drop')
             ->addCommonOptions()
         ;
     }

@@ -15,16 +15,46 @@ class DatabaseConfigurationManager
     }
 
     /**
-     * @param string $includeFilter accepts 'glob' wildcards
-     * @param string $excludeFilter accepts 'glob' wildcards
+     * @param string|string[] $includeFilter accepts 'glob' wildcards. Empty = include all
+     * @param string|string[] $excludeFilter accepts 'glob' wildcards. Empty = exclude none. NB: exclude match wins over include match
      * @return string[]
      */
-    public function listInstances($includeFilter = null, $excludeFilter = null)
+    public function listInstances($includeFilter = [], $excludeFilter = [])
     {
+        if (!is_array($includeFilter)) {
+            $includeFilter = [$includeFilter];
+        }
+        if (!is_array($excludeFilter)) {
+            $excludeFilter = [$excludeFilter];
+        }
+
         $names = [];
         foreach(array_keys($this->instanceList) as $name) {
-            if (($includeFilter == '' || fnmatch($includeFilter, $name)) && ($excludeFilter == '' || !fnmatch($includeFilter, $name)))
+
+            if (empty($includeFilter)) {
+                $include = true;
+            } else {
+                $include = false;
+                foreach($includeFilter as $filter) {
+                    if (fnmatch($filter, $name)) {
+                        $include = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($include && !empty($excludeFilter)) {
+                foreach($excludeFilter as $filter) {
+                    if (fnmatch($filter, $name)) {
+                        $include = false;
+                        break;
+                    }
+                }
+            }
+
+            if ($include) {
                 $names[] = $name;
+            }
         }
         return $names;
     }
