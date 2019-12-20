@@ -24,7 +24,7 @@ class DocController extends AbstractController
     }
 
     /**
-     * @Route("/view/{fileName}", name="doc_view")
+     * @Route("/view/{filename}", name="doc_view")
      *
      * @param string $filename
      * @return \Symfony\Component\HttpFoundation\Response

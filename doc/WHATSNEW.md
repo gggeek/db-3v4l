@@ -1,3 +1,15 @@
+Version ??? (unreleased)
+------------------------
+
+- Breaking change: renamed `dbconsole database:shell` script to `dbconsole sql:shell`
+
+- Improved: dbconsole command: `shell` learned option `--database`
+
+- Improved: dbconsole commands learned option `--output-file`
+
+- Fixed: display of docs in the web interface
+
+
 Version 0.10
 ------------
 

@@ -97,6 +97,12 @@ class InstanceList extends SQLExecutingCommand
                 break;
         }
 
-        $this->writeln($data, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+        if ($this->outputFile != null) {
+            file_put_contents($this->outputFile, $data);
+            $this->writeln("Results saved to file {$this->outputFile}");
+        } else {
+            $this->writeln($data, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+        }
+
     }
 }

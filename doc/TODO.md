@@ -117,6 +117,7 @@
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
+  + `./bin/dbconsole sql:shell` not working from host - it only works from worker
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of dbstack

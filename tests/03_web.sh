@@ -16,9 +16,19 @@ while [ ! -f ./app/var/bootstrap_ok ]; do
   echo .
 done
 
-# Test the web interface - use https://github.com/symfony/panther, plain BrowserKit or behat/selenium/mink ?
+# Test the web interface
 
-# @todo ...
+# @todo use https://github.com/symfony/panther, plain BrowserKit or behat/selenium/mink ?
+
+HOST=http://localhost
+CURL=curl -v --fail
+
+${CURL} ${HOST}/
+${CURL} ${HOST}/doc/list
+${CURL} ${HOST}/doc/FAQ.md
+${CURL} ${HOST}/doc/TOSO.md
+${CURL} ${HOST}/doc/WHATSNEW.md
+${CURL} ${HOST}/instance/list
 
 # Stop the stack
 

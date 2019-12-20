@@ -27,6 +27,7 @@ abstract class SQLExecutingCommand extends BaseCommand
     const DEFAULT_PROCESS_TIMEOUT = 600;
 
     protected $outputFormat;
+    protected $outputFile;
     protected $maxParallelProcesses;
     protected $processTimeout;
 
@@ -48,6 +49,7 @@ abstract class SQLExecutingCommand extends BaseCommand
             ->addOption('only-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against. Usage of * and ? wildcards is allowed. To see all instances available, use `instance:list`', null)
             ->addOption('except-instances', null, InputOption::VALUE_REQUIRED, 'Filter the database servers to run this command against', null)
             ->addOption('output-type', null, InputOption::VALUE_REQUIRED, 'The format for the output: json, php, text or yml', self::DEFAULT_OUTPUT_FORMAT)
+            ->addOption('output-file', null, InputOption::VALUE_REQUIRED, 'Save output to a file instead of writing it to stdout. NB: take care that dbconsole runs in a container, which has a different view of the filesystem. A good dir for output is ./shared')
             ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'The maximum time to wait for subprocess execution (secs)', self::DEFAULT_PROCESS_TIMEOUT)
             ->addOption('max-parallel', null, InputOption::VALUE_REQUIRED, 'The maximum number of subprocesses to run in parallel', self::DEFAULT_PARALLEL_PROCESSES)
             ->addOption('dont-force-enabled-sigchild', null, InputOption::VALUE_NONE, "When using a separate process to run each sql command, do not force Symfony to believe that php was compiled with --enable-sigchild option")
@@ -61,6 +63,7 @@ abstract class SQLExecutingCommand extends BaseCommand
     protected function parseCommonOptions(InputInterface $input)
     {
         $this->outputFormat = $input->getOption('output-type');
+        $this->outputFile = $input->getOption('output-file');
         $this->processTimeout = $input->getOption('timeout');
         $this->maxParallelProcesses = $input->getOption('max-parallel');
 
@@ -243,11 +246,19 @@ abstract class SQLExecutingCommand extends BaseCommand
      */
     protected function writeResults(array $results, $time = null)
     {
-        $this->writeln($this->formatResults($results), OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+        $formattedResults = $this->formatResults($results);
+        if ($this->outputFile != null) {
+            file_put_contents($this->outputFile, $formattedResults);
+        } else {
+            $this->writeln($formattedResults, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
+        }
 
-        if ($this->outputFormat === 'text') {
+
+        if ($this->outputFormat === 'text' || $this->outputFile != null) {
             $this->writeln($results['succeeded'] . ' succeeded, ' . $results['failed'] . ' failed');
-
+            if ($this->outputFile != null) {
+                $this->writeln("Results saved to file {$this->outputFile}");
+            }
             if ($time !== null) {
                 $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
             }

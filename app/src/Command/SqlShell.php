@@ -9,9 +9,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DatabaseShell extends BaseCommand
+class SqlShell extends BaseCommand
 {
-    protected static $defaultName = 'db3v4l:database:shell';
+    protected static $defaultName = 'db3v4l:sql:shell';
 
     /** @var DatabaseConfigurationManager $dbConfigurationManager */
     protected $dbConfigurationManager;
@@ -33,18 +33,23 @@ class DatabaseShell extends BaseCommand
         $this
             ->setDescription('Connects to one of the configured database instances, using the appropriate native sql client')
             ->addOption('instance', null, InputOption::VALUE_REQUIRED, 'The instance to connect to', null)
+            ->addOption('database', null, InputOption::VALUE_REQUIRED, 'The name of an existing database to use')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $instanceName = $input->getOption('instance');
+        $dbName = $input->getOption('database');
 
         if ($instanceName == null) {
             throw new \Exception("Please provide an instance name");
         }
 
         $dbConnectionSpec = $this->dbConfigurationManager->getInstanceConfiguration($instanceName);
+        if ($dbName != '') {
+            $dbConnectionSpec['dbname'] = $dbName;
+        }
         $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
 
         if (! $executor instanceof ShellExecutor) {
