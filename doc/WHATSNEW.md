@@ -1,13 +1,15 @@
 Version ??? (unreleased)
 ------------------------
 
-- Breaking change: renamed `dbconsole database:shell` script to `dbconsole sql:shell`
+- Breaking change: renamed `dbconsole database:shell` command to `dbconsole sql:shell`
 
 - Improved: dbconsole command: `sql:shell` learned option `--database`
 
 - Improved: dbconsole commands learned option `--output-file`
 
 - Improved: dbconsole commands learned one-letter shortcuts for many options
+
+- Improved: dbconsole commands options `only-instances` and `except-instances` can now be repeated multiple times
 
 - Fixed: display of docs in the web interface
 
