@@ -11,7 +11,8 @@ use Db3v4l\Util\Process;
  */
 class PDO extends ForkedExecutor implements CommandExecutor
 {
-    protected $executionStrategy = 'PDO';
+    const EXECUTION_STRATEGY = 'PDO';
+
     protected $instanceName;
     /** @var DatabaseConfigurationManager $dbConfigurationManager */
     protected $dbConfigurationManager;
@@ -51,7 +52,7 @@ class PDO extends ForkedExecutor implements CommandExecutor
             'sql:execute',
             '--only-instances=' . $this->instanceName,
             '--execute-in-process',
-            '--execution-strategy=' . $this->executionStrategy,
+            '--execution-strategy=' . static::EXECUTION_STRATEGY,
             '--output-type=json',
         ];
 

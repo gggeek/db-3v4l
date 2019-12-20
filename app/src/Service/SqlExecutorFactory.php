@@ -32,18 +32,18 @@ class SqlExecutorFactory
      * @return ForkedCommandExecutor|ForkedFileExecutor
      * @throws \OutOfBoundsException
      */
-    public function createForkedExecutor($instanceName, array $databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)
+    public function createForkedExecutor($instanceName, array $databaseConnectionConfiguration, $executionStrategy = NativeClient::EXECUTION_STRATEGY, $timed = true)
     {
         switch ($executionStrategy) {
-            case 'Doctrine':
+            case ForkedDoctrine::EXECUTION_STRATEGY:
                 $executor = new ForkedDoctrine($databaseConnectionConfiguration);
                 $executor->setInstanceName($instanceName);
                 $executor->setDbConfigurationManager($this->dbConfigurationManager);
                 break;
-            case 'NativeClient':
+            case NativeClient::EXECUTION_STRATEGY:
                 $executor = new NativeClient($databaseConnectionConfiguration);
                 break;
-            case 'PDO':
+            case ForkedPDO::EXECUTION_STRATEGY:
                 $executor = new ForkedPDO($databaseConnectionConfiguration);
                 $executor->setInstanceName($instanceName);
                 $executor->setDbConfigurationManager($this->dbConfigurationManager);
@@ -70,10 +70,10 @@ class SqlExecutorFactory
     public function createInProcessExecutor($instanceName, array $databaseConnectionConfiguration, $executionStrategy = 'Doctrine', $timed = true)
     {
         switch ($executionStrategy) {
-            case 'Doctrine':
+            case InProcessDoctrine::EXECUTION_STRATEGY:
                 $executor = new InProcessDoctrine($databaseConnectionConfiguration);
                 break;
-            case 'PDO':
+            case InProcessPDO::EXECUTION_STRATEGY:
                 $executor = new InProcessPDO($databaseConnectionConfiguration);
                 break;
             default:

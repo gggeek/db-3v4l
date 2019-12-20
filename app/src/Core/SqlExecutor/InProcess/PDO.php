@@ -7,6 +7,8 @@ use Db3v4l\Core\SqlExecutor\BaseExecutor;
 
 class PDO extends BaseExecutor implements CommandExecutor
 {
+    const EXECUTION_STRATEGY = 'PDO';
+
     public function getExecuteCommandCallable($sql)
     {
         /// @todo

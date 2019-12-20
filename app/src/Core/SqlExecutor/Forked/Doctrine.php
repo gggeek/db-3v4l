@@ -10,5 +10,5 @@ use Db3v4l\Util\Process;
  */
 class Doctrine extends PDO implements CommandExecutor
 {
-    protected $executionStrategy = 'Doctrine';
+    const EXECUTION_STRATEGY = 'Doctrine';
 }

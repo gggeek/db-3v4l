@@ -3,6 +3,7 @@
 namespace Db3v4l\Command;
 
 use Db3v4l\API\Interfaces\SqlExecutor\Forked\ShellExecutor;
+use Db3v4l\Core\SqlExecutor\Forked\NativeClient;
 use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Service\SqlExecutorFactory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,7 +51,7 @@ class SqlShell extends BaseCommand
         if ($dbName != '') {
             $dbConnectionSpec['dbname'] = $dbName;
         }
-        $executor = $this->executorFactory->createForkedExecutor($instanceName, $dbConnectionSpec, 'NativeClient', false);
+        $executor = $this->executorFactory->createForkedExecutor($instanceName, $dbConnectionSpec, NativeClient::EXECUTION_STRATEGY, false);
 
         if (! $executor instanceof ShellExecutor) {
             throw new \Exception("Can not start an interactive shell for databases of type '{$dbConnectionSpec['vendor']}'");

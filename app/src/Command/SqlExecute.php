@@ -5,6 +5,7 @@ namespace Db3v4l\Command;
 use Db3v4l\Core\DatabaseSchemaManager;
 use Db3v4l\Core\SqlAction\Command;
 use Db3v4l\Core\SqlAction\File;
+use Db3v4l\Core\SqlExecutor\Forked\NativeClient;
 use Db3v4l\Core\SqlExecutor\Forked\TimedExecutor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -103,7 +104,7 @@ class SqlExecute extends DatabaseManagingCommand
 
             // for now, we always use NativeClient for creating/dropping temp dbs
             $previousStrategy = $this->executionStrategy;
-            $this->executionStrategy = 'NativeClient';
+            $this->executionStrategy = NativeClient::EXECUTION_STRATEGY;
             $creationResults = $this->createDatabases($instanceList, $tempDbSpecs);
             $this->executionStrategy = $previousStrategy;
 
@@ -145,7 +146,7 @@ class SqlExecute extends DatabaseManagingCommand
                 }
                 // for now, we always use NativeClient for creating/dropping temp dbs
                 $previousStrategy = $this->executionStrategy;
-                $this->executionStrategy = 'NativeClient';
+                $this->executionStrategy = NativeClient::EXECUTION_STRATEGY;
                 $this->dropDatabases($instanceList, $dbConnectionSpecs, true);
                 $this->executionStrategy = $previousStrategy;
             }

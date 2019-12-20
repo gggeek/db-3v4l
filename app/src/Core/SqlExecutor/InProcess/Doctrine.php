@@ -9,6 +9,8 @@ use Doctrine\DBAL\Configuration;
 
 class Doctrine extends BaseExecutor implements CommandExecutor
 {
+    const EXECUTION_STRATEGY = 'Doctrine';
+
     public function getExecuteCommandCallable($sql)
     {
         /// @todo
