@@ -75,7 +75,7 @@
     + sqllite in default output mode is even worse... (see below)
   + try to have mssql use a smaller (but dynamic) col width for varchar results
   + investigate the possibility of having the clients emitting directly json results instead of plaintext
-    + also: sqlite 3 has a more 'tabular' mode to display results, but it seems not to be able to calculate col. width automatically...
+    + also: sqlite 3 has a 'tabular' mode to display results, but it seems not to be able to calculate col. width automatically...
   + test selecting string with length > 200 chars: ok
 
 - improve travis testing:
@@ -116,13 +116,14 @@
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
-  + add a script that removes docker images and containers (eg. docker-compose down)
+  + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of dbstack
 
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands
   + add a user:create command which takes as option the list of dbs to grant access to
+  + add --database option to database:shell command
   + either remove ./vendor/bin/doctrine-dbal or make it actually work
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
