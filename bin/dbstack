@@ -2,8 +2,9 @@
 
 # Shortcuts to manage the whole set of containers
 
-# @todo move to separate actions of this command the clean up of dead images as well as data and logs (currently separate commands)
 # @todo allow end user to enter pwd for root db accounts on build. If not interactive, generate a random one
+# @todo check for ports conflicts before starting thwe web container
+# @todo if there's no docker-compose onboard but there is curl or wget, download and install docker-compose
 
 # consts
 APP_DEFAULT_CONFIG_FILE=containers.env
@@ -32,10 +33,11 @@ Manages the Db3v4l Docker Stack
 Commands:
     build               build or rebuild the complete set of containers and set up the app. Leaves the stack running
     cleanup CATEGORY    remove tmeporary data/logs/caches/etc... CATEGORY can be any of:
-                        - databases       NB: this removes all your data! Better done with stopped containers
-                        - docker-images   only removes unused images. Can be quite beneficial to free up space
-                        - docker-logs     NB: for this to work, you'll need to run  the script as root
-                        - logs            logs from the databases, webservers, symfony
+                        - databases       NB: this removes all your data! Better done when containers are stopped
+                        - docker-images   removes only unused images. Can be quite beneficial to free up space
+                        - docker-logs     NB: for this to work, you'll need to run this script as root
+                        - logs            removes log files from the databases, webservers, symfony
+                        - shared-data     removes every file in the ./shared folder
     images              list container images
     kill                kill containers
     logs                view output from containers
@@ -219,6 +221,19 @@ cleanup() {
         logs)
             find ./logs/ -type f ! -name .gitkeep -delete
             find ../app/var/log/ -type f ! -name .gitkeep -delete
+        ;;
+        shared-data)
+            if [ ${SILENT} != true ]; then
+                echo "Do you really want to delete all data in the 'shared' folder?"
+                select yn in "Yes" "No"; do
+                    case $yn in
+                        Yes ) break ;;
+                        No ) exit 1 ;;
+                    esac
+                done
+            fi
+
+            find ../shared/ -type f ! -name .gitkeep -delete
         ;;
         symfony-cache)
             find ../app/var/cache/ -type f ! -name .gitkeep -delete

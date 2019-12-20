@@ -11,6 +11,8 @@ Version ??? (unreleased)
 
 - Improved: dbconsole commands options `only-instances` and `except-instances` can now be repeated multiple times
 
+- Improved: dbstack command: `cleanup` learned argument `shared-data`
+
 - Fixed: display of docs in the web interface
 
 

@@ -1,7 +1,7 @@
 ## FAQ
 
 - Q: can I customize the configuration of the databases? A: Yes, there is one config file for each db that you can edit,
-  in docker/config. If you change them, you need to restart the docker containers for the settings to take effect, but
+  in `docker/config`. If you change them, you need to restart the docker containers for the settings to take effect, but
   there is no need to rebuild them
 
 - Q: can I make the db3v4l application use an existing database available in my infrastructure besides the self-contained ones?
@@ -29,3 +29,7 @@
 - Q: does the platform store/log anywhere the executed SQL commands? A: no. But those might be stored in the databases log
   files, which are stored on disk. So it's not a good idea to copy-paste sql snippets which contain sensitive information
   such as passwords
+
+- Q: how can I free up disk space after having installed this tool and played around with it? A: check out the
+  command `./bin/dbstack cleanup` in all its forms. To completely destroy the built images and containers, you can
+  use `docker-compose down --rmi all`
