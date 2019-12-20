@@ -101,7 +101,12 @@ class SqlExecute extends DatabaseManagingCommand
                 }
             }
 
+            // for now, we always use NativeClient for creating/dropping temp dbs
+            $previousStrategy = $this->executionStrategy;
+            $this->executionStrategy = 'NativeClient';
             $creationResults = $this->createDatabases($instanceList, $tempDbSpecs);
+            $this->executionStrategy = $previousStrategy;
+
             $dbConnectionSpecs = $creationResults['data'];
 
         } else {
@@ -138,7 +143,11 @@ class SqlExecute extends DatabaseManagingCommand
                         unset($instanceList[$instanceName]);
                     }
                 }
+                // for now, we always use NativeClient for creating/dropping temp dbs
+                $previousStrategy = $this->executionStrategy;
+                $this->executionStrategy = 'NativeClient';
                 $this->dropDatabases($instanceList, $dbConnectionSpecs, true);
+                $this->executionStrategy = $previousStrategy;
             }
         } else {
             $results = ['succeeded' => 0,  'failed' => 0, 'data' => null];

@@ -56,6 +56,7 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
      * @param string[][] $instanceList
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, if unspecified assumed same as user)
      * @param bool $ifExists
+     * @param string $executionStrategy
      * @return array 'succeeded': int, 'failed': int, 'results': string[]
      * @throws \Exception
      */

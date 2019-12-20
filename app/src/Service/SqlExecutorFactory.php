@@ -16,24 +16,37 @@ use Db3v4l\Core\SqlExecutor\InProcess\TimedExecutor as InProcessTimedExecutor;
 
 class SqlExecutorFactory
 {
+    /** @var DatabaseConfigurationManager $dbConfigurationManager */
+    protected $dbConfigurationManager;
+
+    public function __construct(DatabaseConfigurationManager $dbConfigurationManager)
+    {
+        $this->dbConfigurationManager = $dbConfigurationManager;
+    }
+
     /**
+     * @param string $instanceName
      * @param array $databaseConnectionConfiguration
      * @param string $executionStrategy
      * @param bool $timed
      * @return ForkedCommandExecutor|ForkedFileExecutor
      * @throws \OutOfBoundsException
      */
-    public function createForkedExecutor(array $databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)
+    public function createForkedExecutor($instanceName, array $databaseConnectionConfiguration, $executionStrategy = 'NativeClient', $timed = true)
     {
         switch ($executionStrategy) {
             case 'Doctrine':
                 $executor = new ForkedDoctrine($databaseConnectionConfiguration);
+                $executor->setInstanceName($instanceName);
+                $executor->setDbConfigurationManager($this->dbConfigurationManager);
                 break;
             case 'NativeClient':
                 $executor = new NativeClient($databaseConnectionConfiguration);
                 break;
             case 'PDO':
                 $executor = new ForkedPDO($databaseConnectionConfiguration);
+                $executor->setInstanceName($instanceName);
+                $executor->setDbConfigurationManager($this->dbConfigurationManager);
                 break;
             default:
                 throw new \OutOfBoundsException("Unsupported execution strategy '$executionStrategy'");
@@ -47,13 +60,14 @@ class SqlExecutorFactory
     }
 
     /**
+     * @param string $instanceName
      * @param array $databaseConnectionConfiguration
      * @param string $executionStrategy
      * @param bool $timed
      * @return InProcessCommandExecutor|InProcessFileExecutor
      * @throws \OutOfBoundsException
      */
-    public function createInProcessExecutor(array $databaseConnectionConfiguration, $executionStrategy = 'Doctrine', $timed = true)
+    public function createInProcessExecutor($instanceName, array $databaseConnectionConfiguration, $executionStrategy = 'Doctrine', $timed = true)
     {
         switch ($executionStrategy) {
             case 'Doctrine':

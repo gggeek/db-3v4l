@@ -138,14 +138,14 @@ abstract class SQLExecutingCommand extends BaseCommand
                     }
 
                     if ($this->executeInProcess) {
-                        $executor = $this->executorFactory->createInProcessExecutor($dbConnectionSpec, $this->executionStrategy, $timed);
+                        $executor = $this->executorFactory->createInProcessExecutor($instanceName, $dbConnectionSpec, $this->executionStrategy, $timed);
                         if ($filename === null) {
                             $callables[$instanceName] = $executor->getExecuteCommandCallable($sql);
                         } else {
                             $callables[$instanceName] = $executor->getExecuteFileCallable($filename);
                         }
                     } else {
-                        $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, $this->executionStrategy, $timed);
+                        $executor = $this->executorFactory->createForkedExecutor($instanceName, $dbConnectionSpec, $this->executionStrategy, $timed);
                         $executors[$instanceName] = $executor;
 
                         if ($filename === null) {

@@ -50,7 +50,7 @@ class SqlShell extends BaseCommand
         if ($dbName != '') {
             $dbConnectionSpec['dbname'] = $dbName;
         }
-        $executor = $this->executorFactory->createForkedExecutor($dbConnectionSpec, 'NativeClient', false);
+        $executor = $this->executorFactory->createForkedExecutor($instanceName, $dbConnectionSpec, 'NativeClient', false);
 
         if (! $executor instanceof ShellExecutor) {
             throw new \Exception("Can not start an interactive shell for databases of type '{$dbConnectionSpec['vendor']}'");

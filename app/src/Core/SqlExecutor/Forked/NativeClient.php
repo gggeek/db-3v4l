@@ -12,8 +12,6 @@ use Db3v4l\Util\Process;
  */
 class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecutor, ShellExecutor
 {
-    const EXECUTE_COMMAND = 0;
-    const EXECUTE_FILE = 1;
     const EXECUTE_SHELL = 2;
 
     /**
