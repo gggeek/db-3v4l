@@ -4,7 +4,7 @@
 /app/.env.local
 /app/node_modules/*
 /app/public/build/*
-/app/var/bootstrap_ok
+/app/var/bootstrap_ok_*
 /app/var/cache/*
 /app/var/log/*
 /app/vendor/*

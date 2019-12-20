@@ -10,7 +10,8 @@
 APP_DEFAULT_CONFIG_FILE=containers.env
 APP_LOCAL_CONFIG_FILE=containers.env.local
 DOCKER_DEFAULT_CONFIG_FILE=.env
-WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok
+WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_worker
+WEB_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_web
 WORKER_SERVICE=worker
 # vars
 BOOTSTRAP_TIMEOUT=300
@@ -169,13 +170,13 @@ setup_app() {
 
 # Wait until worker has fully booted
 wait_for_bootstrap() {
-    echo "Waiting for Worker container bootstrap to finish..."
+    echo "Waiting for Worker and Web containers bootstrap to finish..."
     BOOTSTRAP_OK=false
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
         sleep 1
-        if [ -f ${WORKER_BOOTSTRAP_OK_FILE} ]; then
+        if [ -f ${WORKER_BOOTSTRAP_OK_FILE} -a -f ${WEB_BOOTSTRAP_OK_FILE} ]; then
             BOOTSTRAP_OK=true
             break
         fi
@@ -185,7 +186,7 @@ wait_for_bootstrap() {
     if [ $i -gt 0 ]; then echo; fi
 
     if [ ${BOOTSTRAP_OK} != 'true' ]; then
-        printf "\n\e[31mWorker bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
+        printf "\n\e[31mWorker and/or Web bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
         exit 1
     fi
 }

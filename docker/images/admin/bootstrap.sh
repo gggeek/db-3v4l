@@ -10,9 +10,12 @@ clean_up() {
     exit
 }
 
+BS_OK_DIR=/var/www/db3v4l/var
+BS_OK=${BS_OK_DIR}/bootstrap_ok_admin
+
 # Allow any process to see if bootstrap finished by looking up this file
-if [ -f /var/run/bootstrap_ok ]; then
-    rm /var/run/bootstrap_ok
+if [ -f ${BS_OK} ]; then
+    rm ${BS_OK}
 fi
 
 # Fix UID & GID for user www-data
@@ -45,7 +48,7 @@ trap clean_up TERM
 service php7.3-fpm start
 service nginx restart
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
+echo "[`date`] Bootstrap finished" | tee ${BS_OK}
 
 tail -f /dev/null &
 child=$!

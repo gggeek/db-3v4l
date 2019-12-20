@@ -9,9 +9,9 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/dbstack start
 
-# Wait until worker has booted
+# Wait until app containers have booted
 # @todo add a time limit...
-while [ ! -f ./app/var/bootstrap_ok ]; do
+while [ -a ! -f ./app/var/bootstrap_ok_admin ! -f ./app/var/bootstrap_ok_web -a ! -f ./app/var/bootstrap_ok_worker ]; do
   sleep 1
   echo .
 done
@@ -22,7 +22,7 @@ done
 
 HOST=http://localhost
 CURL=curl
-CURLOPTS='-v --fail'
+CURLOPTS='-s -S -v --fail --output /dev/null'
 
 ${CURL} ${CURLOPTS} ${HOST}/
 ${CURL} ${CURLOPTS} ${HOST}/doc/list

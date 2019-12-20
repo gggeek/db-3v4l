@@ -17,7 +17,7 @@ ORIG_UID=$(echo $PASSWD_LINE | cut -f3 -d:)
 ORIG_GID=$(echo $PASSWD_LINE | cut -f4 -d:)
 ORIG_HOME=$(echo $PASSWD_LINE | cut -f6 -d:)
 BS_OK_DIR=${ORIG_HOME}/app/var
-BS_OK=${BS_OK_DIR}/bootstrap_ok
+BS_OK=${BS_OK_DIR}/bootstrap_ok_worker
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
