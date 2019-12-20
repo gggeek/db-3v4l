@@ -97,7 +97,7 @@ You can also list all available database instances and databases:
 
 As well as connect to them using the standard command-line clients with a shortcut command:
 
-    ./bin/dbconsole database:shell --instance=mysql_5_5
+    ./bin/dbconsole sql:shell --instance=mysql_5_5
 
 If you want to connect to the databases using all the cli options available to the standard clients, you can do it too:
 
@@ -140,9 +140,8 @@ See the section 'Alternative commands to dbstack' below for examples.
 
 ### Maintenance
 
-The `./bin/dbstack cleamup` command is provided to help keeping disk space usage under control. It can remove the
+The `./bin/dbstack cleanup` command is provided to help keeping disk space usage under control. It can remove the
 log files produced by running the application, as well as the complete set of database data files.
-
 
 ### How does this work?
 

@@ -7,7 +7,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/stack.sh start
+./bin/dbstack start
 
 # Wait until worker has booted
 # @todo add a time limit...
@@ -19,11 +19,12 @@ done
 # Test the admin interface - use Curl...
 
 HOST=http://localhost
-CURL=curl -v --fail
+CURL=curl
+CURLOPTS='-v --fail'
 
 # @todo test logging it to at least one db
-${CURL} ${HOST}/admin/
+${CURL} ${CURLOPTS} ${HOST}/admin/
 
 # Stop the stack
 
-./bin/stack.sh stop
+./bin/dbstack stop

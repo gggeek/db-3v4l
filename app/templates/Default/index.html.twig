@@ -19,103 +19,134 @@
 
             ### Usage
 
-            Example: executing the sql snippet `select current_date` in parallel on all databases:
+                Executing an example sql snippet:
 
-            ```
-            cd docker && docker-compose up -d
-            docker exec -ti db3v4l_worker su - db3v4l
+                    ./bin/dbconsole sql:execute --sql="create table persons(name varchar(255), age int); insert into persons values('significant other', 99); select name as person, age - 60 as conventional_age from persons;"
 
-                php bin/dbconsole sql:execute --sql='select current_date'
+                If you have a bigger set of SQL statements to execute than it is practical to put in a command-line, you can save them
+                to a file and then execute it in parallel on all databases:
 
-            exit
-            docker-compose stop
-            ```
+                    ./bin/dbconsole sql:execute --file=./shared/my_huge_script.sql
 
-            If you have a bigger set of SQL commands to execute than it is practical to put in a command-line, you can save them
-            to a file and then execute it in parallel on all databases:
+                *NB*: to share files between the host computer and the container, put them in the `shared` folder.
 
-            `php bin/dbconsole sql:execute --file=./shared/my_huge_script.sql`
+                *NB*: you can also execute different sql commands for each database type by saving them to separate files. The `sql:execute`
+                command does replace some tokens in the values of the `--file` option. Eg:
 
-            *NB* to share files between the host computer and the container, put them in the `shared` folder.
+                    ./bin/dbconsole sql:execute --file='./shared/test_{dbtype}.sql'
 
-            *NB* you can also execute different sql commands based on database type by saving them to separate files. The `sql:execute`
-            command does replace some tokens in the values of the `--file` option. Eg:
+                will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
-            `php bin/dbconsole sql:execute --file='./shared/test_{dbtype}.sql'`
+                *NB*: by default a temporary database is created for each invocation of the `sql:execute` command, and disposed
+                immediately afterwards. If you want to persist data in a more permanent way, to be able eg. to run multiple queries
+                against the same data set, you have to follow a multiple-step process:
 
-            will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
+                - create a permanent database on each instance using the `database:create` dbconsole command
+                - load the desired data into each database by using either the command line database client, or the Adminer web console
+                - use the `--database`, `--user`, `--password` options when running `sql:execute`
 
-            From within the worker container, you can also list all available database instances:
+                You can also list all available database instances and databases:
 
-            `php bin/dbconsole instance:list`
+                    ./bin/dbconsole instance:list
 
-            As well as test connecting to them using the standard clients:
+                    ./bin/dbconsole database:list
 
-            ```
-            mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
-            psql -h postgresql_9_4 -U postgres -c 'select current_date'
-            sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
-            sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
-            ```
+                As well as connect to them using the standard command-line clients with a shortcut command:
 
-            The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
+                    ./bin/dbconsole sql:shell --instance=mysql_5_5
 
-            Once the containers are up and running, you can access a database administration console at: http://localhost/adminer.php
-            (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
-            your browser is executing).
+                If you want to connect to the databases using all the cli options available to the standard clients, you can do it too:
 
-            Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
+                    ./bin/dbstack run mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
+                    ./bin/dbstack run psql -h postgresql_9_4 -U postgres -c 'select current_date'
+                    ./bin/dbstack run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
+                    ./bin/dbstack run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
 
-                ./vendor/bin/highlight-query
-                ./vendor/bin/lint-query
-                ./vendor/bin/tokenize-query
+                The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 
-            ## Details
+                Once the containers are up and running, you can access a database administration console at: http://localhost/admin/
+                (if you are running the whole stack inside a VM, replace 'localhost' with the IP of the VM, as seen from the computer where
+                your browser is executing).
 
-            ### Troubleshooting
+                Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-            After starting the containers via `docker-compose up -d`, you can:
+                    ./bin/dbstack run ./app/vendor/bin/highlight-query 'and now'
+                    ./bin/dbstack run ./app/vendor/bin/lint-query 'for something'
+                    ./bin/dbstack run ./app/vendor/bin/tokenize-query 'completely different'
 
-            - check if they are all running: `docker-compose ps`
-            - check if they all bootstrapped correctly: `docker-compose logs`
-            - check if one container bootstrapped correctly, eg: `docker-compose logs db3v4l_postgresql_9_4`
-            - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
+                Or you can just log in to the container where all the command-line tools are, and execute any command you like from there
 
-            ### Maintenance
+                    ./bin/dbstack shell
+                    php bin/console --help
 
-            - 3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
+                ## Details
 
-            ## FAQ
+                ### Troubleshooting
 
-            - Q: can I customize the configuration of the databases? A: Yes, there is one config file for each db that you can edit,
-            in docker/config. If you change them, you need to restart the docker containers for the settings to take effect, but
-            there is no need to rebuild them
+                After starting the containers via `./bin/dbstack build`, you can:
 
-            - Q: can I make the db3v4l application use an existing database available in my infrastructure besides the self-contained ones?
-            A: yes, as long as the type of database is already supported by the application.
-            In order to add a new database, it is enough to:
-            - edit `app/config/services.yml` and add the definition of the extra remote database in key `db3v4l.database_instances`
-            - test that the worker container can connect to the remote database on the desired port (besides firewalls, the
-            dns resolution might be problematic. If in doubt, test first using IP addresses)
+                - check if they are all running: `./bin/dbstack ps`
+                - check if they all bootstrapped correctly: `./bin/dbstack logs`
+                - check if a specific container bootstrapped correctly, eg: `./bin/dbstack logs worker`
+                - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
 
-            - Q: can I access the db3v4l databases from other applications running outside the provided Docker containers? I want
-            to do mass data import / export from them.
-            A: it is possible, but not enabled by default. In order to allow it, stop the Docker Compose stack, edit the
-            `docker-compose.yml` file, set port mapping for any database that you want to expose to the 'outside world' and restart
-            the stack.
-            *Note* that some of the databases included in the db3v4l, such as Microsoft SQL Server, have licensing conditions
-            which restrict what you are legally allowed to use them for. We assume no responsibility for any abuse of such conditions.
-            *Note also* that there has be no hardening or tuning done of the containers running the database - the database root
-            account password is not even randomized... Opening them up for access from external tools might result in
-            security-related issues
+                *NB*: if the `dbstack` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.
+                See the section 'Alternative commands to dbstack' below for examples.
 
-            - Q: what is the level of security offered by this tool? Can I allow untrusted users use it to run _any_ query they want?
-            A: this is the end goal, but at the moment there is close to zero security enforced. Please only allow trusted developers
-            to access the platform and run queries on it
+                ### Maintenance
 
-            - Q: does the platform store/log anywhere the executed SQL commands? A: no. But those might be stored in the databases log
-            files, which are stored on disk. So it's not a good idea to copy-paste sql snippets which contain sensitive information
-            such as passwords
+                The `./bin/dbstack cleanup` command is provided to help keeping disk space usage under control. It can remove the
+                log files produced by running the application, as well as the complete set of database data files.
+
+                ### How does this work?
+
+                The command-line tool `dbconsole`, as well as the web interface are built in php, using the Symfony framework.
+
+                Docker is used to run the app:
+
+                - each db instance runs in a dedicated container (except SQLite)
+                - one container runs the web interface
+                - one container runs the command-line tools which connect to the databases
+                - one container runs Adminer, a separate, self-contained db administration web app, also written in php
+
+                Docker-compose is used to orchestrate the execution of the containers, ie. start, stop and connect them.
+
+                The data files and logs of all the database instances are stored on the disk of the host computer, and mounted as
+                volumes into the containers running the databases.
+
+                All the interactions between `dbconsole` and the databases happen, at the moment, through execution of the native
+                command-line database client (`psql`, `sqlcmd`, etc...). Those clients are executed in parallel as independent processes
+                from the `dbconsole`.
+
+                This design has the following advantages:
+
+                - parallel execution of queries across all database instances to reduce the total execution time
+                - it does not let the warts of the php database-connectors influence the results of query execution
+                - it can easily expand to run queries on multiple database types, even those not supported by php
+
+                On the other hand it comes with some serious drawbacks as well, notably:
+
+                - parsing the data sets which result from a SELECT query from the output of a command-line tool is an exercise in pointlessness
+
+
+                ## Alternative commands to dbstack and dbconsole
+
+                The `dbstack` and `dbconsole` commands require a working bash shell interpreter as well as a few, common unix command-line tools.
+                In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `dbstack` fails
+                you can run alternative commands, as detailed here:
+
+                    ./bin/dbstack build => cd docker && touch containers.env.local && docker-compose build
+                    ./bin/dbstack start => cd docker && docker-compose up -d
+                    ./bin/dbstack shell => docker exec -ti db3v4l_worker su - db3v4l
+                    ./bin/dbstack stop  => cd docker && docker-compose stop
+
+                    ./bin/dbconsole ... =>
+                        docker exec -ti db3v4l_worker su - db3v4l
+                        php bin/dbconsole ...
+
+                *NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
+                the file  docker/containers.env.local _before_ running the `build` command above, and add in there correct values for
+                the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
             {% endapply %}
         {% endblock %}
     {% endembed %}

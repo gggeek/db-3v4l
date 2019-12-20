@@ -7,7 +7,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/stack.sh start
+./bin/dbstack start
 
 # Wait until worker has booted
 # @todo add a time limit...
@@ -21,15 +21,16 @@ done
 # @todo use https://github.com/symfony/panther, plain BrowserKit or behat/selenium/mink ?
 
 HOST=http://localhost
-CURL=curl -v --fail
+CURL=curl
+CURLOPTS='-v --fail'
 
-${CURL} ${HOST}/
-${CURL} ${HOST}/doc/list
-${CURL} ${HOST}/doc/FAQ.md
-${CURL} ${HOST}/doc/TOSO.md
-${CURL} ${HOST}/doc/WHATSNEW.md
-${CURL} ${HOST}/instance/list
+${CURL} ${CURLOPTS} ${HOST}/
+${CURL} ${CURLOPTS} ${HOST}/doc/list
+${CURL} ${CURLOPTS} ${HOST}/doc/view/FAQ.md
+${CURL} ${CURLOPTS} ${HOST}/doc/view/TODO.md
+${CURL} ${CURLOPTS} ${HOST}/doc/view/WHATSNEW.md
+${CURL} ${CURLOPTS} ${HOST}/instance/list
 
 # Stop the stack
 
-./bin/stack.sh stop
+./bin/dbstack stop

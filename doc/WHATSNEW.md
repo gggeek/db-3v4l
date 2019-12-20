@@ -3,6 +3,8 @@ Version ??? (unreleased)
 
 - Breaking change: renamed `dbconsole database:shell` command to `dbconsole sql:shell`
 
+- Fixed: display of docs in the web interface
+
 - Improved: dbconsole command: `sql:shell` learned option `--database`
 
 - Improved: dbconsole commands learned option `--output-file`
@@ -13,7 +15,7 @@ Version ??? (unreleased)
 
 - Improved: dbstack command: `cleanup` learned argument `shared-data`
 
-- Fixed: display of docs in the web interface
+- Improved: run cursory tests of the web interface on Travis
 
 
 Version 0.10
