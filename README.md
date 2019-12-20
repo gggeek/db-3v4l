@@ -140,7 +140,9 @@ See the section 'Alternative commands to dbstack' below for examples.
 
 ### Maintenance
 
-3 scripts are provided in the top-level `bin` folder to help keeping disk space usage under control
+The `./bin/dbstack cleamup` command is provided to help keeping disk space usage under control. It can remove the
+log files produced by running the application, as well as the complete set of database data files.
+
 
 ### How does this work?
 
@@ -151,7 +153,7 @@ Docker is used to run the app:
 - each db instance runs in a dedicated container (except SQLite)
 - one container runs the web interface
 - one container runs the command-line tools which connect to the databases
-- one container runs Adminer, a separate, self-contained db administration app, also written in php
+- one container runs Adminer, a separate, self-contained db administration web app, also written in php
 
 Docker-compose is used to orchestrate the execution of the containers, ie. start, stop and connect them.
 
@@ -165,7 +167,7 @@ from the `dbconsole`.
 This design has the following advantages:
 
 - parallel execution of queries across all database instances to reduce the total execution time
-- it does not let the warts of php database-connectors influence the results of query execution
+- it does not let the warts of the php database-connectors influence the results of query execution
 - it can easily expand to run queries on multiple database types, even those not supported by php
 
 On the other hand it comes with some serious drawbacks as well, notably:

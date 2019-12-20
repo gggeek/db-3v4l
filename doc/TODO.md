@@ -103,7 +103,8 @@
 
 - build:
   + while setting up symfony, have the web site show up a courtesy page
-  + when there are no db data files, dbstack should wait for the db instances to be fully ready...
+  + allow dbstack to download and install docker-compose if it is not found
+  + when there are no db data files, dbstack & dbconsole should wait for the db instances to be fully ready...
     (use docker native status monitoring to achieve this?)
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
   + run security-checker as part of composer post-install and post-upgrade?

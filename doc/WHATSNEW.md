@@ -1,7 +1,7 @@
 Version 0.10
 ------------
 
-- Breaking change: renamed `stack.sh` to `dbstack`
+- Breaking change: renamed `stack.sh` script to `dbstack`
 
 - Breaking change: removed `cleanup-databases.sh`, `cleanup-docker-images.sh`, and `cleanup-logs.sh` - the functionality
   of these scripts has been added to `dbstack`
