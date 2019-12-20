@@ -4,20 +4,25 @@ namespace Db3v4l\Core\SqlExecutor\Forked;
 
 use Db3v4l\API\Interfaces\SqlExecutor\Forked\CommandExecutor;
 use Db3v4l\API\Interfaces\SqlExecutor\Forked\FileExecutor;
+use Db3v4l\API\Interfaces\SqlExecutor\Forked\ShellExecutor;
 use Db3v4l\Util\Process;
 
 /**
  * @todo allow to inject path of db clients via setter/constructor
  */
-class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecutor
+class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecutor, ShellExecutor
 {
+    const EXECUTE_COMMAND = 0;
+    const EXECUTE_FILE = 1;
+    const EXECUTE_SHELL = 2;
+
     /**
      * @param string $sql
      * @return Process
      */
     public function getExecuteStatementProcess($sql)
     {
-        return $this->getProcess($sql);
+        return $this->getProcess($sql, self::EXECUTE_COMMAND);
     }
 
     /**
@@ -26,15 +31,20 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
      */
     public function getExecuteFileProcess($filename)
     {
-        return $this->getProcess($filename, true);
+        return $this->getProcess($filename, self::EXECUTE_FILE);
+    }
+
+    public function getExecuteShellProcess()
+    {
+        return $this->getProcess(null, self::EXECUTE_SHELL);
     }
 
     /**
      * @param string $sqlOrFilename
-     * @param bool $isFile
+     * @param int $action
      * @return Process
      */
-    public function getProcess($sqlOrFilename, $isFile = false)
+    protected function getProcess($sqlOrFilename, $action = self::EXECUTE_COMMAND)
     {
         $clientType = $this->getDbClientType($this->databaseConfiguration);
 
@@ -55,7 +65,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 if (isset($this->databaseConfiguration['dbname'])) {
                     $options[] = $this->databaseConfiguration['dbname'];
                 }
-                if (!$isFile) {
+                if ($action == self::EXECUTE_COMMAND) {
                     $options[] = '--execute=' . $sqlOrFilename;
                 }
                // $env = [
@@ -63,6 +73,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     //'MYSQL_PWD' => $this->databaseConfiguration['password'],
                 //];
                 break;
+
             case 'psql':
                 $command = 'psql';
                 $connectString = "postgresql://".$this->databaseConfiguration['user'].":".$this->databaseConfiguration['password'].
@@ -76,7 +87,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 ];
                 // NB: this triggers a different behaviour that piping multiple commands to stdin, namely
                 // it wraps all of the commands in a transaction and allows either sql commands or a single meta-command
-                if (!$isFile) {
+                if ($action == self::EXECUTE_COMMAND) {
                     $options[] = '--command=' . $sqlOrFilename;
                 }
                 //$env = [
@@ -84,6 +95,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     //'PGPASSWORD' => $this->databaseConfiguration['password'],
                 //];
                 break;
+
             case 'sqlcmd':
                 $command = 'sqlcmd';
                 $options = [
@@ -96,12 +108,13 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 if (isset($this->databaseConfiguration['dbname'])) {
                     $options[] = '-d' . $this->databaseConfiguration['dbname'];
                 }
-                if ($isFile) {
+                if ($action == self::EXECUTE_FILE) {
                     $options[] = '-i' . $sqlOrFilename;
-                } else {
+                } elseif ($action == self::EXECUTE_COMMAND) {
                     $options[] = '-Q' . $sqlOrFilename;
                 }
                 break;
+
             case 'sqlite':
                 $command = 'sqlite3';
                 // 'path' is the full path to the 'master' db (for Doctrine compatibility).
@@ -112,10 +125,11 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     $options[] = $this->databaseConfiguration['path'];
                 }
 
-                if (!$isFile) {
+                if ($action == self::EXECUTE_COMMAND) {
                     $options[] = $sqlOrFilename;
                 }
                 break;
+
             // case 'sqlplus':
             //    $command = 'sqlplus';
             //    // pass on _all_ env vars, including PATH
@@ -128,7 +142,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
         $commandLine = $this->buildCommandLine($command, $options);
 
         /// @todo investigate: for psql is this better done via --file ?
-        if ($isFile && $clientType != 'sqlsrv') {
+        if ($action == self::EXECUTE_FILE && $clientType != 'sqlsrv') {
             $commandLine .= ' < ' . escapeshellarg($sqlOrFilename);
         }
 

@@ -36,6 +36,7 @@ class DatabaseSchemaManager
      * @param string $charset charset/collation name
      * @return CommandAction
      * @throws OutOfBoundsException for unsupported database types
+     * @todo prevent sql injection!
      */
     public function getCreateDatabaseSqlAction($dbName, $userName, $password, $charset = null)
     {
@@ -107,6 +108,7 @@ class DatabaseSchemaManager
      * @param bool $ifExists
      * @throws OutOfBoundsException for unsupported database types
      * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
+     * @todo prevent sql injection!
      */
     public function getDropDatabaseSqlAction($dbName, $userName, $ifExists = false)
     {
@@ -130,13 +132,17 @@ class DatabaseSchemaManager
 
             case 'mssql':
                 $statements = [
-                    "SET QUOTED_IDENTIFIER ON;",
-                    "DROP DATABASE {$ifClause} \"$dbName\";",
+                    "SET QUOTED_IDENTIFIER ON;"
                 ];
                 if ($userName != '') {
-                    $statements[] = "DROP USER {$ifClause} \"$userName\";";
+                    // we assume users are 'local' to each db, as we create them by default
+                    $statements[] = "USE \"$dbName\";";
                     $statements[] = "DROP LOGIN \"$userName\";";
+                    $statements[] = "DROP USER {$ifClause} \"$userName\";";
+                    $statements[] = "USE \"master\";";
                 }
+                $statements[] = "DROP DATABASE {$ifClause} \"$dbName\";";
+
                 return new Command($statements);
 
             //case 'oracle':
@@ -176,6 +182,7 @@ class DatabaseSchemaManager
      * @return Command
      * @throws OutOfBoundsException for unsupported database types
      * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
+     * @todo prevent sql injection!
      */
     public function getDropUserSqlAction($userName, $ifExists = false)
     {
@@ -194,10 +201,12 @@ class DatabaseSchemaManager
                 ]);
 
             case 'mssql':
+                /// @todo if the user is created inside a specific db, this will fail. We need to add a USE DB cmd 1st...
+                ///       to find out if a user exists in the current db: SELECT DATABASE_PRINCIPAL_ID('$user');
                 return new Command([
                     "SET QUOTED_IDENTIFIER ON;",
-                    "DROP USER {$ifClause} \"$userName\";",
-                    "DROP LOGIN \"$userName\";"
+                    "DROP LOGIN \"$userName\";",
+                    "DROP USER {$ifClause} \"$userName\";"
                 ]);
 
             //case 'oracle':

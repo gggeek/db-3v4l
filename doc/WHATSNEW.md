@@ -1,12 +1,24 @@
 Version ?? (unreleased)
 -----------------------
 
+- Breaking changed: renamed `stack.sh` to `dbstack`, removed `cleanup-databases.sh`, `cleanup-docker-images.sh`, and
+  `cleanup-logs.sh` (functionality of the last 3 has been added to `dbstack`)
+
+- New: added `./bin/dbconsole` as quicker notation for `./bin/dbstack dbconsole`
+
 - New: added dbconsole command: `user:drop`
+
+- New: added dbconsole command: `database:shell`. This starts an interactive sql session to one of the configured
+  instances, using the native command-line client. Handy to avoid typing username and password every time
 
 - Improved: results of SELECT commands are now displayed using table formatting for MariaDB and MySQL databases
   when running dbconsole command `sql:execute`. Also, results for PostgeSQL databases are more terse (no more footer)
 
 - Improved: the `database:drop` command reports failures more consistently when trying to drop non-existing databases
+
+- Improved: `stack.sh` has learned a new command: `cleanup`. Run `./bin/stack.sh -h` for details
+
+- Improved: updated the application dependencies to Symfony 4.4.2
 
 - Changed: the `database:create` and `database:drop` commands do _not_ create/drop an user account by default any more.
   In order to force them do so, you should use the `--user` option

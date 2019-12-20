@@ -250,6 +250,12 @@ services:
         class: Db3v4l\Command\DatabaseList
         tags: ['dbconsole.command']
 
+    db3v4l.dbconsole.database_shell:
+        autoconfigure: false
+        autowire: true
+        class: Db3v4l\Command\DatabaseShell
+        tags: ['dbconsole.command']
+
     db3v4l.dbconsole.instance_list:
         autoconfigure: false
         autowire: true

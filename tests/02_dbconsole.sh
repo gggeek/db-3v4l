@@ -11,45 +11,49 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/stack.sh start
+./bin/dbstack start
 
 # DBConsole commands (in increasing order of complexity / code usage)
 
-./bin/stack.sh dbconsole
+./bin/dbconsole
 
-./bin/stack.sh dbconsole instance:list
+./bin/dbconsole instance:list
 
-./bin/stack.sh dbconsole database:list
+./bin/dbconsole database:list
 
-./bin/stack.sh dbconsole user:list
+./bin/dbconsole user:list
 
 # The collation:list output is huge. Let's not pollute test logs...
-./bin/stack.sh dbconsole collation:list >/dev/null
+./bin/dbconsole collation:list >/dev/null
 
-./bin/stack.sh dbconsole database:create --user=testuser --database=testdb
+./bin/dbconsole database:create --user=testuser --database=testdb
 
-# @todo run ./bin/stack.sh dbconsole database:list and check that we have 'testdb' listed the expected nr. of times
+# @todo run ./bin/dbconsole database:list and check that we have 'testdb' listed the expected nr. of times
 
-./bin/stack.sh dbconsole database:drop --user=testuser --database=testdb
+./bin/dbconsole database:drop --user=testuser --database=testdb
+
+# @todo run ./bin/dbconsole database:list and check that we don't have 'testdb' listed any more
 
 # Execution of a basic SELECT query
 
-./bin/stack.sh dbconsole sql:execute --only-instances='mariadb_*' --sql='select current_date'
+./bin/dbconsole sql:execute --only-instances='mariadb_*' --sql='select current_date'
 
-./bin/stack.sh dbconsole sql:execute --only-instances='mysql_*' --sql='select current_date'
+./bin/dbconsole sql:execute --only-instances='mysql_*' --sql='select current_date'
 
-./bin/stack.sh dbconsole sql:execute --only-instances='mssql_*' --sql='select GETDATE()'
+./bin/dbconsole sql:execute --only-instances='mssql_*' --sql='select GETDATE()'
 
-./bin/stack.sh dbconsole sql:execute --only-instances='postgresql_*' --sql='select current_date'
+./bin/dbconsole sql:execute --only-instances='postgresql_*' --sql='select current_date'
 
-./bin/stack.sh dbconsole sql:execute --only-instances='sqlite_*' --sql='select current_date'
+./bin/dbconsole sql:execute --only-instances='sqlite_*' --sql='select current_date'
 
 # Execution of sql from file (using a per-db-vendor sql file)
 
 cp -R ./tests/sql ./shared/
 
-./bin/stack.sh dbconsole sql:execute --file='./shared/sql/02_dbconsole/select_currdate/{vendor}.sql'
+./bin/dbconsole sql:execute --file='./shared/sql/02_dbconsole/select_currdate/{vendor}.sql'
+
+# @todo test interactive execution of sql: `dbconsole database:shell ...`
 
 # Stop the stack
 
-./bin/stack.sh stop
+./bin/dbstack stop

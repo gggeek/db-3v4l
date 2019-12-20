@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# consts
+DOCKER_DEFAULT_CONFIG_FILE=.env
+WORKER_SERVICE=worker
+# vars
+WORKER_CONTAINER=
+WORKER_USER=
+
+check_requirements() {
+    which docker >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        printf "\n\e[31mPlease install docker & add it to \$PATH\e[0m\n\n" >&2
+        exit 1
+    fi
+}
+
+load_default_config() {
+    COMPOSEPROJECT=$(grep -F COMPOSE_PROJECT_NAME ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_PROJECT_NAME=//')
+    if [ -z "${COMPOSEPROJECT}" ]; then
+        printf "\n\e[31mCan not find the name of the composer project name in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+        exit 1
+    fi
+    WORKER_CONTAINER="${COMPOSEPROJECT}_${WORKER_SERVICE}"
+    WORKER_USER=$(grep -F CONTAINER_USER ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER=//')
+    if [ -z "${WORKER_USER}" ]; then
+        printf "\n\e[31mCan not find the name of the container user account in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+        exit 1
+    fi
+}
+
+check_requirements
+
+cd $(dirname -- ${BASH_SOURCE[0]})/../docker
+
+load_default_config
+
+# @todo check that stack has been built, and that worker bootstrap is done
+
+docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"

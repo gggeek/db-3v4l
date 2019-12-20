@@ -47,7 +47,7 @@ NB: if you don't have a bash shell interpreter on your host computer, look at th
 
 ### Installation
 
-    ./bin/stack.sh build
+    ./bin/dbstack build
 
 *NB*: this will take a _long_time. Also, a fast, unmetered internet connection will help.
 
@@ -59,25 +59,25 @@ docker/.env
 
 Example: executing the sql statement `select current_date` in parallel on all databases:
 
-    ./bin/stack.sh start
-    ./bin/stack.sh dbconsole sql:execute --sql='select current_date'
-    ./bin/stack.sh stop
+    ./bin/dbstack start
+    ./bin/dbconsole sql:execute --sql='select current_date'
+    ./bin/dbstack stop
 
 A slightly longer sql snippet:
 
-    ./bin/stack.sh dbconsole sql:execute --sql="create table persons(name varchar(255), age int); insert into persons values('significant other', 99); select name as person, age - 60 as conventional_age from persons;"
+    ./bin/dbconsole sql:execute --sql="create table persons(name varchar(255), age int); insert into persons values('significant other', 99); select name as person, age - 60 as conventional_age from persons;"
 
 If you have a bigger set of SQL statements to execute than it is practical to put in a command-line, you can save them
 to a file and then execute it in parallel on all databases:
 
-    ./bin/stack.sh dbconsole sql:execute --file=./shared/my_huge_script.sql
+    ./bin/dbconsole sql:execute --file=./shared/my_huge_script.sql
 
 *NB*: to share files between the host computer and the container, put them in the `shared` folder.
 
 *NB*: you can also execute different sql commands for each database type by saving them to separate files. The `sql:execute`
 command does replace some tokens in the values of the `--file` option. Eg:
 
-    ./bin/stack.sh dbconsole sql:execute --file='./shared/test_{dbtype}.sql'
+    ./bin/dbconsole sql:execute --file='./shared/test_{dbtype}.sql'
 
 will look for files `test_mariadb.sql`, `test_mssql.sql`, `test_mysql.sql`, `test_postgresql.sql`, `test_sqlite.sql`
 
@@ -91,16 +91,20 @@ against the same data set, you have to follow a multiple-step process:
 
 You can also list all available database instances and databases:
 
-    ./bin/stack.sh dbconsole instance:list
+    ./bin/dbconsole instance:list
 
-    ./bin/stack.sh dbconsole database:list
+    ./bin/dbconsole database:list
 
-As well as test connecting to them using the standard clients:
+As well as connect to them using the standard command-line clients with a shortcut command:
 
-    ./bin/stack.sh run mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
-    ./bin/stack.sh run psql -h postgresql_9_4 -U postgres -c 'select current_date'
-    ./bin/stack.sh run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
-    ./bin/stack.sh run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
+    ./bin/dbconsole database:shell --instance=mysql_5_5
+
+If you want to connect to the databases using all the cli options available to the standard clients, you can do it too:
+
+    ./bin/dbstack run mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
+    ./bin/dbstack run psql -h postgresql_9_4 -U postgres -c 'select current_date'
+    ./bin/dbstack run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
+    ./bin/dbstack run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
 
 The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 
@@ -110,13 +114,13 @@ your browser is executing).
 
 Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-    ./bin/stack.sh run ./app/vendor/bin/highlight-query 'and now'
-    ./bin/stack.sh run ./app/vendor/bin/lint-query 'for something'
-    ./bin/stack.sh run ./app/vendor/bin/tokenize-query 'completely different'
+    ./bin/dbstack run ./app/vendor/bin/highlight-query 'and now'
+    ./bin/dbstack run ./app/vendor/bin/lint-query 'for something'
+    ./bin/dbstack run ./app/vendor/bin/tokenize-query 'completely different'
 
 Or you can just log in to the container where all the command-line tools are, and execute any command you like from there
 
-    ./bin/stack.sh shell
+    ./bin/dbstack shell
         php bin/console --help
 
 
@@ -124,15 +128,15 @@ Or you can just log in to the container where all the command-line tools are, an
 
 ### Troubleshooting
 
-After starting the containers via `./bin/stack.sh build`, you can:
+After starting the containers via `./bin/dbstack build`, you can:
 
-- check if they are all running: `./bin/stack.sh ps`
-- check if they all bootstrapped correctly: `./bin/stack.sh logs`
-- check if a specific container bootstrapped correctly, eg: `./bin/stack.sh logs worker`
+- check if they are all running: `./bin/dbstack ps`
+- check if they all bootstrapped correctly: `./bin/dbstack logs`
+- check if a specific container bootstrapped correctly, eg: `./bin/dbstack logs worker`
 - check the processes running in one container, eg: `docker exec -ti db3v4l_postgresql_9_4 ps aux`
 
-*NB*: if the `stack.sh` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.
-See the section 'Alternative commands to stack.sh' below for examples.
+*NB*: if the `dbstack` command fails, you can use `docker` and `docker-compose` commands for troubleshooting.
+See the section 'Alternative commands to dbstack' below for examples.
 
 ### Maintenance
 
@@ -176,18 +180,18 @@ More details about advanced use cases are given in the section below.
 See the separate [FAQ](./doc/FAQ.md) document.
 
 
-## Alternative commands to stack.sh
+## Alternative commands to dbstack and dbconsole
 
-The `stack.sh` command requires a working bash shell interpreter as well as a few, common unix command-line tools.
-In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `stack.sh` fails
+The `dbstack` and `dbconsole` commands require a working bash shell interpreter as well as a few, common unix command-line tools.
+In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `dbstack` fails
 you can run alternative commands, as detailed here:
 
-    ./bin/stack.sh build => cd docker && touch containers.env.local && docker-compose build
-    ./bin/stack.sh start => cd docker && docker-compose up -d
-    ./bin/stack.sh shell => docker exec -ti db3v4l_worker su - db3v4l
-    ./bin/stack.sh stop  => cd docker && docker-compose stop
+    ./bin/dbstack build => cd docker && touch containers.env.local && docker-compose build
+    ./bin/dbstack start => cd docker && docker-compose up -d
+    ./bin/dbstack shell => docker exec -ti db3v4l_worker su - db3v4l
+    ./bin/dbstack stop  => cd docker && docker-compose stop
 
-    ./bin/stack.sh dbconsole ... =>
+    ./bin/dbconsole ... =>
         docker exec -ti db3v4l_worker su - db3v4l
         php bin/dbconsole ...
 

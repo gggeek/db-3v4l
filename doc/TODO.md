@@ -103,27 +103,22 @@
 
 - build:
   + while setting up symfony, have the web site show up a courtesy page
-  + when there are no db data files, stack.sh should wait for the db instances to be fully ready...
+  + when there are no db data files, dbstack should wait for the db instances to be fully ready...
     (use docker native status monitoring to achieve this?)
   + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
   + run security-checker as part of composer post-install and post-upgrade?
-  + stack.sh: force usage of a random (or user-provided) pwd for db root account on startup
-  + stack.sh: check for ports conflict (80 and 443) on startup
+  + dbstack: force usage of a random (or user-provided) pwd for db root account on startup
+  + dbstack: check for ports conflict (80 and 443) on startup
     + try to make the output of post-(update/install) composer scripts more visible by default
-  + stack.sh: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
+  + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
   + add portainer.io ?
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
-  + move cleanup scripts to stack.sh
-  + also: allow cleaning up of docker logs for own images - eg.
-    echo "" > $(docker inspect --format='{{.LogPath}}' <container_name_or_id>)
-    nb: needs root perms
   + add a script that removes docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
-  + add shell completion for commands of stack.sh
-  + add ./bin/dbconsole as alternative to './bin/stack.sh dbconsole' ?
+  + add shell completion for commands of dbstack
 
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands
@@ -167,3 +162,6 @@
 - worker: add phpbench as dependency for easing testing
 
 - borrow ideas from https://github.com/zzzprojects/sqlfiddle3
+
+- add more tools for parsing/validating sql code, such as adding colorization or improving explain plans
+  eg: https://explain.depesz.com/

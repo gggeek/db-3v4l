@@ -19,7 +19,9 @@ PARALLEL_BUILD=
 REBUILD=false
 RECREATE=false
 SETUP_APP_ON_BUILD=true
+SILENT=false
 VERBOSITY=
+WORKER_CONTAINER=
 WORKER_USER=
 
 help() {
@@ -28,20 +30,24 @@ help() {
 Manages the Db3v4l Docker Stack
 
 Commands:
-    build           build or rebuild the complete set of containers and set up the app. Leaves the stack running
-    dbconsole       execute an application command in the worker container
-    images          list container images
-    kill            kill containers
-    logs            view output from containers
-    pause           pause the containers
-    ps              show the status of running containers
-    setup           set up the app without rebuilding the containers first
-    run             execute a single command in the worker container
-    shell           starts a shell in the worker container
-    start           start the complete set of containers
-    stop            stop the complete set of containers
-    top             display the running container processes
-    unpause         unpause the containers
+    build               build or rebuild the complete set of containers and set up the app. Leaves the stack running
+    cleanup CATEGORY    remove tmeporary data/logs/caches/etc... CATEGORY can be any of:
+                        - databases       NB: this removes all your data! Better done with stopped containers
+                        - docker-images   only removes unused images. Can be quite beneficial to free up space
+                        - docker-logs     NB: for this to work, you'll need to run  the script as root
+                        - logs            logs from the databases, webservers, symfony
+    images              list container images
+    kill                kill containers
+    logs                view output from containers
+    pause               pause the containers
+    ps                  show the status of running containers
+    setup               set up the app without rebuilding the containers first
+    run                 execute a single command in the worker container
+    shell               start a shell in the worker container
+    start               start the complete set of containers
+    stop                stop the complete set of containers
+    top                 display the running container processes
+    unpause             unpause the containers
 
 Options:
     -c              clean up docker images which have become useless - when running 'build'
@@ -71,13 +77,13 @@ check_requirements() {
 }
 
 load_default_config() {
-    COMPOSEPROJECT=$(grep -F  COMPOSE_PROJECT_NAME ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_PROJECT_NAME=//')
+    COMPOSEPROJECT=$(grep -F COMPOSE_PROJECT_NAME ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_PROJECT_NAME=//')
     if [ -z "${COMPOSEPROJECT}" ]; then
         printf "\n\e[31mCan not find the name of the composer project name in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
     fi
     WORKER_CONTAINER="${COMPOSEPROJECT}_${WORKER_SERVICE}"
-    WORKER_USER=$(grep -F  CONTAINER_USER ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER=//')
+    WORKER_USER=$(grep -F CONTAINER_USER ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER=//')
     if [ -z "${WORKER_USER}" ]; then
         printf "\n\e[31mCan not find the name of the container user account in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
@@ -90,8 +96,8 @@ setup_local_config() {
     CURRENT_USER_UID=$(id -u)
     CURRENT_USER_GID=$(id -g)
 
-    CONTAINER_USER_UID=$(grep -F  CONTAINER_USER_UID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_UID=//')
-    CONTAINER_USER_GID=$(grep -F  CONTAINER_USER_GID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_GID=//')
+    CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_UID=//')
+    CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_GID=//')
 
     touch ${APP_LOCAL_CONFIG_FILE}
 
@@ -182,6 +188,49 @@ wait_for_bootstrap() {
     fi
 }
 
+cleanup() {
+    case "${1}" in
+        databases)
+            if [ ${SILENT} != true ]; then
+                echo "Do you really want to delete all database data?"
+                select yn in "Yes" "No"; do
+                    case $yn in
+                        Yes ) break ;;
+                        No ) exit 1 ;;
+                    esac
+                done
+            fi
+
+            find ./data/ -type f ! -name .gitkeep -delete
+            find ./data/ -type d -empty -delete
+        ;;
+        docker-images)
+            docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
+        ;;
+        docker-logs)
+            for CONTAINER in $(docker-compose ps -q)
+            do
+                LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
+                if [ -n "${LOGFILE}" ]; then
+                    echo "" > ${LOGFILE}
+                fi
+            done
+        ;;
+        logs)
+            find ./logs/ -type f ! -name .gitkeep -delete
+            find ../app/var/log/ -type f ! -name .gitkeep -delete
+        ;;
+        symfony-cache)
+            find ../app/var/cache/ -type f ! -name .gitkeep -delete
+        ;;
+        *)
+            printf "\n\e[31mERROR: unknown cleanup target: ${1}\e[0m\n\n" >&2
+            help
+            exit 1
+        ;;
+    esac
+}
+
 # @todo move to a function
 while getopts ":chnprsvw:z" opt
 do
@@ -240,14 +289,16 @@ case "${COMMAND}" in
         build
     ;;
 
-    #cleanup)
-    #;;
+    cleanup)
+        cleanup "${2}"
+    ;;
 
     config)
         docker-compose ${VERBOSITY} config
     ;;
 
     dbconsole)
+        # @deprecated - left in for courtesy
         shift
         # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
         docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"
