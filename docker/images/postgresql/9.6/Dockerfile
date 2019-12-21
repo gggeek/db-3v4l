@@ -10,11 +10,11 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 
 # Update preinstalled packages
 # -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
+RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade ; fi
 
 # Base packages
 # -----------------------------------------------------------------------------
-#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 #    procps
 
 # PG config

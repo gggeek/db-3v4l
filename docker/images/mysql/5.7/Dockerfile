@@ -10,7 +10,7 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 
 # Base packages - `ps` is required before the apt upgrade of mysql...
 # -----------------------------------------------------------------------------
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     procps
 
 # Update preinstalled packages

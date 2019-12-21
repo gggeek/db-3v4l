@@ -10,10 +10,12 @@
 APP_DEFAULT_CONFIG_FILE=containers.env
 APP_LOCAL_CONFIG_FILE=containers.env.local
 DOCKER_DEFAULT_CONFIG_FILE=.env
-WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_worker
+ADMIN_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_admin
 WEB_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_web
+WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_worker
 WORKER_SERVICE=worker
 # vars
+AS_ROOT=false
 BOOTSTRAP_TIMEOUT=300
 CLEANUP_IMAGES=false
 DOCKER_NO_CACHE=
@@ -46,7 +48,7 @@ Commands:
     ps                  show the status of running containers
     setup               set up the app without rebuilding the containers first
     run                 execute a single command in the worker container
-    shell               start a shell in the worker container
+    shell               start a shell in the worker container as the application user
     start               start the complete set of containers
     stop                stop the complete set of containers
     top                 display the running container processes
@@ -59,6 +61,7 @@ Options:
     -p              build containers in parallel - when running 'build'
     -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
+                    log in as root instead of the app user account when running 'shell' and 'run'
     -v              verbose mode
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
     -z              avoid using docker cache - when running 'build -r'
@@ -142,7 +145,8 @@ build() {
     fi
 
     if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
-        wait_for_bootstrap
+        # @todo replace with 'all' when we have support for it...
+        wait_for_bootstrap app
     fi
 
     if [ ${CLEANUP_IMAGES} = 'true' ]; then
@@ -161,23 +165,56 @@ setup_app() {
 
     docker-compose ${VERBOSITY} up -d ${WORKER_SERVICE}
 
-    wait_for_bootstrap
+    wait_for_bootstrap worker
 
     echo "[`date`] Setting up the app (from inside the Worker container)..."
     docker exec ${WORKER_CONTAINER} su - ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install"
     echo "[`date`] Setup finished"
 }
 
-# Wait until worker has fully booted
+# Wait until containers have fully booted
 wait_for_bootstrap() {
-    echo "Waiting for Worker and Web containers bootstrap to finish..."
+    case "${1}" in
+        admin)
+            BOOTSTRAP_CONTAINERS_NAMES=Admin
+            BOOTSTRAP_CONTAINERS_FILES="${ADMIN_BOOTSTRAP_OK_FILE}"
+        ;;
+        #all)
+        # @todo
+        #;;
+        app)
+            BOOTSTRAP_CONTAINERS_NAMES='Worker, Web and Admin'
+            BOOTSTRAP_CONTAINERS_FILES="${ADMIN_BOOTSTRAP_OK_FILE} ${WEB_BOOTSTRAP_OK_FILE} ${WORKER_BOOTSTRAP_OK_FILE}"
+        ;;
+        web)
+            BOOTSTRAP_CONTAINERS_NAMES=Web
+            BOOTSTRAP_CONTAINERS_FILES="${WEB_BOOTSTRAP_OK_FILE}"
+        ;;
+        worker)
+            BOOTSTRAP_CONTAINERS_NAMES=Worker
+            BOOTSTRAP_CONTAINERS_FILES="${WORKER_BOOTSTRAP_OK_FILE}"
+        ;;
+        *)
+            printf "\n\e[31mERROR: unknown booting container: ${1}\e[0m\n\n" >&2
+            help
+            exit 1
+        ;;
+    esac
+
+    echo "Waiting for ${BOOTSTRAP_CONTAINERS_NAMES} containers bootstrap to finish..."
     BOOTSTRAP_OK=false
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
         sleep 1
-        if [ -f ${WORKER_BOOTSTRAP_OK_FILE} -a -f ${WEB_BOOTSTRAP_OK_FILE} ]; then
-            BOOTSTRAP_OK=true
+        BOOTSTRAP_OK=true
+        for BS_OK_FILE in ${BOOTSTRAP_CONTAINERS_FILES}; do
+            if [ ! -f ${BS_OK_FILE} ]; then
+                BOOTSTRAP_OK=false
+                break
+            fi
+        done
+        if [ ${BOOTSTRAP_OK} = true ]; then
             break
         fi
         printf .
@@ -186,7 +223,7 @@ wait_for_bootstrap() {
     if [ $i -gt 0 ]; then echo; fi
 
     if [ ${BOOTSTRAP_OK} != 'true' ]; then
-        printf "\n\e[31mWorker and/or Web bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
+        printf "\n\e[31m${BOOTSTRAP_CONTAINERS_NAMES} bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
         exit 1
     fi
 }
@@ -265,6 +302,7 @@ do
             PARALLEL_BUILD=--parallel
         ;;
         r)
+            AS_ROOT=true
             REBUILD=true
         ;;
         s)
@@ -336,28 +374,37 @@ case "${COMMAND}" in
         docker-compose ${VERBOSITY} pause
     ;;
 
+    run)
+        shift
+        if [ ${AS_ROOT} = true ]; then
+            docker exec -ti ${WORKER_CONTAINER} "$@"
+        else
+            # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
+            # @todo should we try to start from the 'app' dir ?
+            docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
+            #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
+        fi
+    ;;
+
     setup)
         setup_app
     ;;
 
-    run)
-        shift
-        # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
-        # @todo should we try to start from the 'app' dir ?
-        docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
-        #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
-    ;;
-
     shell)
-        docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER}
-        #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER}
+        if [ ${AS_ROOT} = true ]; then
+            docker exec -ti ${WORKER_CONTAINER} bash
+        else
+            docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER}
+            #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER}
+        fi
     ;;
 
     start)
         docker-compose ${VERBOSITY} up -d ${2}
         if [ -z "${2}" -o "${2}" = "worker" ]; then
             if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
-                wait_for_bootstrap
+                # @todo replace with 'all' when we have support for it...
+                wait_for_bootstrap app
             fi
         fi
     ;;

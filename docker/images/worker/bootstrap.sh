@@ -5,19 +5,24 @@ echo "[`date`] Bootstrapping the Worker..."
 clean_up() {
     # Perform program exit housekeeping
     echo "[`date`] Stopping the container..."
+    if [ -f "${BS_OK_FILE}" ]; then
+        rm "${BS_OK_FILE}"
+    fi
     exit
 }
-
-# Fix UID & GID for user '${CONTAINER_USER}'
-
-echo "[`date`] Fixing filesystem permissions..."
 
 PASSWD_LINE=$(cat /etc/passwd | grep ${CONTAINER_USER})
 ORIG_UID=$(echo $PASSWD_LINE | cut -f3 -d:)
 ORIG_GID=$(echo $PASSWD_LINE | cut -f4 -d:)
 ORIG_HOME=$(echo $PASSWD_LINE | cut -f6 -d:)
+
 BS_OK_DIR=${ORIG_HOME}/app/var
-BS_OK=${BS_OK_DIR}/bootstrap_ok_worker
+BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok_worker
+
+# Fix UID & GID for user '${CONTAINER_USER}'
+
+echo "[`date`] Fixing filesystem permissions..."
+
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
@@ -26,8 +31,8 @@ if [ ! -d ${BS_OK_DIR} ]; then
     mkdir -p ${BS_OK_DIR}
     #chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${BS_OK_DIR}
 else
-    if [ -f "${BS_OK}" ]; then
-        rm "${BS_OK}"
+    if [ -f "${BS_OK_FILE}" ]; then
+        rm "${BS_OK_FILE}"
     fi
 fi
 
@@ -92,7 +97,7 @@ else
     fi
 fi
 
-echo "[`date`] Bootstrap finished" | tee "${BS_OK}"
+echo "[`date`] Bootstrap finished" | tee "${BS_OK_FILE}"
 
 trap clean_up TERM
 

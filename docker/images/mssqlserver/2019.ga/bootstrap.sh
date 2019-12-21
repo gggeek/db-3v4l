@@ -7,6 +7,9 @@ clean_up() {
     echo "[`date`] Stopping the service..."
     #service mysql stop
     pkill --signal term sqlservr
+    if [ -f /var/run/bootstrap_ok ]; then
+        rm /var/run/bootstrap_ok
+    fi
     exit
 }
 

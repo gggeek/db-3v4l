@@ -13,10 +13,9 @@ Version ??? (unreleased)
 
 - Improved: dbconsole commands options `only-instances` and `except-instances` can now be repeated multiple times
 
-- Improved: dbstack command: `cleanup` learned argument `shared-data`
+- Improved: dbstack commands `run` and `shell` learned option `-r` to run as root
 
-- Improved: run cursory tests of the web interface on Travis
-
+- Improved: dbstack script learned new command: `rootshell`
 
 Version 0.10
 ------------

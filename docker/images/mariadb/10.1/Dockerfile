@@ -15,7 +15,7 @@ RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=
 
 # Base packages
 # -----------------------------------------------------------------------------
-#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 #    procps
 
 # Clear archives in apt cache folder to slim down the image

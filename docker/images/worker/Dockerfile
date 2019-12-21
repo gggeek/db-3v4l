@@ -18,7 +18,7 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 
 # Base packages (some are required by the steps below)
 # ------------------------------------------------------------------------------
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     alien \
     default-mysql-client \
     curl \
@@ -49,7 +49,7 @@ RUN pecl channel-update pecl.php.net
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools unixodbc-dev
+RUN DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get -y install msodbcsql17 mssql-tools unixodbc-dev
 RUN sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/g' /etc/locale.gen
 RUN locale-gen
 RUN pecl install sqlsrv-5.7.0preview
@@ -90,6 +90,13 @@ RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 # tuning-primer.sh
 RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
+
+# Redis cli and php extension
+RUN apt-get -y install redis-tools
+# @todo add suport for igbinary serialization
+RUN yes '' | pecl install redis
+RUN echo "extension=redis.so" > /etc/php/7.3/mods-available/redis.ini
+RUN ln -s /etc/php/7.3/cli/conf.d/90-redis.ini /etc/php/7.3/mods-available/redis.ini
 
 # Local user
 # ------------------------------------------------------------------------------
@@ -136,7 +143,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # @todo if those are only needed for developers of the app itself and not users, compile this in conditionally
 # ------------------------------------------------------------------------------
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get -y install nodejs
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 # note: there is no yarn package attged with 'buster' release, only 'stable'...

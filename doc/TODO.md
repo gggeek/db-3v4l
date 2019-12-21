@@ -1,5 +1,7 @@
 ## Fixes
 
+- script `./bin/dbconsole sql:shell` not working from host - it only works from worker
+
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
@@ -7,8 +9,6 @@
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?
-
-- script `./bin/dbconsole sql:shell` not working from host - it only works from worker
 
 
 ## Major features
@@ -18,21 +18,21 @@
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
-- worker+web: add a queued-task implementation, using sf messenger and a db
+- worker+web: add a queued-task implementation, using sf messenger and a queueing daemon (redis?)
 
-- web: when listing instances, show the _real_ db version nr, as done by cli.
+- web: when listing instances, show the _real_ db version nr, as done by cli
 
 - web: allow to insert sql snippet, pick the desired instances, run it (queued) and show results
 
 - worker: add a php-based sql executor, so that we can return datasets in a fully structured way instead of relying
-  on stdout of cli tools
+  on stdout of cli tools (wip...)
   + investigate: are there good db-access libs written for nodejs that could be used instead/as well?
 
 - worker+web?: allow custom init/ddl scripts for temp dbs (to load data and set session vars)
 
 - pick up a library which allows to load db-agnostic schema defs and data (see what adminer can do...)
 
-- web: store previous snippets in a dedicated db, list them for reuse (private to each user session)
+- web: store previous snippets in a dedicated db (redis?), list them for reuse (private to each user session)
 
 - web: add rest API
 
@@ -71,7 +71,7 @@
 
 ## Improvements
 
-- improve handling of 'select' queries output
+- improve handling output of 'select' queries
   + test selecting a string with a | character in it =>
     + no client quotes it: to reliably parse columns we have to rely on tabular format, ie. measure header width...
     + sqllite in default output mode is even worse... (see below)
@@ -82,7 +82,7 @@
 
 - improve travis testing:
   + add tests:
-    + make sure after query execution there are no leftover users
+    + make sure after query execution there are no leftover users or dbs (use jq? or sf panther?)
     + same but with an invalid query
     + ...
   + use 'bats' for shell-driven tests?
@@ -104,11 +104,13 @@
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
 
 - build:
+  + add composer HEALTHCHECK to containers, at least our own (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + while setting up symfony, have the web site show up a courtesy page
   + allow dbstack to download and install docker-compose if it is not found
-  + when there are no db data files, dbstack & dbconsole should wait for the db instances to be fully ready...
-    (use docker native status monitoring to achieve this?)
-  + add a composer post-upgrade script that downloads automatically the latest version of adminer or at least checks it
+  + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
+    (see examples at https://docs.docker.com/compose/startup-order/)
+  + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
+    or at least checks it
   + run security-checker as part of composer post-install and post-upgrade?
   + dbstack: force usage of a random (or user-provided) pwd for db root account on startup
   + dbstack: check for ports conflict (80 and 443) on startup

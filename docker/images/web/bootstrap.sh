@@ -7,15 +7,18 @@ clean_up() {
     echo "[`date`] Stopping the services..."
     service nginx stop
     service php7.3-fpm stop
+    if [ -f "${BS_OK_FILE}" ]; then
+        rm "${BS_OK_FILE}"
+    fi
     exit
 }
 
 BS_OK_DIR=/var/www/db3v4l/var
-BS_OK=${BS_OK_DIR}/bootstrap_ok_web
+BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok_web
 
 # Allow any process to see if bootstrap finished by looking up this file
-if [ -f ${BS_OK} ]; then
-    rm ${BS_OK}
+if [ -f ${BS_OK_FILE} ]; then
+    rm ${BS_OK_FILE}
 fi
 
 # Fix UID & GID for user www-data
@@ -41,8 +44,6 @@ fi
 
 #echo "[`date`] Modifying Nginx configuration..."
 
-# @todo here we should wait for the worker container to finish setting up the app, really
-
 echo "[`date`] Starting the services..."
 
 trap clean_up TERM
@@ -50,7 +51,7 @@ trap clean_up TERM
 service php7.3-fpm start
 service nginx restart
 
-echo "[`date`] Bootstrap finished" | tee ${BS_OK}
+echo "[`date`] Bootstrap finished" | tee ${BS_OK_FILE}
 
 tail -f /dev/null &
 child=$!
