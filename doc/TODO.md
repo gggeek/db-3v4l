@@ -71,6 +71,8 @@
 
 ## Improvements
 
+- add TOC to readme.md (see how it's done at fe. https://raw.githubusercontent.com/phpredis/phpredis/develop/README.markdown)
+
 - improve handling output of 'select' queries
   + test selecting a string with a | character in it =>
     + no client quotes it: to reliably parse columns we have to rely on tabular format, ie. measure header width...

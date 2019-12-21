@@ -96,7 +96,7 @@ RUN apt-get -y install redis-tools
 # @todo add suport for igbinary serialization
 RUN yes '' | pecl install redis
 RUN echo "extension=redis.so" > /etc/php/7.3/mods-available/redis.ini
-RUN ln -s /etc/php/7.3/cli/conf.d/90-redis.ini /etc/php/7.3/mods-available/redis.ini
+RUN ln -s /etc/php/7.3/mods-available/redis.ini /etc/php/7.3/cli/conf.d/90-redis.ini
 
 # Local user
 # ------------------------------------------------------------------------------
