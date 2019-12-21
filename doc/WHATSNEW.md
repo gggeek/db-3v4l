@@ -1,5 +1,5 @@
-Version ??? (unreleased)
-------------------------
+Version 0.11
+------------
 
 - Breaking change: renamed `dbconsole database:shell` command to `dbconsole sql:shell`
 
@@ -15,7 +15,7 @@ Version ??? (unreleased)
 
 - Improved: dbstack command: `cleanup` learned argument `shared-data`
 
-- Improved: dbstack commands `run` and `shell` learned option `-r` to run as root
+- Improved: dbstack commands `run` and `shell` learned option `-r` for running as root
 
 
 Version 0.10
