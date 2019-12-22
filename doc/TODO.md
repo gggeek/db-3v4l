@@ -13,7 +13,8 @@
 
 ## Major features
 
-- host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver, etc...)
+- host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver,
+  no 'admin' tools such as lazydocker and adminer, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
 
 - add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
@@ -59,6 +60,7 @@
   - add firewall rules to the all containers to block access to outside world (at bootstrap ?)
   - make app code non-writeable by www-data user (and separate nginx user from php-fpm user)
   - harden php configuration
+  - disallow network connections from db containers to redis
   - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres')
 
 - db: add more databases: Firebird 2 and 3, cockroachdb, DB2, Hana, ASE, SQL.js, Elasticsearch, SQLite 2, MongoDB, ClickHouse
@@ -124,6 +126,7 @@
   + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
   + add portainer.io ? (note: we already have a stack-admin tool...)
+  + add redisinsight container
   + add labels to all images, to help tools which can filter out containers/images by a given label
   + remove more unused stuff from containers, such as fdisk?, etc...
   + check out if we could use `docker app` to package the application
@@ -143,11 +146,6 @@
   + log by default php errors to /var/log/php and mount that dir on host ?
   + add shell completion for commands of dbconsole
 
-- lazydocker:
-  + do not list containers/images/volumes which do not belong to the db-3v4l stack
-  + test what happens trying to open the config file
-  + make '/' project be listed as 'db-3v4l'
-
 - worker: sanitize sql execution cmd:
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)
   + disallow execution of commands that are part of the db client instead of being sent to the server, such as eg. 'use db'
@@ -165,11 +163,20 @@
 - worker: improve profile of 'db3v4l' account
   + use a colorful shell prompt
 
-- worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
-
 - web+worker: set up a cronjob to remove SF profiler data
 
 - web+worker: move sf logs to a mounted volume
+
+- lazydocker:
+  + do not list containers/images/volumes which do not belong to the db-3v4l stack
+  + test what happens trying to open the config file
+  + make '/' project be listed as 'db-3v4l'
+  + test: instead of starting from debian-slim and installing lazydocker in it, could we start from the lazydocker
+    docker image? (it might be hard as it is based on 'scratch' - does it allow to install docker?... maybe
+    a better solution would be to copy the executable found in the lazydocker image into a minimalist
+    image which can run docker, such as: https://github.com/rancher/docker-from-scratch)
+
+- worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
 
 - db: mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out

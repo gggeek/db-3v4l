@@ -42,11 +42,25 @@ services:
         container_name: "${COMPOSE_PROJECT_NAME}_lazydocker"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ./config/lazydocker:/root/.config/jesseduffield/lazydocker
             # @todo could we get away with mounting something that does not include data and logs?
+            #       Maybe it would be enough to copy the composer files into the container ?
             - ./:/var/db3v4l
-        #environment:
-        #    - CONTAINER_USER
+        #env_file:
+        #    - ./containers.env
+        #    - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    redis:
+        build:
+            context: images/redis
+            args:
+                debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: redis
+        container_name: "${COMPOSE_PROJECT_NAME}_redis"
+        volumes:
+            - ./data/redis:/var/redis
+            - ./logs/redis:/var/log/redis
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"

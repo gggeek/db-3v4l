@@ -25,30 +25,18 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade ; fi
 
-# Base packages - docker and lazydocker
+# Base packages - redis
+# NB All db interaction is done by the 'admin' and 'worker' images...
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg2 \
-    procps \
-    software-properties-common \
-    vim-tiny
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-RUN add-apt-repository \
-       "deb [arch=amd64] https://download.docker.com/linux/debian \
-       $(lsb_release -cs) \
-       stable"
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    docker-ce-cli
+    redis
 
-COPY install_update_linux.sh /root/install_update_linux.sh
-RUN chmod 755 /root/install_update_linux.sh
-RUN /root/install_update_linux.sh
-
-RUN mkdir -p /root/.config/jesseduffield/lazydocker
-COPY lazydocker/config.yml /root/.config/jesseduffield/lazydocker/config.yml
+# Set up Redis
+# -----------------------------------------------------------------------------
+RUN mkdir /etc/redis/redis.conf.d
+RUN sed -i 's/bind 127.0.0.1 ::1/###bind 127.0.0.1 ::1/g' /etc/redis/redis.conf
+COPY redis/db3v4l.conf /etc/redis/redis.conf.d/db3v4l.conf
+RUN echo 'include /etc/redis/redis.conf.d/db3v4l.conf' >> /etc/redis/redis.conf
 
 # Clear archives in apt cache folder
 # -----------------------------------------------------------------------------
@@ -58,5 +46,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # -----------------------------------------------------------------------------
 COPY bootstrap.sh /root/bootstrap.sh
 RUN chmod 755 /root/bootstrap.sh
+
+EXPOSE 6379
 
 ENTRYPOINT ["/root/bootstrap.sh"]

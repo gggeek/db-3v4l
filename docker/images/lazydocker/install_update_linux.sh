@@ -22,6 +22,3 @@ curl -L -o lazydocker.tar.gz $GITHUB_URL
 tar xvf lazydocker.tar.gz
 mv lazydocker /usr/local/bin/
 rm lazydocker.tar.gz
-
-# create config dir
-mkdir -p /root/.config/jesseduffield/lazydocker
