@@ -3,6 +3,8 @@ Version ??? (unreleased)
 
 - Improved: better sorting of results (eg. mariadb 10 comes after mariadb 5)
 
+- New: dbstack learned a new command: `admin`
+
 
 Version 0.11
 ------------

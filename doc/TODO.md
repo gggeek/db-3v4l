@@ -110,22 +110,23 @@
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
 
 - build/docker:
-  + add composer HEALTHCHECK to containers, at least our own (see https://docs.docker.com/engine/reference/builder/#healthcheck)
+  + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + while setting up symfony, have the web site show up a courtesy page
   + allow dbstack to download and install docker-compose if it is not found
   + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
     (see examples at https://docs.docker.com/compose/startup-order/)
   + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
-    or at least checks it
+    or at least checks it - see how we install the latest available lazydocker
   + run security-checker as part of composer post-install and post-upgrade?
   + dbstack: force usage of a random (or user-provided) pwd for db root account on startup
   + dbstack: check for ports conflict (80 and 443) on startup
     + try to make the output of post-(update/install) composer scripts more visible by default
   + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
-  + add portainer.io / lazydocker / dockstation ?
+  + add portainer.io ? (note: we already have a stack-admin tool...)
   + add labels to all images, to help tools which can filter out containers/images by a given label
   + remove more unused stuff from containers, such as fdisk?, etc...
+  + check out if we could use `docker app` to package the application
 
 - host: improve cli scripts:
   + add removal of docker images and containers (eg. docker-compose down)
@@ -141,6 +142,11 @@
     - sqlite might be problematic
   + log by default php errors to /var/log/php and mount that dir on host ?
   + add shell completion for commands of dbconsole
+
+- lazydocker:
+  + do not list containers/images/volumes which do not belong to the db-3v4l stack
+  + test what happens trying to open the config file
+  + make '/' project be listed as 'db-3v4l'
 
 - worker: sanitize sql execution cmd:
   + examine in detail and document the differences between running a command vs a file (eg. transaction usage)

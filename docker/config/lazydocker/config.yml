@@ -1,0 +1,7 @@
+reporting: "off"
+
+commandTemplates:
+    dockerCompose: docker-compose --project-directory=/var/db3v4l
+
+oS:
+    openCommand: "vi {{filename}}"

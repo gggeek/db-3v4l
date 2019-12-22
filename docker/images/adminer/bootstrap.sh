@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping the Admin server..."
+echo "[`date`] Bootstrapping the DB Admin server..."
 
 clean_up() {
     # Perform program exit housekeeping

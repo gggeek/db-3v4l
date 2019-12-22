@@ -8,15 +8,15 @@ networks:
 
 services:
 
-    admin:
+    adminer:
         build:
-            context: images/admin
+            context: images/adminer
             args:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: admin
-        container_name: "${COMPOSE_PROJECT_NAME}_admin"
+        hostname: adminer
+        container_name: "${COMPOSE_PROJECT_NAME}_adminer"
         # No ports exposed by default: we use the 'web' container as reverse proxy
         #ports:
         #    - "${COMPOSE_WEB_LISTEN_ADDR}:${COMPOSE_WEB_LISTEN_PORT_HTTP}:80"
@@ -27,6 +27,26 @@ services:
             - ./logs/admin/php:/var/log/php
         environment:
             - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    lazydocker:
+        build:
+            context: images/lazydocker
+            args:
+                debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: lazydocker
+        container_name: "${COMPOSE_PROJECT_NAME}_lazydocker"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./config/lazydocker:/root/.config/jesseduffield/lazydocker
+            # @todo could we get away with mounting something that does not include data and logs?
+            - ./:/var/db3v4l
+        #environment:
+        #    - CONTAINER_USER
         env_file:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"

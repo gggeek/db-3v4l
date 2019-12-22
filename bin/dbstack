@@ -339,6 +339,10 @@ if [ ! -f ${APP_LOCAL_CONFIG_FILE} ]; then
 fi
 
 case "${COMMAND}" in
+    admin)
+        docker exec -ti db3v4l_lazydocker lazydocker
+    ;;
+
     build)
         build
     ;;
