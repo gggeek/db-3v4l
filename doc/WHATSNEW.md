@@ -1,3 +1,9 @@
+Version ??? (unreleased)
+------------------------
+
+- Improved: better sorting of results (eg. mariadb 10 comes after mariadb 5)
+
+
 Version 0.11
 ------------
 

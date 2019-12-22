@@ -222,8 +222,23 @@ abstract class SQLExecutingCommand extends BaseCommand
             }
         }
 
-        /// @todo implement proper sorting based on vendor name + version
-        ksort($results);
+        uksort($results, function ($a, $b) {
+            $aParts = explode('_', $a, 2);
+            $bParts = explode('_', $b, 2);
+            $cmp = strcasecmp($aParts[0], $bParts[0]);
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+            if (count($aParts) == 1) {
+                return -1;
+            }
+            if (count($bParts) == 1) {
+                return 1;
+            }
+            $aVersion = str_replace('_', '.', $aParts[1]);
+            $bVersion = str_replace('_', '.', $bParts[1]);
+            return version_compare($aVersion, $bVersion);
+        });
 
         return [
             'succeeded' => $succeeded,

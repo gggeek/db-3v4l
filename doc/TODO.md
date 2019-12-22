@@ -61,12 +61,16 @@
   - harden php configuration
   - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres')
 
-- db: add more database types: Firebird 2 and 3, cockroachdb, DB2, Elasticsearch, SQLite 2, MongoDB, ClickHouse
-  - https://hub.docker.com/r/ibmcom/db2
+- db: add more databases: Firebird 2 and 3, cockroachdb, DB2, Hana, ASE, SQL.js, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/cockroachdb/cockroach
+  - https://hub.docker.com/r/ibmcom/db2
+  - https://hub.docker.com/_/sap-hana-express-edition (https://developers.sap.com/tutorials/hxe-docstore-04-php-app.html)
+  - https://github.com/djarosz/sap-ase-developer-docker, https://github.com/dstore-dbap/sap-ase-docker
   - https://github.com/kripken/sql.js/
 
 - db: add clustered mysql/postgresql containers
+
+- db: add more sqllite binaries (see list at https://www.sqlite.org/download.html and https://www.sqlite.org/chronology.html)
 
 
 ## Improvements
@@ -119,7 +123,7 @@
     + try to make the output of post-(update/install) composer scripts more visible by default
   + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
-  + add portainer.io ?
+  + add portainer.io / lazydocker / dockstation ?
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
@@ -134,7 +138,6 @@
   + make it possible to have uniform table formatting for SELECT-like queries
     - test with rows containing multiple cols, newlines, ...
     - sqlite might be problematic
-  + when sorting instances, make mariadb_10 go after mariadb_5 and postgresql_10 go after postgresql_9
   + log by default php errors to /var/log/php and mount that dir on host ?
   + add shell completion for commands of dbconsole
 
