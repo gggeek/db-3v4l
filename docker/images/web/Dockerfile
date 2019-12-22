@@ -1,5 +1,13 @@
 FROM debian:buster-slim
 
+LABEL \
+    org.opencontainers.image.authors="ggiunta@gmail.com" \
+    org.opencontainers.image.url="https://github.com/gggeek/db-3v4l" \
+    org.opencontainers.image.documentation="https://github.com/gggeek/db-3v4l" \
+    org.opencontainers.image.source="https://github.com/gggeek/db-3v4l" \
+    org.opencontainers.image.licenses="GPL-2.0-or-later" \
+    org.opencontainers.image.title="DB-3va4l Web"
+
 ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true

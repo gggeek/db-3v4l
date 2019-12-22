@@ -109,7 +109,7 @@
 - ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
 
-- build:
+- build/docker:
   + add composer HEALTHCHECK to containers, at least our own (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + while setting up symfony, have the web site show up a courtesy page
   + allow dbstack to download and install docker-compose if it is not found
@@ -124,6 +124,7 @@
   + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
   + add an opcache control panel (reverse-proxying one from web) ? (that and/or matthimatiker/opcache-bundle)
   + add portainer.io / lazydocker / dockstation ?
+  + add labels to all images, to help tools which can filter out containers/images by a given label
   + remove more unused stuff from containers, such as fdisk?, etc...
 
 - host: improve cli scripts:
