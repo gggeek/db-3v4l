@@ -44,6 +44,7 @@ Commands:
     images              list container images
     kill                kill containers
     logs                view output from containers
+    monitor             starts an interactive console for monitoring containers, images, volumes
     pause               pause the containers
     ps                  show the status of running containers
     setup               set up the app without rebuilding the containers first
@@ -344,10 +345,6 @@ if [ ! -f ${APP_LOCAL_CONFIG_FILE} ]; then
 fi
 
 case "${COMMAND}" in
-    admin)
-        docker exec -ti db3v4l_lazydocker lazydocker
-    ;;
-
     build)
         build
     ;;
@@ -368,19 +365,27 @@ case "${COMMAND}" in
     ;;
 
     images)
-        docker-compose ${VERBOSITY} images
+        docker-compose ${VERBOSITY} images ${2}
+    ;;
+
+    kill)
+        docker-compose ${VERBOSITY} kill ${2}
     ;;
 
     logs)
         docker-compose ${VERBOSITY} logs ${2}
     ;;
 
+    monitor)
+        docker exec -ti db3v4l_lazydocker lazydocker
+    ;;
+
     ps)
-        docker-compose ${VERBOSITY} ps
+        docker-compose ${VERBOSITY} ps ${2}
     ;;
 
     pause)
-        docker-compose ${VERBOSITY} pause
+        docker-compose ${VERBOSITY} pause ${2}
     ;;
 
     run)
@@ -423,11 +428,11 @@ case "${COMMAND}" in
     ;;
 
     top)
-        docker-compose ${VERBOSITY} top
+        docker-compose ${VERBOSITY} top ${2}
     ;;
 
     unpause)
-        docker-compose ${VERBOSITY} unpause
+        docker-compose ${VERBOSITY} unpause ${2}
     ;;
 
     #update)

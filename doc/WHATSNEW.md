@@ -1,9 +1,9 @@
 Version ??? (unreleased)
 ------------------------
 
-- Improved: better sorting of results (eg. mariadb 10 comes after mariadb 5)
+- Improved: better sorting of results (eg. mariadb 10 now comes after mariadb 5)
 
-- New: dbstack learned a new command: `admin`. It will open an interactive, textual admin console, which gives useful
+- New: dbstack learned a new command: `monitor`. It will open an interactive, textual admin console, which gives useful
   information about the running containers (eg. cpu and memory usage)
 
 

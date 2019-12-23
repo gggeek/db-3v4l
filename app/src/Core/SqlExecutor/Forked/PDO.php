@@ -7,7 +7,8 @@ use Db3v4l\Service\DatabaseConfigurationManager;
 use Db3v4l\Util\Process;
 
 /**
- * Executes sql queries via a separate symfony console command
+ * Executes sql queries via a separate symfony console command.
+ * Relies on the 'sql:execute' dbconsole command
  */
 class PDO extends ForkedExecutor implements CommandExecutor
 {
@@ -69,7 +70,6 @@ class PDO extends ForkedExecutor implements CommandExecutor
 
         $instanceConfiguration = $this->dbConfigurationManager->getInstanceConfiguration($this->instanceName);
 
-        /// @todo add support for charset ?
         if ($instanceConfiguration != $this->databaseConfiguration) {
             if (isset($this->databaseConfiguration['dbname'])) {
                 $options[] = '--database=' . $this->databaseConfiguration['dbname'];

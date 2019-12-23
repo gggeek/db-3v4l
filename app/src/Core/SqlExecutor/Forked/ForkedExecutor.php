@@ -13,7 +13,5 @@ abstract class ForkedExecutor extends BaseExecutor
     {
         $arguments = array_map('escapeshellarg', $arguments);
         return escapeshellcmd($command) . ' ' . implode(' ', $arguments);
-
-        return new Process($commandLine, null, $env);
     }
 }
