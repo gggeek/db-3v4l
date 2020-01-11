@@ -277,10 +277,10 @@ abstract class SQLExecutingCommand extends BaseCommand
      */
     protected function writeResults(array $results, $time = null)
     {
-        $formattedResults = $this->formatResults($results);
         if ($this->outputFile != null) {
-            file_put_contents($this->outputFile, $formattedResults);
+            $this->writeResultsToFile($results);
         } else {
+            $formattedResults = $this->formatResults($results);
             $this->writeln($formattedResults, OutputInterface::VERBOSITY_QUIET,  OutputInterface::OUTPUT_RAW);
         }
 
@@ -293,5 +293,11 @@ abstract class SQLExecutingCommand extends BaseCommand
                 $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
             }
         }
+    }
+
+    protected function writeResultsToFile(array $results)
+    {
+        $formattedResults = $this->formatResults($results);
+        file_put_contents($this->outputFile, $formattedResults);
     }
 }

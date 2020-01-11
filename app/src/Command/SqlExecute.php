@@ -260,4 +260,27 @@ class SqlExecute extends DatabaseManagingCommand
             $string
         );
     }
+
+    protected function hasDBSpecTokens($string)
+    {
+        return $string != str_replace(
+            array('{dbtype}', '{instancename}', '{vendor}'),
+            '',
+            $string
+        );
+    }
+
+    protected function writeResultsToFile(array $results)
+    {
+        if (!$this->hasDBSpecTokens($this->outputFile)) {
+            parent::writeResultsToFile($results);
+            return;
+        }
+
+        foreach($results['data'] as $instanceName => $data) {
+            $formattedData = $this->formatResults(array('data' => $data));
+            $outputFile = $this->replaceDBSpecTokens($this->outputFile, $instanceName, $this->dbConfigurationManager->getInstanceConfiguration($instanceName));
+            file_put_contents($outputFile, $formattedData);
+        }
+    }
 }
