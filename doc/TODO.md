@@ -70,7 +70,7 @@
   - https://github.com/djarosz/sap-ase-developer-docker, https://github.com/dstore-dbap/sap-ase-docker
   - https://github.com/kripken/sql.js/
 
-- db: add clustered mysql/postgresql containers
+- db: add clustered mysql/postgresql containers; mysql-proxy and pgsql-proxy
 
 - db: add more sqllite binaries (see list at https://www.sqlite.org/download.html and https://www.sqlite.org/chronology.html)
 
