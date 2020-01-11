@@ -74,6 +74,7 @@
 /docker/logs/postgresql/10.11/*
 /docker/logs/postgresql/11.6/*
 /docker/logs/postgresql/12.1/*
+/docker/logs/redis/*
 /docker/logs/web/redis/*
 /docker/logs/web/nginx/*
 /docker/logs/web/php/*
