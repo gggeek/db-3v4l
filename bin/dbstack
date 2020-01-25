@@ -29,7 +29,7 @@ WORKER_CONTAINER=
 WORKER_USER=
 
 help() {
-    printf "Usage: stack.sh [OPTIONS] COMMAND [OPTARG]
+    printf "Usage: dbstack [OPTIONS] COMMAND [OPTARG]
 
 Manages the Db3v4l Docker Stack
 
