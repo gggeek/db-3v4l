@@ -62,7 +62,7 @@ Options:
     -p              build containers in parallel - when running 'build'
     -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
-                    log in as root instead of the app user account when running 'shell' and 'run'
+                    log in as root instead of the app user account - when running 'shell' and 'run'
     -v              verbose mode
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
     -z              avoid using docker cache - when running 'build -r'
