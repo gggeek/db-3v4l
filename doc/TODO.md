@@ -1,5 +1,8 @@
 ## Fixes
 
+- when running 2 selects (or 1 select plus 'show warnings'), only the 1st data set is present in dbconsole output ?
+  (maybe it's when a returned dataset is empty?)
+
 - script `./bin/dbconsole sql:shell` not working from host - it only works from worker
 
 - adminer:
@@ -12,6 +15,9 @@
 
 
 ## Major features
+
+- allow picking specific minor-versions for each db
+  also: how to easily upgrade a db once the initial image has been downloaded? (eg. 8.0.18 -> 8.0.19) ?
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver,
   no 'admin' tools such as lazydocker and adminer, etc...)
@@ -183,9 +189,11 @@
 
 - db: postgresql: move stats_temp_directory to /tmpfs
 
-- worker: add phpbench as dependency for easing testing
+- worker: add phpbench as dependency for easing perf/scalability testing
 
 - borrow ideas from https://github.com/zzzprojects/sqlfiddle3
 
 - add more tools for parsing/validating sql code, such as adding colorization or improving explain plans
   eg: https://explain.depesz.com/
+
+- add mysqlbench
