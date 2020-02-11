@@ -3,7 +3,12 @@ Version 0.13
 
 - New: Percona pt-toolkit is now installed in the worker container
 
+- Improved: added the `-u` option to `dbstack.sh build`, to allow updating the base Docker images.
+  This allows to easily upgrade the available databases to the latest releases found on dockerHub
+
 - Improved: upgraded bundled Adminer from 4.7.5 to 4.7.6
+
+- Improved: updated the application dependencies to Symfony 4.4.4
 
 
 Version 0.12

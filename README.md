@@ -36,7 +36,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 
 * Docker-compose: version 1.10.0 or later (version 1.23.0 or later recommended)
 
-* Recommended: bash shell and commands: awk, date, dirname, grep, id, printf, sed
+* Recommended: bash shell and commands: awk, date, dirname, find, grep, id, printf, sed, sort, xargs
 
 * minimum RAM, CPU, Disk space: these have not been measured, but you probably want something better than a raspberry pi...
 
@@ -86,7 +86,8 @@ immediately afterwards. If you want to persist data in a more permanent way, to 
 against the same data set, you have to follow a multiple-step process:
 
 - create a permanent database on each instance using the `database:create` dbconsole command
-- load the desired data into each database by using either the command line database client, or the Adminer web console
+- load the desired data into each database by using either the command line database client, the Adminer web console,
+  or `./bin/dbconsole sql:execute --file` with options `--database`, `--user`, `--password`
 - use the `--database`, `--user`, `--password` options when running `sql:execute`
 
 You can also list all available database instances and databases:
@@ -122,7 +123,7 @@ Or you can just log in to the container where all the command-line tools are, an
 
     ./bin/dbstack shell
         php bin/console --help
-
+        pt-status
 
 ## Details
 

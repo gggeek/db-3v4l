@@ -4,6 +4,21 @@
   in `docker/config`. If you change them, you need to restart the docker containers for the settings to take effect, but
   there is no need to rebuild them
 
+- Q: what is the exact version of the installed databases? A: for each database that is part of the stack, we strive to
+  install the latest-available minor version for each major version. The minor versions are not set in configuration,
+  but depend on what has been published on Docker Hub by the respective vendors. Depending on the moment that you first
+  build the stack, you might thus get a different minor version, eg. mysql 8.0.14 or mysql 8.0.19.
+  The best way to know the exact version of the installed databases is to run the command `./bin/dbconsole database:list`
+
+- Q: can I customize the versions of the installed databases? A: Yes, this is possible, even though not made easy.
+  In order to specify a specific version for, say, mysql 8.0, you will have to edit the file
+  `docker/images/mysql/8.0/Dockerfile` and replace the line `FROM mysql:8.0` with, f.e. `FROM mysql:8.0.18`.
+  If you had already built the stack before making this change, you will need to rebuild it.
+
+- Q: can I upgrade the versions of the installed databases to the latest available minor release? A: in order to do so,
+  it is enough to run the `dbstack build` command with the `-u` option, which will pull the latest updates to base images
+  from Docker Hub
+
 - Q: can I make the db3v4l application use an existing database available in my infrastructure besides the self-contained ones?
   A: yes, as long as the type of database is already supported by the application.
   In order to add a new database, it is enough to:

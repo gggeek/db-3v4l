@@ -16,10 +16,9 @@
 
 ## Major features
 
-- add percona server: 5.6, 5.7, 8.0
+- add Percona server: 5.6, 5.7, 8.0
 
-- allow picking specific minor-versions for each db
-  also: how to easily upgrade a db once the initial image has been downloaded? (eg. 8.0.18 -> 8.0.19) ?
+- allow to easily pick specific minor-versions for each db
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver,
   no 'admin' tools such as lazydocker and adminer, etc...)

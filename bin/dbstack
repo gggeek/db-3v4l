@@ -20,6 +20,7 @@ BOOTSTRAP_TIMEOUT=300
 CLEANUP_IMAGES=false
 DOCKER_NO_CACHE=
 PARALLEL_BUILD=
+PULL_IMAGES=false
 REBUILD=false
 RECREATE=false
 SETUP_APP_ON_BUILD=true
@@ -63,6 +64,7 @@ Options:
     -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
                     log in as root instead of the app user account - when running 'shell' and 'run'
+    -u              update containers by pulling the base images - when running 'build'
     -v              verbose mode
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
     -z              avoid using docker cache - when running 'build -r'
@@ -136,6 +138,14 @@ build() {
     docker-compose ${VERBOSITY} stop
     if [ ${REBUILD} = 'true' ]; then
         docker-compose ${VERBOSITY} rm -f
+    fi
+
+    if [ ${PULL_IMAGES} = 'true' ]; then
+        echo "[`date`] Pulling base Docker images..."
+        IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
+        for IMAGE in $IMAGES; do
+            docker pull $IMAGE
+        done
     fi
 
     docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
@@ -291,7 +301,7 @@ cleanup() {
 }
 
 # @todo move to a function
-while getopts ":chnprsvw:z" opt
+while getopts ":chnprsuvw:z" opt
 do
     case $opt in
         c)
@@ -313,6 +323,9 @@ do
         ;;
         s)
             RECREATE=true
+        ;;
+        u)
+            PULL_IMAGES=true
         ;;
         v)
             VERBOSITY=--verbose
