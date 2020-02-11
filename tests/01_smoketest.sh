@@ -13,7 +13,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...
 # @todo enable parallel builds for docker-compose >= 1.23.0
-./bin/dbstack -n build
+./bin/dbstack -n -w 600 build
 
 ./bin/dbstack setup
 

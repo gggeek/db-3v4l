@@ -11,7 +11,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/dbstack start
+./bin/dbstack -w 600 start
 
 # DBConsole commands (in increasing order of complexity / code usage)
 

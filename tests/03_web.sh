@@ -7,14 +7,14 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/dbstack start
+./bin/dbstack -w 600 start
 
-# Wait until app containers have booted
-# @todo add a time limit...
-while [ -a ! -f ./app/var/bootstrap_ok_admin ! -f ./app/var/bootstrap_ok_web -a ! -f ./app/var/bootstrap_ok_worker ]; do
-  sleep 1
-  echo .
-done
+# Wait until app containers have booted - this is now done by `dbstack start` itself...
+## @todo add a time limit...
+#while [ -a ! -f ./app/var/bootstrap_ok_admin ! -f ./app/var/bootstrap_ok_web -a ! -f ./app/var/bootstrap_ok_worker ]; do
+#  sleep 1
+#  echo .
+#done
 
 # Test the web interface
 
