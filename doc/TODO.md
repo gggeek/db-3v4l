@@ -1,13 +1,13 @@
 ## Fixes
 
-- when running 2 selects (or 1 select plus 'show warnings'), only the 1st data set is present in dbconsole output ?
-  (maybe it's when a returned dataset is empty?)
+- when running selects that return an empty dataset, at least with mysql, nothing is returned in the output json/yml (ie. not even NULL or an empty array)
 
 - script `./bin/dbconsole sql:shell` not working from host - it only works from worker
 
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
+  + nginx times out on long requests
 
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
@@ -15,6 +15,10 @@
 
 
 ## Major features
+
+- add percona server: 5.6, 5.7, 8.0
+
+- add percona toolkit to the worker
 
 - allow picking specific minor-versions for each db
   also: how to easily upgrade a db once the initial image has been downloaded? (eg. 8.0.18 -> 8.0.19) ?
