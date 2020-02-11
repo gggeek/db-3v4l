@@ -175,6 +175,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
             case 'mariadb':
             case 'mysql':
                 // 'table format', triggered by using the -t option for the client
+                // NB: both mariadb and mysql output no headers line when resultset has 0 rows
                 $output = explode("\n", $string);
                 array_shift($output); // '+--+'
                 array_shift($output); // headers
