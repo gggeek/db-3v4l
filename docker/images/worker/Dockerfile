@@ -99,6 +99,12 @@ RUN chmod 0755 /usr/local/bin/mysqltuner.pl
 RUN curl -L https://launchpadlibrarian.net/78745738/tuning-primer.sh -o /usr/local/bin/tuning-primer.sh
 RUN chmod 0755 /usr/local/bin/tuning-primer.sh
 
+# Percona pt-toolkit
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install gnupg2
+RUN curl -L https://repo.percona.com/apt/percona-release_latest.generic_all.deb -o /tmp/percona-release_latest.generic_all.deb
+RUN dpkg -i /tmp/percona-release_latest.generic_all.deb
+RUN apt-get update && apt-get -y install percona-toolkit
+
 # Redis cli and php extension
 RUN apt-get -y install redis-tools
 # @todo add suport for igbinary serialization

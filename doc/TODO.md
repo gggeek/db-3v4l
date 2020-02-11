@@ -18,8 +18,6 @@
 
 - add percona server: 5.6, 5.7, 8.0
 
-- add percona toolkit to the worker
-
 - allow picking specific minor-versions for each db
   also: how to easily upgrade a db once the initial image has been downloaded? (eg. 8.0.18 -> 8.0.19) ?
 

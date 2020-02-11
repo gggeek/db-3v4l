@@ -1,3 +1,9 @@
+Version 0.13
+------------
+
+- New: Percona pt-toolkit is now installed in the worker container
+
+
 Version 0.12
 ------------
 
