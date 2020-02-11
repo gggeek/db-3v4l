@@ -3,6 +3,8 @@ Version 0.13
 
 - New: Percona pt-toolkit is now installed in the worker container
 
+- Improved: upgraded bundled Adminer from 4.7.5 to 4.7.6
+
 
 Version 0.12
 ------------
