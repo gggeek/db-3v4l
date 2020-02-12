@@ -12,6 +12,8 @@ Version 0.13
 
 - Improved: updated the application dependencies to Symfony 4.4.4
 
+- Fixed: made sure the database:drop command uses the `-u` flag for usernames, same as other commands do
+
 
 Version 0.12
 ------------
