@@ -3,8 +3,9 @@
 # Shortcuts to manage the whole set of containers
 
 # @todo allow end user to enter pwd for root db accounts on build. If not interactive, generate a random one
-# @todo check for ports conflicts before starting thwe web container
+# @todo check for ports conflicts before starting the web container
 # @todo if there's no docker-compose onboard but there is curl or wget, download and install docker-compose
+# @todo add a command to remove the built containers and their anon volumes ? eg. `docker-compose rm -s -v`
 
 # consts
 APP_DEFAULT_CONFIG_FILE=containers.env
@@ -17,7 +18,7 @@ WORKER_SERVICE=worker
 APP_LOCAL_CONFIG_FILE=
 AS_ROOT=false
 BOOTSTRAP_TIMEOUT=300
-CLEANUP_IMAGES=false
+CLEANUP_UNUSED_IMAGES=false
 DOCKER_NO_CACHE=
 PARALLEL_BUILD=
 PULL_IMAGES=false
@@ -127,9 +128,9 @@ setup_local_config() {
 }
 
 build() {
-    if [ ${CLEANUP_IMAGES} = 'true' ]; then
+    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
         # for good measure, do a bit of hdd disk cleanup ;-)
-        echo "[`date`] Removing dead Docker images from disk..."
+        echo "[`date`] Removing unused Docker images from disk..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
     fi
 
@@ -165,8 +166,8 @@ build() {
         wait_for_bootstrap app
     fi
 
-    if [ ${CLEANUP_IMAGES} = 'true' ]; then
-        echo "[`date`] Removing dead Docker images from disk, again..."
+    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
+        echo "[`date`] Removing unused Docker images from disk, again..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
     fi
 
@@ -305,7 +306,7 @@ while getopts ":chnprsuvw:z" opt
 do
     case $opt in
         c)
-            CLEANUP_IMAGES=true
+            CLEANUP_UNUSED_IMAGES=true
         ;;
         h)
             help
@@ -448,6 +449,7 @@ case "${COMMAND}" in
         docker-compose ${VERBOSITY} unpause ${2}
     ;;
 
+    # achieved by running `build -u`... could be expanded to also do a git pull?
     #update)
     #;;
 
