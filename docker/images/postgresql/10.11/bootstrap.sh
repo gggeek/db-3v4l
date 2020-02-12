@@ -5,7 +5,6 @@ echo "[`date`] Bootstrapping PostgreSQL..."
 clean_up() {
     # Perform program exit housekeeping
     echo "[`date`] Stopping the service..."
-    #service postgres stop
     pkill -x --signal term postgres
     if [ -f /var/run/bootstrap_ok ]; then
         rm /var/run/bootstrap_ok
@@ -18,9 +17,7 @@ if [ -f /var/run/bootstrap_ok ]; then
     rm /var/run/bootstrap_ok
 fi
 
-# Fix UID & GID for user 'postgres'
-
-echo "[`date`] Fixing postgresql permissions..."
+echo "[`date`] Fixing postgres user permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep postgres)
 ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
@@ -30,11 +27,11 @@ CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
 if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${ORIG_GID}" ]; then
-
     # note: we allow non-unique user and group ids...
     groupmod -o -g "${CONTAINER_USER_GID}" postgres
     usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" postgres
-
+fi
+if [ $(stat -c '%u' "/var/lib/postgresql") != "${CONTAINER_USER_UID}" -o $(stat -c '%g' "/var/lib/postgresql") != "${CONTAINER_USER_GID}" ]; then
     # home dir == data dir
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/lib/postgresql"
     #chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/log/postgresql"
