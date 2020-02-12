@@ -46,6 +46,8 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
+                /// @todo if mysql version is bigger than 8.0, add `WITH mysql_native_password`
                 $statements = [
                     "CREATE DATABASE `$dbName`" . ($collation !== null ? " CHARACTER SET $collation" : '') . ';'
                 ];
@@ -121,6 +123,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 $statements = [
                     "DROP DATABASE {$ifClause} `$dbName`;"
                 ];
@@ -195,6 +198,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
                 return new Command([
                     "DROP USER '$userName'@'%';"
@@ -240,6 +244,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 return new Command(
                     'SHOW COLLATION;',
                     function ($output, $executor) {
@@ -312,6 +317,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 return new Command(
                     /// @todo use 'SHOW DATABASES' for versions < 5
                     "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;",
@@ -372,6 +378,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 return new Command(
                     'SELECT DISTINCT User FROM mysql.user ORDER BY User;',
                     function ($output, $executor) {
@@ -424,6 +431,7 @@ class DatabaseSchemaManager
 
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 return new Command(
                     'SHOW VARIABLES LIKE "version";',
                     function ($output, $executor) {
@@ -497,6 +505,9 @@ class DatabaseSchemaManager
                 break;
 
             case 'mysql':
+                break;
+
+            case 'percona':
                 break;
 
             case 'mssql':

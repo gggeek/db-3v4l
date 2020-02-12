@@ -130,6 +130,36 @@ parameters:
             #server_version: '8.0'
             vendor: mysql
             version: '8.0'
+        percona_5_6:
+            host: percona_5_6
+            port: 3306
+            user: root
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_mysql
+            #server_version: '5.6'
+            vendor: percona
+            version: '5.6'
+        percona_5_7:
+            host: percona_5_7
+            port: 3306
+            user: root
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_mysql
+            #server_version: '5.7'
+            vendor: percona
+            version: '5.7'
+        percona_8_0:
+            host: percona_8_0
+            port: 3306
+            user: root
+            password: '%env(MYSQL_ROOT_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_mysql
+            #server_version: '8.0'
+            vendor: percona
+            version: '8.0'
         # oracle...
         postgresql_9_4:
             host: postgresql_9_4

@@ -16,8 +16,6 @@
 
 ## Major features
 
-- add Percona server: 5.6, 5.7, 8.0
-
 - allow to easily pick specific minor-versions for each db
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver,
@@ -84,6 +82,9 @@
 
 ## Improvements
 
+- ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
+  Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
+
 - add TOC to readme.md (see how it's done at fe. https://raw.githubusercontent.com/phpredis/phpredis/develop/README.markdown)
 
 - improve handling output of 'select' queries
@@ -114,9 +115,6 @@
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
-
-- ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
-  Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
 
 - build/docker:
   + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)

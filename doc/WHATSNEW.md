@@ -1,10 +1,12 @@
 Version 0.13
 ------------
 
+- New: added Percona Server 5.6, 5.7 and 8.0 to the available databases
+
 - New: Percona pt-toolkit is now installed in the worker container
 
 - Improved: added the `-u` option to `dbstack.sh build`, to allow updating the base Docker images.
-  This allows to easily upgrade the available databases to the latest releases found on dockerHub
+  This can be used to easily upgrade the available databases to the latest release found on dockerHub
 
 - Improved: upgraded bundled Adminer from 4.7.5 to 4.7.6
 

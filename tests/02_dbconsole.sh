@@ -40,6 +40,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/dbconsole sql:execute --only-instances='mysql_*' --sql='select current_date'
 
+./bin/dbconsole sql:execute --only-instances='percona_*' --sql='select current_date'
+
 ./bin/dbconsole sql:execute --only-instances='mssql_*' --sql='select GETDATE()'
 
 ./bin/dbconsole sql:execute --only-instances='postgresql_*' --sql='select current_date'

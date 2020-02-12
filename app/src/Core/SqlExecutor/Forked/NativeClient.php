@@ -157,8 +157,8 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
     {
         $vendor = $connectionConfiguration['vendor'];
         return str_replace(
-            array('mariadb', 'mssql', 'oracle', 'postgresql'),
-            array('mysql', 'sqlcmd', 'sqlplus', 'psql'),
+            array('mariadb', 'mssql', 'oracle', 'percona', 'postgresql'),
+            array('mysql', 'sqlcmd', 'sqlplus', 'mysql', 'psql'),
             $vendor
         );
     }
@@ -174,6 +174,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
         switch ($this->databaseConfiguration['vendor']) {
             case 'mariadb':
             case 'mysql':
+            case 'percona':
                 // 'table format', triggered by using the -t option for the client
                 // NB: both mariadb and mysql output no headers line when resultset has 0 rows
                 $output = explode("\n", $string);

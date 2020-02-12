@@ -26,6 +26,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 * MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
 * Microsoft SQL Server: 2017.cu18, 2019.ga (on Linux)
 * Mysql: 5.5, 5.6, 5.7, 8.0
+* Percona Server for MySQL: 5.6, 5.7, 8.0
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 * SQLite: 3.27
 

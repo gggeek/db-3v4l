@@ -1,0 +1,3 @@
+[mysqld]
+# avoid connection errors "Authentication plugin 'caching_sha2_password' cannot be loaded"
+default_authentication_plugin=mysql_native_password

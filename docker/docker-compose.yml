@@ -111,97 +111,7 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
-    mysql_5_5:
-        build:
-            context: images/mysql/5.5
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: mysql_5_5
-        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_5"
-        #ports:
-        #    - "3306:3306"
-        volumes:
-            - ./config/mysql/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/mysql/5.5:/var/lib/mysql
-            - ./logs/mysql/5.5:/var/log/mysql
-        tmpfs:
-            # used for mysql temp tables
-            - /tmpfs:mode=777,size=1g
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    mysql_5_6:
-        build:
-            context: images/mysql/5.6
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: mysql_5_6
-        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_6"
-        #ports:
-        #    - "3307:3306"
-        volumes:
-            - ./config/mysql/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/mysql/5.6:/var/lib/mysql
-            - ./logs/mysql/5.6:/var/log/mysql
-        tmpfs:
-            # used for mysql temp tables
-            - /tmpfs:mode=777,size=1g
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    mysql_5_7:
-        build:
-            context: images/mysql/5.7
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: mysql_5_7
-        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_7"
-        #ports:
-        #    - "3308:3306"
-        volumes:
-            - ./config/mysql/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/mysql/5.7:/var/lib/mysql
-            - ./logs/mysql/5.7:/var/log/mysql
-        tmpfs:
-            # used for mysql temp tables
-            - /tmpfs:mode=777,size=1g
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    mysql_8_0:
-        build:
-            context: images/mysql/8.0
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: mysql_8_0
-        container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
-        #ports:
-        #    - "3309:3306"
-        volumes:
-            - ./config/mysql/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            - ./data/mysql/8.0:/var/lib/mysql
-            - ./logs/mysql/8.0:/var/log/mysql
-        tmpfs:
-            # used for mysql temp tables
-            - /tmpfs:mode=777,size=1g
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+### Databases
 
     mariadb_5_5:
         build:
@@ -332,6 +242,167 @@ services:
             - ./config/mariadb/10.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mariadb/10.4:/var/lib/mysql
             - ./logs/mariadb/10.4:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mysql_5_5:
+        build:
+            context: images/mysql/5.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_5"
+        #ports:
+        #    - "3306:3306"
+        volumes:
+            - ./config/mysql/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/5.5:/var/lib/mysql
+            - ./logs/mysql/5.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mysql_5_6:
+        build:
+            context: images/mysql/5.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_6
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_6"
+        #ports:
+        #    - "3307:3306"
+        volumes:
+            - ./config/mysql/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/5.6:/var/lib/mysql
+            - ./logs/mysql/5.6:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mysql_5_7:
+        build:
+            context: images/mysql/5.7
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_5_7
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_7"
+        #ports:
+        #    - "3308:3306"
+        volumes:
+            - ./config/mysql/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/5.7:/var/lib/mysql
+            - ./logs/mysql/5.7:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    mysql_8_0:
+        build:
+            context: images/mysql/8.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mysql_8_0
+        container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
+        #ports:
+        #    - "3309:3306"
+        volumes:
+            - ./config/mysql/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/8.0:/var/lib/mysql
+            - ./logs/mysql/8.0:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    percona_5_6:
+        build:
+            context: images/percona/5.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: percona_5_6
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_5_6"
+        #ports:
+        #    - "3307:3306"
+        volumes:
+            - ./config/percona/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/5.6:/var/lib/mysql
+            - ./logs/percona/5.6:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    percona_5_7:
+        build:
+            context: images/percona/5.7
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: percona_5_7
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_5_7"
+        #ports:
+        #    - "3308:3306"
+        volumes:
+            - ./config/percona/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/5.7:/var/lib/mysql
+            - ./logs/percona/5.7:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    percona_8_0:
+        build:
+            context: images/percona/8.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: percona_8_0
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_8_0"
+        #ports:
+        #    - "3309:3306"
+        volumes:
+            - ./config/percona/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/8.0:/var/lib/mysql
+            - ./logs/percona/8.0:/var/log/mysql
         tmpfs:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
