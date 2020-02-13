@@ -62,7 +62,7 @@
   - rate-limit http requests
   - size-limit http requests
   - add caching in nginx of static assets (or add varnish for caching ?)
-  - add firewall rules to the all containers to block access to outside world (at bootstrap ?)
+  - add firewall rules to all containers to block access to outside world (at bootstrap ?)
   - make app code non-writeable by www-data user (and separate nginx user from php-fpm user)
   - harden php configuration
   - disallow network connections from db containers to redis
@@ -137,6 +137,7 @@
   + check out if we could use `docker app` to package the application
 
 - host: improve cli scripts:
+  + allow 'cleanup' command to remove all anonymous docker volumes - or at least the ones belonging to this app
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of dbstack
@@ -161,6 +162,11 @@
   + check: can the temp user drop&creates other databases for postgresql?
   + make sure no command-injection / option-injection is possible
 
+- app refactor:
+  + allow to register via sf config execution of a cli tool against all dbs, with mapped username, pwd, etc... (eg: mysqltuner)
+  + allow the Command object to specify many sql queries, where 2nd one depends on result of 1st (with callable in between)
+  + finish & test execution of select/nonselect queries via pdo; doctrine
+
 - web gui:
   + keep icons visible when collapsing left menu
   + add a logo
@@ -182,6 +188,7 @@
     image which can run docker, such as: https://github.com/rancher/docker-from-scratch)
 
 - worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
+  + what about the percona-mysql client ?
 
 - db: mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
