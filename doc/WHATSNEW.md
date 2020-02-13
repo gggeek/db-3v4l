@@ -1,3 +1,9 @@
+Version 0.xx (unreleased)
+-------------------------
+
+- Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)
+
+
 Version 0.13
 ------------
 

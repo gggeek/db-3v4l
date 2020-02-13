@@ -98,6 +98,7 @@ COPY nginx/sites-enabled/* /etc/nginx/sites-enabled/
 RUN rm /etc/nginx/sites-enabled/default
 COPY php/7.3/fpm/pool.d/db3v4l.conf /etc/php/7.3/fpm/pool.d/db3v4l.conf
 RUN rm /etc/php/7.3/fpm/pool.d/www.conf
+COPY php/7.3/fpm/conf.d/zz-db3v4l.ini /etc/php/7.3/fpm/conf.d/zz-db3v4l.ini
 
 RUN ln -s /etc/php/7.3/mods-available/sqlsrv.ini /etc/php/7.3/fpm/conf.d/90-sqlsrv.ini
 RUN ln -s /etc/php/7.3/mods-available/pdo_sqlsrv.ini /etc/php/7.3/fpm/conf.d/90-pdo_sqlsrv.ini
