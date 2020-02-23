@@ -13,7 +13,7 @@ USER root
 
 # Update preinstalled packages
 # -----------------------------------------------------------------------------
-RUN if [ "${do_update_os}" != "false" ]; then yum update -y ; fi
+RUN if [ "${do_update_os}" != "false" ]; then yum update -y; fi
 
 # Base packages
 # @todo we could probably remove: curl, sqlite
