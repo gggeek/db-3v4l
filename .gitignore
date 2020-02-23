@@ -22,6 +22,8 @@
 /docker/data/mysql/5.6/*
 /docker/data/mysql/5.7/*
 /docker/data/mysql/8.0/*
+/docker/data/oracle/11.2/*
+/docker/data/oracle/18.4/*
 /docker/data/percona/5.6/*
 /docker/data/percona/5.7/*
 /docker/data/percona/8.0/*
@@ -46,6 +48,8 @@
 !/docker/data/mysql/5.6/.gitkeep
 !/docker/data/mysql/5.7/.gitkeep
 !/docker/data/mysql/8.0/.gitkeep
+!/docker/data/oracle/11.2/.gtikeep
+!/docker/data/oracle/18.4/.gtikeep
 !/docker/data/percona/5.6/.gitkeep
 !/docker/data/percona/5.7/.gitkeep
 !/docker/data/percona/8.0/.gitkeep
@@ -74,6 +78,8 @@
 /docker/logs/mysql/5.6/*
 /docker/logs/mysql/5.7/*
 /docker/logs/mysql/8.0/*
+/docker/logs/oracle/11.2/*
+/docker/logs/oracle/18.4/*
 /docker/logs/percona/5.6/*
 /docker/logs/percona/5.7/*
 /docker/logs/percona/8.0/*
@@ -102,6 +108,8 @@
 !/docker/logs/mysql/5.6/.gitkeep
 !/docker/logs/mysql/5.7/.gitkeep
 !/docker/logs/mysql/8.0/.gitkeep
+!/docker/logs/oracle/11.2/.gtikeep
+!/docker/logs/oracle/18.4/.gtikeep
 !/docker/logs/postgresql/9.4/.gitkeep
 !/docker/logs/percona/5.6/.gitkeep
 !/docker/logs/percona/5.7/.gitkeep

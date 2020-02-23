@@ -1,5 +1,7 @@
-Version 0.xx (unreleased)
+Version 0.14 (unreleased)
 -------------------------
+
+- New: added Oracle Database 18c (XE)
 
 - Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)
 

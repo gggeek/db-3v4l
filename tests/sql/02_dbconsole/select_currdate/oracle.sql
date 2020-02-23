@@ -1,0 +1,1 @@
+SELECT sysdate FROM dual;

@@ -160,7 +160,16 @@ parameters:
             #server_version: '8.0'
             vendor: percona
             version: '8.0'
-        # oracle...
+        oracle_18_4:
+            host: oracle_18_4
+            port: 1521
+            user: system
+            password: '%env(ORACLE_PWD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '9.4'
+            vendor: oracle
+            version: '18.4'
         postgresql_9_4:
             host: postgresql_9_4
             port: 5432

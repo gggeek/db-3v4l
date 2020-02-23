@@ -338,7 +338,15 @@ class DatabaseSchemaManager
                     }
                 );
 
-            //case 'oracle':
+            case 'oracle':
+                return new Command(
+                    // @todo add "WHERE name NOT IN ('...')" ?
+                    "SELECT username AS schema_name FROM sys.all_users ORDER BY username;",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
+                );
 
             case 'postgresql':
                 return new Command(
@@ -442,7 +450,14 @@ class DatabaseSchemaManager
                     }
                 );
 
-            //case 'oracle':
+            case 'oracle':
+                return new Command(
+                    "SELECT * FROM v\$version WHERE banner LIKE 'Oracle%';",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output)[0];
+                    }
+                );
 
             case 'postgresql':
                 return new Command(

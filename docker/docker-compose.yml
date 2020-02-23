@@ -343,6 +343,47 @@ services:
             - ./containers.env
             - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
+#    There's not yet a click-free oracle-11g-xe installation available for download yet...
+#    oracle_11_2:
+#        build:
+#            context: images/oracle/11.2
+#            args:
+#                timezone: "${COMPOSE_TZ}"
+#                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+#        hostname: oracle_11_2
+#        container_name: "${COMPOSE_PROJECT_NAME}_oracle_11_2"
+#        #ports:
+#        #    - "1522:1521"
+#        volumes:
+#            #- ./config/oracle/11.2/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+#            - ./data/oracle/11.2:/opt/oracle/oradata
+#            #- ./logs/oracle/11.2:/var/log/mysql
+#        environment:
+#            - CONTAINER_USER
+#        env_file:
+#            - ./containers.env
+#            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
+    oracle_18_4:
+        build:
+            context: images/oracle/18.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: oracle_18_4
+        container_name: "${COMPOSE_PROJECT_NAME}_oracle_18_4"
+        #ports:
+        #    - "1522:1521"
+        volumes:
+            #- ./config/oracle/18.4/${COMPOSE_DB_SIZE}.cnf:/opt/oracle/...
+            - ./data/oracle/18.4:/opt/oracle/oradata
+            #- ./logs/oracle/18.4:/var/log/oracle-database-xe-18c/
+        environment:
+            - CONTAINER_USER
+        env_file:
+            - ./containers.env
+            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+
     percona_5_6:
         build:
             context: images/percona/5.6
@@ -352,7 +393,7 @@ services:
         hostname: percona_5_6
         container_name: "${COMPOSE_PROJECT_NAME}_percona_5_6"
         #ports:
-        #    - "3307:3306"
+        #    - "3310:3306"
         volumes:
             - ./config/percona/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
             - ./data/percona/5.6:/var/lib/mysql
@@ -375,7 +416,7 @@ services:
         hostname: percona_5_7
         container_name: "${COMPOSE_PROJECT_NAME}_percona_5_7"
         #ports:
-        #    - "3308:3306"
+        #    - "3311:3306"
         volumes:
             - ./config/percona/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
             - ./data/percona/5.7:/var/lib/mysql
@@ -398,7 +439,7 @@ services:
         hostname: percona_8_0
         container_name: "${COMPOSE_PROJECT_NAME}_percona_8_0"
         #ports:
-        #    - "3309:3306"
+        #    - "3312:3306"
         volumes:
             - ./config/percona/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
             - ./data/percona/8.0:/var/lib/mysql

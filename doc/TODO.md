@@ -22,7 +22,7 @@
   no 'admin' tools such as lazydocker and adminer, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
 
-- add oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
+- add more oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - worker+web: add a queued-task implementation, using sf messenger and a queueing daemon (redis?)
 

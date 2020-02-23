@@ -12,7 +12,7 @@ b) allow doing full-fledged performance testing, comparing resource usage across
 
 Broad advancement status:
 - command-line interface to execute SQL snippets on multiple databases and compare results: basically done
-- database support: good coverage. Of the 'well-known players', only Oracle is missing
+- database support: good coverage of the 'well-known players'
 - GUI interface: displays documentation and the list of databases. It also includes Adminer for db management, but it
   does not allow parallel execution of queries
 
@@ -27,6 +27,7 @@ In the meantime, you can try out http://sqlfiddle.com/
 * Microsoft SQL Server: 2017.cu18, 2019.ga (on Linux)
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * Percona Server for MySQL: 5.6, 5.7, 8.0
+* Oracle: 18c (18.4.0) Express Edition
 * PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
 * SQLite: 3.27
 
@@ -107,6 +108,7 @@ If you want to connect to the databases using all the cli options available to t
     ./bin/dbstack run psql -h postgresql_9_4 -U postgres -c 'select current_date'
     ./bin/dbstack run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
     ./bin/dbstack run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
+    ./bin/dbstack run sqlplus system@oracle_18_4/xe
 
 The default password for those commands is '3v4l' for all databases except ms sql server, for which it is 3v4l3V4L.
 

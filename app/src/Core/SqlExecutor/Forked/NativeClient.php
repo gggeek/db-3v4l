@@ -129,22 +129,41 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 }
                 break;
 
-            // case 'sqlplus':
-            //    $command = 'sqlplus';
-            //    // pass on _all_ env vars, including PATH
-            //    $env = null;
-            //    break;
-            default:
+            case 'sqlplus':
+                $command = 'sqlplus';
+                $options = [
+                    '-L', // 'attempts to log in just once, instead of reprompting on error'
+                    '-NOLOGINTIME',
+                    '-S',
+                    $this->databaseConfiguration['user'] . '/' . $this->databaseConfiguration['password'] .
+                    '@//' . $this->databaseConfiguration['host'] . ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : ''),
+                ];
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    /// @todo!
+                    ///$options[] = '-d' . $this->databaseConfiguration['dbname'];
+                }
+                if ($action == self::EXECUTE_FILE) {
+                    $options[] = '@' . $sqlOrFilename;
+                //} elseif ($action == self::EXECUTE_COMMAND) {
+                //    ///$options[] = '-Q' . $sqlOrFilename;
+                }
+                break;
+
+                default:
                 throw new \OutOfBoundsException("Unsupported db client '$clientType'");
         }
 
         $commandLine = $this->buildCommandLine($command, $options);
 
         /// @todo investigate: for psql is this better done via --file ?
-        if ($action == self::EXECUTE_FILE && $clientType != 'sqlsrv') {
+        if ($action == self::EXECUTE_FILE && $clientType != 'sqlsrv' && $clientType != 'sqlplus') {
             $commandLine .= ' < ' . escapeshellarg($sqlOrFilename);
         }
 
+        if ($action == self::EXECUTE_COMMAND && $clientType == 'sqlplus') {
+            $commandLine .= " << +SQLEOF\n" . $sqlOrFilename . "\n+SQLEOF";
+var_dump($commandLine);
+        }
         return new Process($commandLine, null, $env);
     }
 

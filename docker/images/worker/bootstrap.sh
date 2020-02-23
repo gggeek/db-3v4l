@@ -65,6 +65,7 @@ echo "[`date`] Setting up the application: config file .env.local..."
 echo "APP_ENV=${APP_ENV}" > /tmp/.env.local
 echo "APP_DEBUG=${APP_DEBUG}" >> /tmp/.env.local
 echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> /tmp/.env.local
+echo "ORACLE_PWD=${ORACLE_PWD}" >> /tmp/.env.local
 echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> /tmp/.env.local
 echo "SA_PASSWORD=${SA_PASSWORD}" >> /tmp/.env.local
 
