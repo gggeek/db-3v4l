@@ -138,14 +138,11 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     $this->databaseConfiguration['user'] . '/' . $this->databaseConfiguration['password'] .
                     '@//' . $this->databaseConfiguration['host'] . ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : ''),
                 ];
-                if (isset($this->databaseConfiguration['dbname'])) {
-                    /// @todo!
-                    ///$options[] = '-d' . $this->databaseConfiguration['dbname'];
-                }
+                // nb: for oracle, we use schemas instead of pdbs to map 'databases'...
+                //if (isset($this->databaseConfiguration['dbname'])) {
+                //}
                 if ($action == self::EXECUTE_FILE) {
                     $options[] = '@' . $sqlOrFilename;
-                //} elseif ($action == self::EXECUTE_COMMAND) {
-                //    ///$options[] = '-Q' . $sqlOrFilename;
                 }
                 break;
 
@@ -206,7 +203,14 @@ var_dump($commandLine);
                     $line = trim($line);
                 }
                 return $output;
-            //case 'oracle':
+            case 'oracle':
+                $output = explode("\n", $string);
+                array_shift($output); // headers
+                array_shift($output); // '---'
+                foreach($output as &$line) {
+                    $line = trim($line);
+                }
+                return $output;
             case 'postgresql':
                 $output = explode("\n", $string);
                 array_shift($output); // headers

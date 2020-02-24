@@ -355,9 +355,9 @@ services:
 #        #ports:
 #        #    - "1522:1521"
 #        volumes:
-#            #- ./config/oracle/11.2/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+#            #- ./config/oracle/11.2/${COMPOSE_DB_SIZE}.cnf:/opt/oracle/...
 #            - ./data/oracle/11.2:/opt/oracle/oradata
-#            #- ./logs/oracle/11.2:/var/log/mysql
+#            #- ./logs/oracle/11.2:...
 #        environment:
 #            - CONTAINER_USER
 #        env_file:
@@ -377,6 +377,8 @@ services:
         volumes:
             #- ./config/oracle/18.4/${COMPOSE_DB_SIZE}.cnf:/opt/oracle/...
             - ./data/oracle/18.4:/opt/oracle/oradata
+            # @todo which of the many oracle log folder to map to the host? see `find /opt/oracle/ -name '*.log'`...
+            #       Idea: we could mount many container folders to subdirs of ./logs/oracle/18.4
             #- ./logs/oracle/18.4:/var/log/oracle-database-xe-18c/
         environment:
             - CONTAINER_USER

@@ -37,7 +37,9 @@ fi
 if [ $(stat -c '%u' "/home/oracle") != "${CONTAINER_USER_UID}" -o $(stat -c '%g' "/home/oracle") != "${CONTAINER_USER_GID}" ]; then
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/home/oracle"
 fi
-chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/etc/oratab"
+if [ -f /etc/oratab ]; then
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/etc/oratab"
+fi
 
 #chown -R mysql:mysql /var/run/mysqld
 

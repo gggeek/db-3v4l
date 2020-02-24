@@ -539,8 +539,11 @@ class DatabaseSchemaManager
                 }
                 break;
 
-            //case 'oracle':
-            //    break;
+            case 'oracle':
+                if ($charset == 'utf8') {
+                    $charset = 'AL32UTF8';
+                }
+                break;
 
             case 'postgresql':
                 break;
