@@ -84,6 +84,7 @@ class PDO extends ForkedExecutor implements CommandExecutor
 
         $commandLine = $this->buildCommandLine($command, $options);
 
+        /// @todo create Process from array
         return new Process($commandLine, null, $env);
     }
 

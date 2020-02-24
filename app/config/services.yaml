@@ -166,8 +166,9 @@ parameters:
             user: system
             password: '%env(ORACLE_PWD)%'
             #charset: UTF8
-            #driver: pdo_pgsql
-            #server_version: '9.4'
+            #driver: pdo_oci
+            #server_version: '18.4'
+            servicename: xe
             vendor: oracle
             version: '18.4'
         postgresql_9_4:

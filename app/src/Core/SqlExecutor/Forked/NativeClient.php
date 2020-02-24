@@ -136,9 +136,11 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     '-NOLOGINTIME',
                     '-S',
                     $this->databaseConfiguration['user'] . '/' . $this->databaseConfiguration['password'] .
-                    '@//' . $this->databaseConfiguration['host'] . ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : ''),
+                    '@//' . $this->databaseConfiguration['host'] .
+                        ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : '') .
+                        ($this->databaseConfiguration['servicename'] != '' ?  '/' . $this->databaseConfiguration['servicename'] : ''),
                 ];
-                // nb: for oracle, we use schemas instead of pdbs to map 'databases'...
+                // nb: for oracle, we use schemas (instead of pdbs) to map 'databases'...
                 //if (isset($this->databaseConfiguration['dbname'])) {
                 //}
                 if ($action == self::EXECUTE_FILE) {
@@ -158,10 +160,17 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
         }
 
         if ($action == self::EXECUTE_COMMAND && $clientType == 'sqlplus') {
-            $commandLine .= " << +SQLEOF\n" . $sqlOrFilename . "\n+SQLEOF";
-var_dump($commandLine);
+            $commandLine .= " << 'SQLEOF'\n" . $sqlOrFilename . "\nSQLEOF";
         }
-        return new Process($commandLine, null, $env);
+
+        $process = Process::fromShellCommandline($commandLine, null, $env);
+
+        if ($action == self::EXECUTE_COMMAND && $clientType == 'sqlplus') {
+            // The way Symfony Process deals with sighchildEnabled breaks EOF handling. We disable it
+            $process->forceSigchildEnabledIndividually(false);
+        }
+
+        return $process;
     }
 
     /**
@@ -205,6 +214,7 @@ var_dump($commandLine);
                 return $output;
             case 'oracle':
                 $output = explode("\n", $string);
+                array_shift($output); // empty line
                 array_shift($output); // headers
                 array_shift($output); // '---'
                 foreach($output as &$line) {

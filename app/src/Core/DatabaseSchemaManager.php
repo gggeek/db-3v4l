@@ -452,10 +452,12 @@ class DatabaseSchemaManager
 
             case 'oracle':
                 return new Command(
-                    "SELECT * FROM v\$version WHERE banner LIKE 'Oracle%';",
+                    /// @todo for oracle < 18, only 'banner' col is available, not 'banner_full'
+                    "SELECT banner_full FROM v\$version WHERE banner LIKE 'Oracle Database%';",
                     function ($output, $executor) {
                         /** @var Executor $executor */
-                        return $executor->resultSetToArray($output)[0];
+                        $lines = $executor->resultSetToArray($output);
+                        return str_replace('Version ', '', $lines[1]) . ' (' . $lines[0.] . ')';
                     }
                 );
 
