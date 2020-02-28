@@ -31,6 +31,9 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     groupmod -o -g "${CONTAINER_USER_GID}" oinstall
     usermod -o -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" oracle
 fi
+if [ $(stat -c '%u' "/opt/oracle/oradata") != "${CONTAINER_USER_UID}" -o $(stat -c '%g' "/opt/oracle/oradata") != "${CONTAINER_USER_GID}" ]; then
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/opt/oracle/oradata"
+fi
 if [ $(stat -c '%u' "/opt/oracle") != "${CONTAINER_USER_UID}" -o $(stat -c '%g' "/opt/oracle") != "${CONTAINER_USER_GID}" ]; then
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/opt/oracle"
 fi
