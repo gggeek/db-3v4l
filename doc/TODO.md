@@ -7,7 +7,6 @@
 - adminer:
   + can not connect to mariadb 5.5
   + sqllite not working in pre-filled list of databases (miss filename for root db)
-  + nginx times out on long requests
 
 - improve handling of character sets:
   + should we we always create utf8 databases by default ? what about mssql 2017 ?
@@ -81,6 +80,11 @@
 
 
 ## Improvements
+
+- oracle: add support for custom config files
+
+- move to usage pf docker volumes instead of mounted host dirs for storing data, iff this enabled us to skip all the
+  'chown' calls (to be seen: would we be able to keep config and log files readable on the host with good user id?)
 
 - ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
@@ -176,7 +180,7 @@
 
 - web+worker: set up a cronjob to remove SF profiler data
 
-- web+worker: move sf logs to a mounted volume
+- web+worker: move sf logs to a mounted dir
 
 - lazydocker:
   + do not list containers/images/volumes which do not belong to the db-3v4l stack
