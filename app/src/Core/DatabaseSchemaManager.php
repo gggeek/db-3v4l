@@ -75,7 +75,7 @@ class DatabaseSchemaManager
                 }
                 return new Command($statements);
 
-            //case 'oracle':
+            case 'oracle':
 
             case 'postgresql':
                 $statements = [
@@ -259,7 +259,14 @@ class DatabaseSchemaManager
                     }
                 );
 
-            //case 'oracle':
+            case 'oracle':
+                return new Command(
+                    "SELECT value AS Collation FROM v\$nls_valid_values WHERE parameter = 'CHARACTERSET' ORDER BY value;",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
+                );
 
             case 'postgresql':
                 return new Command(
@@ -341,7 +348,7 @@ class DatabaseSchemaManager
             case 'oracle':
                 return new Command(
                     // @todo add "WHERE name NOT IN ('...')" ?
-                    "SELECT username AS schema_name FROM sys.all_users ORDER BY username;",
+                    "SELECT username AS Database FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
                     function ($output, $executor) {
                         /** @var Executor $executor */
                         return $executor->resultSetToArray($output);
@@ -404,7 +411,15 @@ class DatabaseSchemaManager
                     }
                 );
 
-            //case 'oracle':
+            case 'oracle':
+                return new Command(
+                    // NB: we filter out 'system' users, as there are many...
+                    "SELECT username FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
+                    function ($output, $executor) {
+                        /** @var Executor $executor */
+                        return $executor->resultSetToArray($output);
+                    }
+                );
 
             case 'postgresql':
                 return new Command(

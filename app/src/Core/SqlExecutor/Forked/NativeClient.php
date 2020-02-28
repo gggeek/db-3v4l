@@ -130,6 +130,8 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 break;
 
             case 'sqlplus':
+                /// @todo disable execution of dangerous (or all) SQLPLUS commands.
+                ///       See the list at https://docs.oracle.com/en/database/oracle/oracle-database/18/sqpug/SQL-Plus-command-reference.html#GUID-177F24B7-D154-4F8B-A05B-7568079800C6
                 $command = 'sqlplus';
                 $options = [
                     '-L', // 'attempts to log in just once, instead of reprompting on error'
@@ -145,7 +147,10 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 //}
                 if ($action == self::EXECUTE_FILE) {
                     $options[] = '@' . $sqlOrFilename;
+                } else {
+                    $sqlOrFilename = "set pagesize 50000;\nset feedback off;\n" . $sqlOrFilename;
                 }
+
                 break;
 
                 default:
@@ -161,6 +166,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
 
         if ($action == self::EXECUTE_COMMAND && $clientType == 'sqlplus') {
             $commandLine .= " << 'SQLEOF'\n" . $sqlOrFilename . "\nSQLEOF";
+var_dump($commandLine);
         }
 
         $process = Process::fromShellCommandline($commandLine, null, $env);
