@@ -76,6 +76,18 @@ class DatabaseSchemaManager
                 return new Command($statements);
 
             case 'oracle':
+                /// @todo what if password is empty?
+                $statements = [
+                    "CREATE USER \"$dbName\" IDENTIFIED BY $password;",
+                    "GRANT CONNECT, RESOURCE TO \"$dbName\";",
+                    "GRANT UNLIMITED_TABLESPACE TO \"$dbName\";",
+                ];
+                if ($userName != '' && $userName != $dbName) {
+                    /// @what to do ?
+                    //$statements[] = "CREATE USER '$userName'@'%' IDENTIFIED BY '$password';";
+                    //$statements[] = "GRANT ALL PRIVILEGES ON `$dbName`.* TO '$userName'@'%';";
+                }
+                return new Command($statements);
 
             case 'postgresql':
                 $statements = [
@@ -148,7 +160,15 @@ class DatabaseSchemaManager
 
                 return new Command($statements);
 
-            //case 'oracle':
+            case 'oracle':
+                /// @todo check support for IF EXISTS
+                $statements = [
+                    "DROP USER \"$dbName\";",
+                ];
+                if ($userName != '' && $userName != $dbName) {
+                    /// @todo what to do ?
+                }
+                return new Command($statements);
 
             case 'postgresql':
                 $statements = [
@@ -213,7 +233,10 @@ class DatabaseSchemaManager
                     "DROP USER {$ifClause} \"$userName\";"
                 ]);
 
-            //case 'oracle':
+            case 'oracle':
+                return new Command([
+                    "DROP USER \"$userName\";",
+                ]);
 
             case 'postgresql':
                 return new Command([
@@ -347,7 +370,6 @@ class DatabaseSchemaManager
 
             case 'oracle':
                 return new Command(
-                    // @todo add "WHERE name NOT IN ('...')" ?
                     "SELECT username AS Database FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
                     function ($output, $executor) {
                         /** @var Executor $executor */
@@ -467,12 +489,10 @@ class DatabaseSchemaManager
 
             case 'oracle':
                 return new Command(
-                    /// @todo for oracle < 18, only 'banner' col is available, not 'banner_full'
-                    "SELECT banner_full FROM v\$version WHERE banner LIKE 'Oracle Database%';",
+                    "SELECT version_full || ' (' || banner || ')' AS version FROM  v\$version, v\$instance;",
                     function ($output, $executor) {
                         /** @var Executor $executor */
-                        $lines = $executor->resultSetToArray($output);
-                        return str_replace('Version ', '', $lines[1]) . ' (' . $lines[0.] . ')';
+                        return $executor->resultSetToArray($output)[0];
                     }
                 );
 

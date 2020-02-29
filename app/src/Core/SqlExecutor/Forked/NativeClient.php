@@ -146,6 +146,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 //if (isset($this->databaseConfiguration['dbname'])) {
                 //}
                 if ($action == self::EXECUTE_FILE) {
+                    /// @todo add to the existing file the pagesize and feedback settings
                     $options[] = '@' . $sqlOrFilename;
                 } else {
                     $sqlOrFilename = "set pagesize 50000;\nset feedback off;\n" . $sqlOrFilename;
@@ -166,7 +167,6 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
 
         if ($action == self::EXECUTE_COMMAND && $clientType == 'sqlplus') {
             $commandLine .= " << 'SQLEOF'\n" . $sqlOrFilename . "\nSQLEOF";
-var_dump($commandLine);
         }
 
         $process = Process::fromShellCommandline($commandLine, null, $env);
