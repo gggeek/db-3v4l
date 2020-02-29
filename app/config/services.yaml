@@ -236,6 +236,17 @@ parameters:
             path: /home/db3v4l/data/sqlite/3.27/3v4l.sqlite
             vendor: sqlite
             version: '3.27'
+
+    db3v4l.database_managers:
+        # key: vendor name, value: class name
+        mariadb: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
+        mssql: "\\Db3v4l\\Core\\DatabaseManager\\SQLServer"
+        mysql: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
+        oracle: "\\Db3v4l\\Core\\DatabaseManager\\Oracle12"
+        percona: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
+        postgresql: "\\Db3v4l\\Core\\DatabaseManager\\PostgreSQL"
+        sqlite: "\\Db3v4l\\Core\\DatabaseManager\\SQLite"
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -263,6 +274,13 @@ services:
             - '%db3v4l.database_instances%'
 
     Db3v4l\Service\DatabaseConfigurationManager: '@db3v4l.database_configuration_manager'
+
+    db3v4l.database_manager_factory:
+        class: Db3v4l\Service\DatabaseManagerFactory
+        arguments:
+            - '%db3v4l.database_managers%'
+
+    Db3v4l\Service\DatabaseManagerFactory: '@db3v4l.database_manager_factory'
 
     # manual 'aliasing' of autoconfigured console commands, for the custom console
 

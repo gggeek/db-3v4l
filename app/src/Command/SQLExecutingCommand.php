@@ -6,6 +6,7 @@ use Db3v4l\API\Interfaces\SqlAction\CommandAction;
 use Db3v4l\API\Interfaces\SqlAction\FileAction;
 use Db3v4l\Core\DatabaseSchemaManager;
 use Db3v4l\Service\DatabaseConfigurationManager;
+use Db3v4l\Service\DatabaseManagerFactory;
 use Db3v4l\Service\ProcessManager;
 use Db3v4l\Service\SqlExecutorFactory;
 use Db3v4l\Util\Process;
@@ -21,6 +22,8 @@ abstract class SQLExecutingCommand extends BaseCommand
     /** @var SqlExecutorFactory $executorFactory */
     protected $executorFactory;
     protected $processManager;
+    /** @var DatabaseManagerFactory $databaseManagerFactory */
+    protected $databaseManagerFactory;
 
     const DEFAULT_OUTPUT_FORMAT = 'text';
     const DEFAULT_PARALLEL_PROCESSES = 16;
@@ -37,11 +40,14 @@ abstract class SQLExecutingCommand extends BaseCommand
     public function __construct(
         DatabaseConfigurationManager $dbConfigurationManager,
         SqlExecutorFactory $executorFactory,
-        ProcessManager $processManager)
+        ProcessManager $processManager,
+        DatabaseManagerFactory $databaseManagerFactory
+    )
     {
         $this->dbConfigurationManager = $dbConfigurationManager;
         $this->executorFactory = $executorFactory;
         $this->processManager = $processManager;
+        $this->databaseManagerFactory = $databaseManagerFactory;
 
         parent::__construct();
     }
@@ -108,7 +114,7 @@ abstract class SQLExecutingCommand extends BaseCommand
 
             foreach ($instanceList as $instanceName => $dbConnectionSpec) {
 
-                $schemaManager = new DatabaseSchemaManager($dbConnectionSpec);
+                $schemaManager = $this->databaseManagerFactory->getDatabaseManager($dbConnectionSpec);
 
                 /** @var CommandAction|FileAction $sqlAction */
                 $sqlAction = call_user_func_array($getSqlActionCallable, [$schemaManager, $instanceName]);
