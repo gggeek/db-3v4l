@@ -44,6 +44,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/dbconsole sql:execute --only-instances='mssql_*' --sql='select GETDATE()'
 
+./bin/dbconsole sql:execute --only-instances='oracle_*' --sql='select sysdate from dual;'
+
 ./bin/dbconsole sql:execute --only-instances='postgresql_*' --sql='select current_date'
 
 ./bin/dbconsole sql:execute --only-instances='sqlite_*' --sql='select current_date'

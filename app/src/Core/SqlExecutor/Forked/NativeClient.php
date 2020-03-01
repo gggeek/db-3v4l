@@ -135,13 +135,13 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 $command = 'sqlplus';
                 $connectionIdentifier = '//' . $this->databaseConfiguration['host'] .
                     ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : '');
-                // nb: for oracle, we use pdbs to map 'databases', and they get a new service name
+                // nb: for oracle, if we use pdbs to map 'databases', they get a new service name
                 /// @todo allow support for _not_ doing that, and using schemas as 'databases'
-                if (isset($this->databaseConfiguration['dbname'])) {
-                    $connectionIdentifier .= '/' . $this->databaseConfiguration['dbname'];
+                if (isset($this->databaseConfiguration['servicename'])) {
+                    $connectionIdentifier .= '/' . $this->databaseConfiguration['servicename'];
                 } else {
-                    if ($this->databaseConfiguration['servicename'] != '') {
-                        $connectionIdentifier .= '/' . $this->databaseConfiguration['servicename'];
+                    if ($this->databaseConfiguration['dbname'] != '') {
+                        $connectionIdentifier .= '/' . $this->databaseConfiguration['dbname'];
                     }
                 }
                 $options = [
@@ -156,10 +156,12 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                     $options[] = 'SYSDBA';
                 }
                 if ($action == self::EXECUTE_FILE) {
-                    /// @todo add to the existing file the pagesize and feedback settings
-                    $options[] = '@' . $sqlOrFilename;
+                    /// @todo wouldn't it be better to create another temp file with prefixed the sqlplus commands?
+                    //$options[] = '@' . $sqlOrFilename;
+                    $sqlOrFilename = "WHENEVER OSERROR EXIT FAILURE;\nWHENEVER SQLERROR EXIT SQL.SQLCODE;\nSET PAGESIZE 50000;\nSET FEEDBACK OFF;\n" . file_get_contents($sqlOrFilename);
+                    $action = self::EXECUTE_COMMAND;
                 } else {
-                    $sqlOrFilename = "set pagesize 50000;\nset feedback off;\n" . $sqlOrFilename;
+                    $sqlOrFilename = "WHENEVER OSERROR EXIT FAILURE;\nWHENEVER SQLERROR EXIT SQL.SQLCODE;\nSET PAGESIZE 50000;\nSET FEEDBACK OFF;\n" . $sqlOrFilename;
                 }
 
                 break;

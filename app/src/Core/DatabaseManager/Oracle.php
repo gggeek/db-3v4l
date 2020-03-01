@@ -8,10 +8,26 @@ use Db3v4l\Core\SqlAction\Command;
 
 /**
  * This DBManager uses schemas as 'database'.
- * @todo if used with Oracle >= 12, usernames have to be prefixed with c## to be in the CDB...
+ * NB: if used with Oracle >= 12, usernames have to be prefixed with c## to be 'common' (ie. in the CDB), so you might
+ *     want to run everything inside a pdb...
  */
 class Oracle extends BaseManager implements DatabaseManager
 {
+    /**
+     * Returns the sql 'action' used to list all available databases
+     * @return Command
+     * @todo for each database, retrieve the charset/collation
+     */
+    public function getListDatabasesSqlAction()
+    {
+        return new Command(
+            "SELECT username AS Database FROM all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
 
     /**
      * Returns the sql 'action' used to create a new db and accompanying user
@@ -20,6 +36,7 @@ class Oracle extends BaseManager implements DatabaseManager
      * @param string $password
      * @param string $charset charset/collation name
      * @return Command
+     * @throws \Exception
      * @todo prevent sql injection!
      */
     public function getCreateDatabaseSqlAction($dbName, $userName, $password, $charset = null)
@@ -29,13 +46,14 @@ class Oracle extends BaseManager implements DatabaseManager
         /// @todo throw if $charset is not the same as the db one
 
         if ($userName != '' && $userName != $dbName) {
-            /// @todo throw
+            throw new \Exception("Can not create a database (schema) on Oracle with a different accompanying user");
         }
 
+        // NB: if we use a quoted identifier for the username, logging in becomes more difficult, as it will require quotes too...
         $statements = [
-            "CREATE USER \"$dbName\" IDENTIFIED BY $password;",
-            "GRANT CONNECT, RESOURCE TO \"$dbName\";",
-            "GRANT UNLIMITED_TABLESPACE TO \"$dbName\";",
+            "CREATE USER $dbName IDENTIFIED BY \"$password\";",
+            "GRANT CONNECT, RESOURCE TO $dbName;",
+            "GRANT UNLIMITED TABLESPACE TO $dbName;",
         ];
 
         return new Command($statements);
@@ -48,20 +66,37 @@ class Oracle extends BaseManager implements DatabaseManager
      * @return Command
      * @param bool $ifExists
      * @bug $ifExists = true not supported
+     * @throws \Exception
      * @todo prevent sql injection!
      */
     public function getDropDatabaseSqlAction($dbName, $userName, $ifExists = false)
     {
         if ($userName != '' && $userName != $dbName) {
-            /// @todo throw
+            throw new \Exception("Can not drop a database (schema) on Oracle with a different accompanying user");
         }
 
         /// @todo check support for IF EXISTS
         $statements = [
-            "DROP USER \"$dbName\" CASCADE;",
+            "DROP USER $dbName CASCADE;",
         ];
 
         return new Command($statements);
+    }
+
+    /**
+     * Returns the sql 'action' used to list all existing db users
+     * @return Command
+     */
+    public function getListUsersSqlAction()
+    {
+        return new Command(
+            // NB: we filter out 'system' users, as there are many...
+            "SELECT username FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
     }
 
     /**
@@ -70,11 +105,14 @@ class Oracle extends BaseManager implements DatabaseManager
      * @return Command
      * @bug $ifExists = true not supported
      * @todo prevent sql injection!
+     * @todo we should somehow warn users that this destroys the schema too
      */
     public function getDropUserSqlAction($userName, $ifExists = false)
     {
+        /// @todo check support for IF EXISTS
+
         return new Command([
-            "DROP USER \"$userName\ CASCADE;",
+            "DROP USER $userName CASCADE;",
         ]);
     }
 
@@ -86,38 +124,6 @@ class Oracle extends BaseManager implements DatabaseManager
     {
         return new Command(
             "SELECT value AS Collation FROM v\$nls_valid_values WHERE parameter = 'CHARACTERSET' ORDER BY value;",
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all available databases
-     * @return Command
-     * @todo for each database, retrieve the charset/collation
-     */
-    public function getListDatabasesSqlAction()
-    {
-        return new Command(
-            "SELECT username AS Database FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all existing db users
-     * @return Command
-     */
-    public function getListUsersSqlAction()
-    {
-        return new Command(
-        // NB: we filter out 'system' users, as there are many...
-            "SELECT username FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
             function ($output, $executor) {
                 /** @var Executor $executor */
                 return $executor->resultSetToArray($output);

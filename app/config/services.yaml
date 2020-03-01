@@ -168,7 +168,8 @@ parameters:
             #charset: UTF8
             #driver: pdo_oci
             #server_version: '18.4'
-            servicename: xe
+            # We work inside the pdb 1 by default. It makes it easier to create users with any name...
+            servicename: xepdb1
             vendor: oracle
             version: '18.4'
         postgresql_9_4:
@@ -242,7 +243,7 @@ parameters:
         mariadb: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
         mssql: "\\Db3v4l\\Core\\DatabaseManager\\SQLServer"
         mysql: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
-        oracle: "\\Db3v4l\\Core\\DatabaseManager\\OraclePDB"
+        oracle: "\\Db3v4l\\Core\\DatabaseManager\\Oracle"
         percona: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
         postgresql: "\\Db3v4l\\Core\\DatabaseManager\\PostgreSQL"
         sqlite: "\\Db3v4l\\Core\\DatabaseManager\\SQLite"

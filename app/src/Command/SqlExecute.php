@@ -83,7 +83,7 @@ class SqlExecute extends DatabaseManagingCommand
             /// @todo inject more randomness in the username, by allowing more chars than bin2hex produces
 
             $userName = 'db3v4l_' . substr(bin2hex(random_bytes(5)), 0, 9); // some mysql versions have a limitation of 16 chars for usernames
-            $password = bin2hex(random_bytes(16));
+            $password = bin2hex(random_bytes(15)); // some oracle versions have a limit of 30 chars on passwords
             //$dbName = bin2hex(random_bytes(31));
             $dbName = $userName; // $userName will be used as db name
 
@@ -130,6 +130,11 @@ class SqlExecute extends DatabaseManagingCommand
         }
 
         if (count($dbConnectionSpecs)) {
+
+            if ($this->outputFormat === 'text') {
+                $this->writeln('<info>Executing sql command/file...</info>', OutputInterface::VERBOSITY_VERBOSE);
+            }
+
             $results = $this->executeSQL($dbConnectionSpecs, $sql, $file);
 
             if ($this->outputFormat === 'text') {

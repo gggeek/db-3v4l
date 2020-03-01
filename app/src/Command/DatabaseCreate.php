@@ -61,7 +61,9 @@ class DatabaseCreate extends DatabaseManagingCommand
             }
         } else {
             if ($password == null) {
-                $password = bin2hex(random_bytes(16));
+                // 30 chars = max length for Oracle (at least up to 11g)
+                /// @todo move to a constant
+                $password = bin2hex(random_bytes(15));
 
                 // Should we warn the user always? To avoid breaking non-text-format, we can send it to stderr...
                 // Otoh we give the password in the structured output that we produce
