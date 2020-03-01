@@ -172,6 +172,7 @@
   + allow the Command object to specify many sql queries, where 2nd one depends on result of 1st (with callable in between)
   + finish & test execution of select/nonselect queries via pdo; doctrine
   + allow to plug Schema Managers via tagged services instead of registering class names
+  + allow to plug NativeClient without rewriting NativeClient.php
 
 - web gui:
   + keep icons visible when collapsing left menu

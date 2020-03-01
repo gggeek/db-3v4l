@@ -230,7 +230,6 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 return $output;
             case 'oracle':
                 $output = explode("\n", $string);
-var_dump($output);
                 array_shift($output); // empty line
                 array_shift($output); // headers
                 array_shift($output); // '---'
