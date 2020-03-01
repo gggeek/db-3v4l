@@ -9,9 +9,27 @@ use Db3v4l\Core\SqlAction\Command;
 class SQLServer extends BaseManager implements DatabaseManager
 {
     /**
+     * Returns the sql 'action' used to list all available databases
+     * @return Command
+     * @todo for each database, retrieve the charset/collation
+     */
+    public function getListDatabasesSqlAction()
+    {
+        return new Command(
+        // the way we create it, the user account is contained in the db
+        // @todo add "WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')" ?
+            "SELECT name AS 'Database' FROM sys.databases ORDER BY name;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
+
+    /**
      * Returns the sql 'action' used to create a new db and accompanying user
-     * @param string $dbName Max 63 chars for Postgres
-     * @param string $userName Max 16 chars for MySQL 5.5
+     * @param string $dbName
+     * @param string $userName
      * @param string $password
      * @param string $charset charset/collation name
      * @return Command
@@ -45,7 +63,6 @@ class SQLServer extends BaseManager implements DatabaseManager
      * @param string $userName
      * @return Command
      * @param bool $ifExists
-     * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
      * @todo prevent sql injection!
      */
     public function getDropDatabaseSqlAction($dbName, $userName, $ifExists = false)
@@ -71,10 +88,24 @@ class SQLServer extends BaseManager implements DatabaseManager
     }
 
     /**
+     * Returns the sql 'action' used to list all existing db users
+     * @return Command
+     */
+    public function getListUsersSqlAction()
+    {
+        return new Command(
+            "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
+
+    /**
      * @param string $userName
      * @param bool $ifExists
      * @return Command
-     * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
      * @todo prevent sql injection!
      */
     public function getDropUserSqlAction($userName, $ifExists = false)
@@ -101,39 +132,6 @@ class SQLServer extends BaseManager implements DatabaseManager
     {
         return new Command(
             'SELECT name AS Collation FROM fn_helpcollations();',
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all available databases
-     * @return Command
-     * @todo for each database, retrieve the charset/collation
-     */
-    public function getListDatabasesSqlAction()
-    {
-        return new Command(
-        // the way we create it, the user account is contained in the db
-        // @todo add "WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')" ?
-            "SELECT name AS 'Database' FROM sys.databases ORDER BY name;",
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all existing db users
-     * @return Command
-     */
-    public function getListUsersSqlAction()
-    {
-        return new Command(
-            "SELECT name AS 'User' FROM sys.sql_logins ORDER BY name",
             function ($output, $executor) {
                 /** @var Executor $executor */
                 return $executor->resultSetToArray($output);

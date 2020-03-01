@@ -5,7 +5,7 @@ namespace Db3v4l\API\Interfaces;
 use Db3v4l\API\Interfaces\SqlAction\CommandAction;
 
 /**
- * Manages databases (and users/policies) of an instance
+ * Manages databases, users/policies and other per-instance data of db instances
  */
 interface DatabaseManager
 {
@@ -59,7 +59,6 @@ interface DatabaseManager
     /**
      * Returns the sql 'action' used to list all available collations
      * @return CommandAction
-     * @throws OutOfBoundsException for unsupported database types
      */
     public function getListCollationsSqlAction();
 }

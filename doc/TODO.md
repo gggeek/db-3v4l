@@ -163,6 +163,7 @@
     - missing for psql? (according to slack discussion: this is impossible using psql and can only be done using a different
       driver... it might be in fact already happening when NOT using input via files...)
     - missing for sqlsrv
+    - definitely missing for oracle
   + check: can the temp user drop&creates other databases for postgresql?
   + make sure no command-injection / option-injection is possible
 
@@ -170,6 +171,7 @@
   + allow to register via sf config execution of a cli tool against all dbs, with mapped username, pwd, etc... (eg: mysqltuner)
   + allow the Command object to specify many sql queries, where 2nd one depends on result of 1st (with callable in between)
   + finish & test execution of select/nonselect queries via pdo; doctrine
+  + allow to plug Schema Managers via tagged services instead of registering class names
 
 - web gui:
   + keep icons visible when collapsing left menu

@@ -8,10 +8,26 @@ use Db3v4l\Core\SqlAction\Command;
 
 class MySQL extends BaseManager implements DatabaseManager
 {
+    /**
+     * Returns the sql 'action' used to list all available databases
+     * @return Command
+     * @todo for each database, retrieve the charset/collation
+     */
+    public function getListDatabasesSqlAction()
+    {
+        return new Command(
+        /// @todo use 'SHOW DATABASES' for versions < 5
+            "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
 
     /**
      * Returns the sql 'action' used to create a new db and accompanying user
-     * @param string $dbName Max 63 chars for Postgres
+     * @param string $dbName
      * @param string $userName Max 16 chars for MySQL 5.5
      * @param string $password
      * @param string $charset charset/collation name
@@ -39,7 +55,7 @@ class MySQL extends BaseManager implements DatabaseManager
      * @param string $userName
      * @return Command
      * @param bool $ifExists
-     * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
+     * @bug $ifExists = true not fully supported
      * @todo prevent sql injection!
      */
     public function getDropDatabaseSqlAction($dbName, $userName, $ifExists = false)
@@ -60,18 +76,33 @@ class MySQL extends BaseManager implements DatabaseManager
     }
 
     /**
+     * Returns the sql 'action' used to list all existing db users
+     * @return Command
+     */
+    public function getListUsersSqlAction()
+    {
+        return new Command(
+            'SELECT DISTINCT User FROM mysql.user ORDER BY User;',
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
+
+    /**
      * @param string $userName
      * @param bool $ifExists
      * @return Command
-     * @bug currently some DBs report failures for non-existing user, even when $ifExists = true
+     * @bug $ifExists = true not supported
      * @todo prevent sql injection!
      */
     public function getDropUserSqlAction($userName, $ifExists = false)
     {
-        $ifClause = '';
+        /*$ifClause = '';
         if ($ifExists) {
             $ifClause = 'IF EXISTS';
-        }
+        }*/
 
         /// @todo since mysql 5.7, 'DROP USER IF EXISTS' is supported. We could use it...
         return new Command([
@@ -96,38 +127,6 @@ class MySQL extends BaseManager implements DatabaseManager
                     $out[] = trim($parts[0]) . ' (' . trim($parts[1]) .')';
                 }
                 return $out;
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all available databases
-     * @return Command
-     * @todo for each database, retrieve the charset/collation
-     */
-    public function getListDatabasesSqlAction()
-    {
-        return new Command(
-            /// @todo use 'SHOW DATABASES' for versions < 5
-            "SELECT SCHEMA_NAME AS 'Database' FROM information_schema.SCHEMATA ORDER BY SCHEMA_NAME;",
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
-
-    /**
-     * Returns the sql 'action' used to list all existing db users
-     * @return Command
-     */
-    public function getListUsersSqlAction()
-    {
-        return new Command(
-            'SELECT DISTINCT User FROM mysql.user ORDER BY User;',
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
             }
         );
     }

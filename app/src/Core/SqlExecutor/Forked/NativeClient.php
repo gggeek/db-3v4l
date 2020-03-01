@@ -133,18 +133,28 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 /// @todo disable execution of dangerous (or all) SQLPLUS commands.
                 ///       See the list at https://docs.oracle.com/en/database/oracle/oracle-database/18/sqpug/SQL-Plus-command-reference.html#GUID-177F24B7-D154-4F8B-A05B-7568079800C6
                 $command = 'sqlplus';
+                $connectionIdentifier = '//' . $this->databaseConfiguration['host'] .
+                    ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : '');
+                // nb: for oracle, we use pdbs to map 'databases', and they get a new service name
+                /// @todo allow support for _not_ doing that, and using schemas as 'databases'
+                if (isset($this->databaseConfiguration['dbname'])) {
+                    $connectionIdentifier .= '/' . $this->databaseConfiguration['dbname'];
+                } else {
+                    if ($this->databaseConfiguration['servicename'] != '') {
+                        $connectionIdentifier .= '/' . $this->databaseConfiguration['servicename'];
+                    }
+                }
                 $options = [
                     '-L', // 'attempts to log in just once, instead of reprompting on error'
                     '-NOLOGINTIME',
                     '-S',
-                    $this->databaseConfiguration['user'] . '/' . $this->databaseConfiguration['password'] .
-                    '@//' . $this->databaseConfiguration['host'] .
-                        ($this->databaseConfiguration['port'] != '' ?  ':' . $this->databaseConfiguration['port'] : '') .
-                        ($this->databaseConfiguration['servicename'] != '' ?  '/' . $this->databaseConfiguration['servicename'] : ''),
+                    $this->databaseConfiguration['user'] . '/' . $this->databaseConfiguration['password'] . '@' . $connectionIdentifier,
                 ];
-                // nb: for oracle, we use schemas (instead of pdbs) to map 'databases'...
-                //if (isset($this->databaseConfiguration['dbname'])) {
-                //}
+                /// @todo make this optional somehow / allow SYSOPER as alternative
+                if (strtolower($this->databaseConfiguration['user']) === 'sys') {
+                    $options[] = 'AS';
+                    $options[] = 'SYSDBA';
+                }
                 if ($action == self::EXECUTE_FILE) {
                     /// @todo add to the existing file the pagesize and feedback settings
                     $options[] = '@' . $sqlOrFilename;
@@ -220,6 +230,7 @@ class NativeClient extends ForkedExecutor implements CommandExecutor, FileExecut
                 return $output;
             case 'oracle':
                 $output = explode("\n", $string);
+var_dump($output);
                 array_shift($output); // empty line
                 array_shift($output); // headers
                 array_shift($output); // '---'

@@ -6,27 +6,16 @@ use Db3v4l\API\Interfaces\DatabaseManager;
 use Db3v4l\API\Interfaces\SqlExecutor\Executor;
 use Db3v4l\Core\SqlAction\Command;
 
-class PostgreSQL extends BaseManager implements DatabaseManager
+/**
+ * This DBManager uses schemas as 'database'.
+ * @todo if used with Oracle >= 12, usernames have to be prefixed with c## to be in the CDB...
+ */
+class Oracle extends BaseManager implements DatabaseManager
 {
-    /**
-     * Returns the sql 'action' used to list all available databases
-     * @return Command
-     * @todo for each database, retrieve the charset/collation
-     */
-    public function getListDatabasesSqlAction()
-    {
-        return new Command(
-            'SELECT datname AS "Database" FROM pg_database ORDER BY datname;',
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
-    }
 
     /**
      * Returns the sql 'action' used to create a new db and accompanying user
-     * @param string $dbName Max 63 chars for Postgres
+     * @param string $dbName
      * @param string $userName
      * @param string $password
      * @param string $charset charset/collation name
@@ -35,18 +24,20 @@ class PostgreSQL extends BaseManager implements DatabaseManager
      */
     public function getCreateDatabaseSqlAction($dbName, $userName, $password, $charset = null)
     {
-        $collation = $this->getCollationName($charset);
+        //$collation = $this->getCollationName($charset);
+
+        /// @todo throw if $charset is not the same as the db one
+
+        if ($userName != '' && $userName != $dbName) {
+            /// @todo throw
+        }
 
         $statements = [
-            // q: do we need to add 'TEMPLATE template0' ?
-            //    see f.e. https://www.vertabelo.com/blog/collations-in-postgresql/
-            "CREATE DATABASE \"$dbName\"" . ($collation !== null ? " ENCODING $collation" : '') . ';',
+            "CREATE USER \"$dbName\" IDENTIFIED BY $password;",
+            "GRANT CONNECT, RESOURCE TO \"$dbName\";",
+            "GRANT UNLIMITED_TABLESPACE TO \"$dbName\";",
         ];
-        if ($userName != '') {
-            $statements[] = "COMMIT;";
-            $statements[] = "CREATE USER \"$userName\" WITH PASSWORD '$password'" . ';';
-            $statements[] = "GRANT ALL ON DATABASE \"$dbName\" TO \"$userName\""; // q: should we avoid granting CREATE?
-        }
+
         return new Command($statements);
     }
 
@@ -56,54 +47,34 @@ class PostgreSQL extends BaseManager implements DatabaseManager
      * @param string $userName
      * @return Command
      * @param bool $ifExists
+     * @bug $ifExists = true not supported
      * @todo prevent sql injection!
      */
     public function getDropDatabaseSqlAction($dbName, $userName, $ifExists = false)
     {
-        $ifClause = '';
-        if ($ifExists) {
-            $ifClause = 'IF EXISTS';
+        if ($userName != '' && $userName != $dbName) {
+            /// @todo throw
         }
 
+        /// @todo check support for IF EXISTS
         $statements = [
-            "DROP DATABASE {$ifClause} \"$dbName\";",
+            "DROP USER \"$dbName\" CASCADE;",
         ];
-        if ($userName != '') {
-            $statements[] = "DROP USER {$ifClause} \"$userName\";";
-        }
-        return new Command($statements);
-    }
 
-    /**
-     * Returns the sql 'action' used to list all existing db users
-     * @return Command
-     */
-    public function getListUsersSqlAction()
-    {
-        return new Command(
-            'SELECT usename AS "User" FROM pg_catalog.pg_user ORDER BY usename;',
-            function ($output, $executor) {
-                /** @var Executor $executor */
-                return $executor->resultSetToArray($output);
-            }
-        );
+        return new Command($statements);
     }
 
     /**
      * @param string $userName
      * @param bool $ifExists
      * @return Command
+     * @bug $ifExists = true not supported
      * @todo prevent sql injection!
      */
     public function getDropUserSqlAction($userName, $ifExists = false)
     {
-        $ifClause = '';
-        if ($ifExists) {
-            $ifClause = 'IF EXISTS';
-        }
-
         return new Command([
-            "DROP USER {$ifClause} \"$userName\";"
+            "DROP USER \"$userName\ CASCADE;",
         ]);
     }
 
@@ -114,7 +85,39 @@ class PostgreSQL extends BaseManager implements DatabaseManager
     public function getListCollationsSqlAction()
     {
         return new Command(
-            'SELECT collname AS Collation FROM pg_collation ORDER BY collname',
+            "SELECT value AS Collation FROM v\$nls_valid_values WHERE parameter = 'CHARACTERSET' ORDER BY value;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
+
+    /**
+     * Returns the sql 'action' used to list all available databases
+     * @return Command
+     * @todo for each database, retrieve the charset/collation
+     */
+    public function getListDatabasesSqlAction()
+    {
+        return new Command(
+            "SELECT username AS Database FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
+            function ($output, $executor) {
+                /** @var Executor $executor */
+                return $executor->resultSetToArray($output);
+            }
+        );
+    }
+
+    /**
+     * Returns the sql 'action' used to list all existing db users
+     * @return Command
+     */
+    public function getListUsersSqlAction()
+    {
+        return new Command(
+        // NB: we filter out 'system' users, as there are many...
+            "SELECT username FROM sys.all_users WHERE oracle_maintained != 'Y' ORDER BY username;",
             function ($output, $executor) {
                 /** @var Executor $executor */
                 return $executor->resultSetToArray($output);
@@ -129,7 +132,7 @@ class PostgreSQL extends BaseManager implements DatabaseManager
     public function getRetrieveVersionInfoSqlAction()
     {
         return new Command(
-            'SHOW server_version;',
+            "SELECT version_full || ' (' || banner || ')' AS version FROM  v\$version, v\$instance;",
             function ($output, $executor) {
                 /** @var Executor $executor */
                 return $executor->resultSetToArray($output)[0];
@@ -144,7 +147,7 @@ class PostgreSQL extends BaseManager implements DatabaseManager
      * @todo what shall we accept as valid input, ie. 'generic' charset names ? maybe do 2 passes: known-db-charset => generic => specific for each db ?
      *       see: https://www.iana.org/assignments/character-sets/character-sets.xhtml for IANA names
      */
-    protected function getCollationName($charset)
+    /*protected function getCollationName($charset)
     {
         if ($charset == null) {
             return null;
@@ -157,6 +160,10 @@ class PostgreSQL extends BaseManager implements DatabaseManager
             $charset = 'utf8';
         }
 
+        if ($charset == 'utf8') {
+            $charset = 'AL32UTF8';
+        }
+
         return $charset;
-    }
+    }*/
 }

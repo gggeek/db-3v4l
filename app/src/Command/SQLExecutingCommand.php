@@ -211,12 +211,18 @@ abstract class SQLExecutingCommand extends BaseCommand
                         $results[$instanceName] = $output;
                         $succeeded++;
                     } else {
+                        $err = trim($process->getErrorOutput());
                         $results[$instanceName] = [
-                            'stderr' => trim($process->getErrorOutput()),
-                            'exitcode' => $process->getExitCode()
+                            'exitcode' => $process->getExitCode(),
+                            'stderr' => $err,
                         ];
+                        // some command-line database tools mix up stdout and stderr - we go out of our way to accommodate them...
+                        if ($err === '') {
+                            $results[$instanceName]['stdout'] = $err = trim($process->getOutput());
+                        }
+
                         $failed++;
-                        $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $process->getErrorOutput() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
+                        $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $err . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                     }
                 }
             }

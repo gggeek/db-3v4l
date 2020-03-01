@@ -163,7 +163,7 @@ parameters:
         oracle_18_4:
             host: oracle_18_4
             port: 1521
-            user: system
+            user: sys
             password: '%env(ORACLE_PWD)%'
             #charset: UTF8
             #driver: pdo_oci
@@ -242,7 +242,7 @@ parameters:
         mariadb: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
         mssql: "\\Db3v4l\\Core\\DatabaseManager\\SQLServer"
         mysql: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
-        oracle: "\\Db3v4l\\Core\\DatabaseManager\\Oracle12"
+        oracle: "\\Db3v4l\\Core\\DatabaseManager\\OraclePDB"
         percona: "\\Db3v4l\\Core\\DatabaseManager\\MySQL"
         postgresql: "\\Db3v4l\\Core\\DatabaseManager\\PostgreSQL"
         sqlite: "\\Db3v4l\\Core\\DatabaseManager\\SQLite"
