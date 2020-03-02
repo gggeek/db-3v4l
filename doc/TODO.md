@@ -127,10 +127,10 @@
 
 - build/docker:
   + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)
-  + while setting up symfony, have the web site show up a courtesy page
-  + allow dbstack to download and install docker-compose if it is not found
   + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
     (see examples at https://docs.docker.com/compose/startup-order/)
+  + while setting up symfony, have the web site show up a courtesy page
+  + allow dbstack to download and install docker-compose if it is not found
   + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
     or at least checks it - see how we install the latest available lazydocker
   + run security-checker as part of composer post-install and post-upgrade?
