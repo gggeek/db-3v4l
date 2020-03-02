@@ -5,6 +5,8 @@ Version 0.14 (unreleased)
 
 - Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)
 
+- New: taught `dbstack.sh` a new command: `services`, to list all defined docker-compose 'services'
+
 
 Version 0.13
 ------------

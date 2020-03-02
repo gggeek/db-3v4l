@@ -50,6 +50,8 @@ fi
 
 # Stack status
 
+./bin/dbstack services
+
 # @todo enable this for docker-compose >= 1.12.0
 #./bin/dbstack images
 

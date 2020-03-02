@@ -52,6 +52,7 @@ Commands:
     setup               set up the app without rebuilding the containers first
     run                 execute a single command in the worker container
     shell               start a shell in the worker container as the application user
+    services            list docker-compose services
     start               start the complete set of containers
     stop                stop the complete set of containers
     top                 display the running container processes
@@ -368,7 +369,7 @@ case "${COMMAND}" in
     ;;
 
     config)
-        docker-compose ${VERBOSITY} config
+        docker-compose ${VERBOSITY} config ${2}
     ;;
 
     dbconsole)
@@ -435,6 +436,10 @@ case "${COMMAND}" in
                 wait_for_bootstrap app
             fi
         fi
+    ;;
+
+    services)
+        docker-compose config --services | sort
     ;;
 
     stop)

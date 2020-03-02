@@ -83,7 +83,7 @@
 
 ## Improvements
 
-- move to usage pf docker volumes instead of mounted host dirs for storing data, iff this enabled us to skip all the
+- move to usage of docker volumes instead of mounted host dirs for storing data, iff this enabled us to skip all the
   'chown' calls (to be seen: would we be able to keep config and log files readable on the host with good user id?)
 
 - oracle: add support for custom config files (note: spfile is inside oradata and linked back to $ORACLE_HOME/dbs, but binary;
@@ -147,6 +147,7 @@
 
 - host: improve cli scripts:
   + allow 'cleanup' command to remove all anonymous docker volumes - or at least the ones belonging to this app
+    use `docker-compose config --volumes` to list them? see https://github.com/docker/docker.github.io/issues/8366
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
   + add shell completion for commands of dbstack

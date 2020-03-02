@@ -29,14 +29,18 @@ install:
 #before_script:
 
 script:
-    - ./tests/01_smoketest.sh -w 600 -x 180
-    - ./tests/02_dbconsole.sh -w 600 -x 60
-    - ./tests/03_web.sh -w 600
-    - ./tests/04_admin.sh -w 600
+    - ./tests/01_smoketest.sh -w 300 -x 300 > test01.log
+    - ./tests/02_dbconsole.sh -w 300 -x 60 > test02.log
+    - ./tests/03_web.sh -w 300 > test03.log
+    - ./tests/04_admin.sh -w 300 > test04.log
 
 #after_success:
 
 after_failure:
-    - ./bin/dbstack logs worker
+    -  if [ -f test01.log ]; then cat test01.log; fi
+    -  if [ -f test02.log ]; then cat test02.log; fi
+    -  if [ -f test03.log ]; then cat test03.log; fi
+    -  if [ -f test04.log ]; then cat test04.log; fi
+    - for svc in $(./bin/dbstack services); do docker-compose logs $svc; done
 
 #after_script:
