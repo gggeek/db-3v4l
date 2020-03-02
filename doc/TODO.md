@@ -21,8 +21,6 @@
   no 'admin' tools such as lazydocker and adminer, etc...)
   Being able to start a single 'db type' might also make sense in parallelization of tests on travis.
 
-- add more oracle containers (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
-
 - worker+web: add a queued-task implementation, using sf messenger and a queueing daemon (redis?)
 
 - web: when listing instances, show the _real_ db version nr, as done by cli
@@ -55,6 +53,7 @@
 - "public server" configuration:
   - make sure there is no possibility to achieve 'command injection' when invoking sql cli tools by passing in
     arguments that eg. start with a dash
+  - add sql-injection prevention to dbmanagers
   - disable access to admin
   - add mod_security 3
   - prevent usage of custom db schemas, allow only temp ones
@@ -65,7 +64,10 @@
   - make app code non-writeable by www-data user (and separate nginx user from php-fpm user)
   - harden php configuration
   - disallow network connections from db containers to redis
-  - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres')
+  - let user pick up name of root account besides its pwd (no more 'sa', 'root', 'postgres', 'sys')
+  - check valid chars for root account pwd (across all dbs) to increase randomness
+
+- add more oracle containers ? (see https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance)
 
 - db: add more databases: Firebird 2 and 3, cockroachdb, DB2, Hana, ASE, SQL.js, Elasticsearch, SQLite 2, MongoDB, ClickHouse
   - https://hub.docker.com/r/cockroachdb/cockroach
@@ -81,10 +83,13 @@
 
 ## Improvements
 
-- oracle: add support for custom config files
-
 - move to usage pf docker volumes instead of mounted host dirs for storing data, iff this enabled us to skip all the
   'chown' calls (to be seen: would we be able to keep config and log files readable on the host with good user id?)
+
+- oracle: add support for custom config files (note: spfile is inside oradata and linked back to $ORACLE_HOME/dbs, but binary;
+  init.ora is in $ORACLE_HOME/dbs and textual, but it is only read at db creation time, plus it should probably not be blank =>
+  we could f.e. add an extra init.ora and have it appended to the oracle-provided one via bootstrap.sh...
+  also, there are values which could be overridden in /etc/sysconfig/oracle-xe-18c.conf)
 
 - ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
   Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019

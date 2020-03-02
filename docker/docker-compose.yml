@@ -375,11 +375,14 @@ services:
         #ports:
         #    - "1522:1521"
         volumes:
-            #- ./config/oracle/18.4/${COMPOSE_DB_SIZE}.cnf:/opt/oracle/...
+            # @todo add in boostrap.sh support for appending this to the existing init.ora...
+            #- ./config/oracle/18.4/${COMPOSE_DB_SIZE}.init.ora:/etc/sysconfig/oracle-xe-18c.init.ora.extra
             - ./data/oracle/18.4:/opt/oracle/oradata
             # @todo which of the many oracle log folder to map to the host? see `find /opt/oracle/ -name '*.log'`...
             #       Idea: we could mount many container folders to subdirs of ./logs/oracle/18.4
-            #- ./logs/oracle/18.4:/var/log/oracle-database-xe-18c/
+            #- ./logs/oracle/18.4/alert_XE.log:/opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
+            #- ./logs/oracle/18.4/rdbms:/opt/oracle/product/18c/dbhomeXE/rdbms/log/
+            #- ./logs/oracle/18.4/client:/opt/oracle/product/18c/dbhomeXE/log/oracle_18_4/client/
         environment:
             - CONTAINER_USER
         env_file:
