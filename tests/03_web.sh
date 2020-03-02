@@ -3,11 +3,27 @@
 # Fail on any error
 set -ev
 
+BOOTSTRAP_TIMEOUT=60
+
+while getopts ":w:" opt
+do
+    case $opt in
+        w)
+            BOOTSTRAP_TIMEOUT=${OPTARG}
+        ;;
+        \?)
+            printf "\n\e[31mERROR: unknown option -${OPTARG}\e[0m\n\n" >&2
+            exit 1
+        ;;
+    esac
+done
+shift $((OPTIND-1))
+
 cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Start the stack
 
-./bin/dbstack -w 600 start
+./bin/dbstack -w ${BOOTSTRAP_TIMEOUT} start
 
 # Wait until app containers have booted - this is now done by `dbstack start` itself...
 ## @todo add a time limit...
