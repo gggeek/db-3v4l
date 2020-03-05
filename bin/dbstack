@@ -226,8 +226,7 @@ wait_for_bootstrap() {
         ;;
     esac
 
-    echo "Waiting for containers bootstrap to finish"
-    BOOTSTRAP_OK=false
+    echo "[`date`] Waiting for containers bootstrap to finish..."
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
@@ -279,6 +278,8 @@ cleanup() {
             fi
 
             find ./data/ -type f ! -name .gitkeep -delete
+            # leftover sockets happen...
+            find ./data/ -type s -delete
             find ./data/ -type d -empty -delete
         ;;
         docker-images)
