@@ -9,7 +9,11 @@ function buildServerList()
     $servers = [];
     foreach($config['parameters']['db3v4l.database_instances'] as $instance => $def) {
         $servers[$instance] = new AdminerLoginServerEnhanced(
-            $def['host'].':'.$def['port'],
+            (
+                $def['vendor'] == 'oracle' ?
+                ('//'.$def['host'].':'.$def['port'].'/'.$def['servicename']) :
+                ($def['host'].':'.$def['port'])
+            ),
             $def['vendor'].' '.$def['version'],
             str_replace(
                 array('mariadb', 'mysql', 'postgresql'),
