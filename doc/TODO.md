@@ -128,7 +128,9 @@
 - build/docker:
   + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
+    at the moment, only the oracle container waits for the db to be rebuild
     (see examples at https://docs.docker.com/compose/startup-order/)
+  + check if we can change ownership of sqlserver data files to plain user instead of root
   + while setting up symfony, have the web site show up a courtesy page
   + allow dbstack to download and install docker-compose if it is not found
   + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
