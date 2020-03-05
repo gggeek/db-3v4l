@@ -42,11 +42,11 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # The collation:list output is huge. Let's not pollute test logs...
 ./bin/dbconsole collation:list >/dev/null
 
-./bin/dbconsole database:create --user=testuser --database=testdb
+./bin/dbconsole database:create --user=testuser --database=testuser
 
 # @todo run ./bin/dbconsole database:list and check that we have 'testdb' listed the expected nr. of times
 
-./bin/dbconsole database:drop --user=testuser --database=testdb
+./bin/dbconsole database:drop --user=testuser --database=testuser
 
 # @todo run ./bin/dbconsole database:list and check that we don't have 'testdb' listed any more
 
