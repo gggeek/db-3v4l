@@ -1,11 +1,19 @@
 Version 0.14 (unreleased)
 -------------------------
 
-- New: added Oracle Database 18c (XE)
+- New: added Oracle Database 18c (XE) to the available databases
+
+- New: taught `dbstack` a new command: `services`, to list all defined docker-compose 'services'
 
 - Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)
 
-- New: taught `dbstack.sh` a new command: `services`, to list all defined docker-compose 'services'
+- Improved: `dbstack cleanup databases` tries harder to scrub local data which might prevent the databases from
+  being recreated successfully on next start
+
+- Improved: bumped the application dependencies to Symfony 4.4.5
+
+- Improved: `dbstack build` and `dbstack start` now wait for the bootstrap process of every container to finish,
+  instead of waiting only for the web/admin/worker ones
 
 
 Version 0.13
@@ -15,7 +23,7 @@ Version 0.13
 
 - New: Percona pt-toolkit is now installed in the worker container
 
-- Improved: added the `-u` option to `dbstack.sh build`, to allow updating the base Docker images.
+- Improved: added the `-u` option to `dbstack build`, to allow updating the base Docker images.
   This can be used to easily upgrade the available databases to the latest release found on dockerHub
 
 - Improved: upgraded bundled Adminer from 4.7.5 to 4.7.6
