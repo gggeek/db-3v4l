@@ -23,11 +23,11 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo "[`date`] Handing over control to /entrypoint.sh..."
+echo "[`date`] Handing over control to $@..."
 
 trap clean_up TERM
 
-/docker-entrypoint.sh $@ &
+$@ &
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 

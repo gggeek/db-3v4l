@@ -27,13 +27,6 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/dbstack -w ${BOOTSTRAP_TIMEOUT} start
 
-# Wait until app containers have booted - this is now done by `dbstack start` itself...
-## @todo add a time limit...
-#while [ -a ! -f ./app/var/bootstrap_ok_admin ! -f ./app/var/bootstrap_ok_web -a ! -f ./app/var/bootstrap_ok_worker ]; do
-#  sleep 1
-#  echo .
-#done
-
 # Test the web interface
 
 # @todo use https://github.com/symfony/panther, plain BrowserKit or behat/selenium/mink ?

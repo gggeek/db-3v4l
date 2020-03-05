@@ -13,8 +13,8 @@ clean_up() {
     exit
 }
 
-BS_OK_DIR=/var/www/db3v4l/var
-BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok_admin
+BS_OK_DIR=/var/run
+BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok
 
 # Allow any process to see if bootstrap finished by looking up this file
 if [ -f ${BS_OK_FILE} ]; then

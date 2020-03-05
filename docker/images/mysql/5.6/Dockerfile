@@ -29,4 +29,5 @@ RUN chmod 755 /root/bootstrap.sh
 
 EXPOSE 3306
 
-ENTRYPOINT ["/root/bootstrap.sh", "mysqld"]
+ENTRYPOINT ["/root/bootstrap.sh"]
+CMD ["mysqld"]

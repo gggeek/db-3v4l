@@ -29,8 +29,8 @@ install:
 #before_script:
 
 script:
-    - ./tests/01_smoketest.sh -w 300 -x 600
-    - ./tests/02_dbconsole.sh -w 300 -x 60
+    - ./tests/01_smoketest.sh -w 900
+    - ./tests/02_dbconsole.sh -w 300
     - ./tests/03_web.sh -w 300
     - ./tests/04_admin.sh -w 300
 

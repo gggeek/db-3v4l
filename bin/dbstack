@@ -10,9 +10,7 @@
 # consts
 APP_DEFAULT_CONFIG_FILE=containers.env
 DOCKER_DEFAULT_CONFIG_FILE=.env
-ADMIN_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_admin
-WEB_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_web
-WORKER_BOOTSTRAP_OK_FILE=../app/var/bootstrap_ok_worker
+BOOTSTRAP_OK_FILE=/var/run/bootstrap_ok
 WORKER_SERVICE=worker
 # vars
 APP_LOCAL_CONFIG_FILE=
@@ -162,10 +160,8 @@ build() {
         docker-compose ${VERBOSITY} up -d
     fi
 
-    if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
-        # @todo replace with 'all' when we have support for it...
-        wait_for_bootstrap app
-    fi
+    wait_for_bootstrap all
+    RETCODE=$?
 
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
         echo "[`date`] Removing unused Docker images from disk, again..."
@@ -173,6 +169,8 @@ build() {
     fi
 
     echo "[`date`] Build finished"
+
+    exit ${RETCODE}
 }
 
 setup_app() {
@@ -184,6 +182,10 @@ setup_app() {
     docker-compose ${VERBOSITY} up -d ${WORKER_SERVICE}
 
     wait_for_bootstrap worker
+    RETCODE=$?
+    if [ ${RETCODE} -ne 0 ]; then
+        exit ${RETCODE}
+    fi
 
     echo "[`date`] Setting up the app (from inside the Worker container)..."
     docker exec ${WORKER_CONTAINER} su - ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install"
@@ -192,58 +194,75 @@ setup_app() {
 
 # Wait until containers have fully booted
 wait_for_bootstrap() {
+
+    if [ ${BOOTSTRAP_TIMEOUT} -le 0 ]; then
+        return 0
+    fi
+
     case "${1}" in
         admin)
-            BOOTSTRAP_CONTAINERS_NAMES=Admin
-            BOOTSTRAP_CONTAINERS_FILES="${ADMIN_BOOTSTRAP_OK_FILE}"
+            BOOTSTRAP_CONTAINERS=adminer
         ;;
-        #all)
-        # @todo
-        #;;
+        all)
+            # q: check all services or only the running ones?
+            #BOOTSTRAP_CONTAINERS=$(docker-compose config --services)
+            BOOTSTRAP_CONTAINERS=$(docker-compose ps --services | tr '\n' ' ')
+        ;;
         app)
-            BOOTSTRAP_CONTAINERS_NAMES='Worker, Web and Admin'
-            BOOTSTRAP_CONTAINERS_FILES="${ADMIN_BOOTSTRAP_OK_FILE} ${WEB_BOOTSTRAP_OK_FILE} ${WORKER_BOOTSTRAP_OK_FILE}"
+            BOOTSTRAP_CONTAINERS='worker web adminer'
         ;;
-        web)
-            BOOTSTRAP_CONTAINERS_NAMES=Web
-            BOOTSTRAP_CONTAINERS_FILES="${WEB_BOOTSTRAP_OK_FILE}"
-        ;;
-        worker)
-            BOOTSTRAP_CONTAINERS_NAMES=Worker
-            BOOTSTRAP_CONTAINERS_FILES="${WORKER_BOOTSTRAP_OK_FILE}"
-        ;;
+        #web)
+        #    BOOTSTRAP_CONTAINERS=web
+        #;;
+        #worker)
+        #    BOOTSTRAP_CONTAINERS=worker
+        #;;
         *)
-            printf "\n\e[31mERROR: unknown booting container: ${1}\e[0m\n\n" >&2
-            help
-            exit 1
+            #printf "\n\e[31mERROR: unknown booting container: ${1}\e[0m\n\n" >&2
+            #help
+            #exit 1
+            # @todo add check that this service is actually defined
+            BOOTSTRAP_CONTAINERS=${1}
         ;;
     esac
 
-    echo "Waiting for ${BOOTSTRAP_CONTAINERS_NAMES} containers bootstrap to finish..."
+    echo "Waiting for containers bootstrap to finish"
     BOOTSTRAP_OK=false
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
         sleep 1
-        BOOTSTRAP_OK=true
-        for BS_OK_FILE in ${BOOTSTRAP_CONTAINERS_FILES}; do
-            if [ ! -f ${BS_OK_FILE} ]; then
-                BOOTSTRAP_OK=false
-                break
+        BOOTSTRAP_OK=''
+        for BS_CONTAINER in ${BOOTSTRAP_CONTAINERS}; do
+            printf "Waiting for ${BS_CONTAINER} ... "
+            # @todo speed this up... maybe go back to generating and checking files mounted on the host?
+            docker-compose exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
+            RETCODE=$?
+            if [ ${RETCODE} -eq 0 ]; then
+                printf "\e[32mdone\e[0m\n"
+                BOOTSTRAP_OK="${BOOTSTRAP_OK} ${BS_CONTAINER}"
+            else
+                echo;
             fi
         done
-        if [ ${BOOTSTRAP_OK} = true ]; then
-            break
+        if [ -n "${BOOTSTRAP_OK}" ]; then
+            for BS_CONTAINER in ${BOOTSTRAP_OK}; do
+                BOOTSTRAP_CONTAINERS=${BOOTSTRAP_CONTAINERS//${BS_CONTAINER}/}
+            done
+            if [ -z  "${BOOTSTRAP_CONTAINERS// /}" ]; then
+                break
+            fi
         fi
-        printf .
         i=$(( i + 1 ))
     done
     if [ $i -gt 0 ]; then echo; fi
 
-    if [ ${BOOTSTRAP_OK} != 'true' ]; then
-        printf "\n\e[31m${BOOTSTRAP_CONTAINERS_NAMES} bootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
-        exit 1
+    if [ -n "${BOOTSTRAP_CONTAINERS// /}" ]; then
+        printf "\n\e[31mBootstrap process did not finish within ${BOOTSTRAP_TIMEOUT} seconds\e[0m\n\n" >&2
+        return 1
     fi
+
+    return 0
 }
 
 cleanup() {
@@ -408,8 +427,8 @@ case "${COMMAND}" in
         if [ ${AS_ROOT} = true ]; then
             docker exec -ti ${WORKER_CONTAINER} "$@"
         else
-            # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
             # @todo should we try to start from the 'app' dir ?
+            # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
             docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
             #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
         fi
@@ -430,11 +449,12 @@ case "${COMMAND}" in
 
     start)
         docker-compose ${VERBOSITY} up -d ${2}
-        if [ -z "${2}" -o "${2}" = "worker" ]; then
-            if [ ${BOOTSTRAP_TIMEOUT} -gt 0 ]; then
-                # @todo replace with 'all' when we have support for it...
-                wait_for_bootstrap app
-            fi
+        if [ -z "${2}" ]; then
+            wait_for_bootstrap all
+            exit $?
+        else
+            wait_for_bootstrap ${2}
+            exit $?
         fi
     ;;
 

@@ -16,8 +16,8 @@ ORIG_UID=$(echo $PASSWD_LINE | cut -f3 -d:)
 ORIG_GID=$(echo $PASSWD_LINE | cut -f4 -d:)
 ORIG_HOME=$(echo $PASSWD_LINE | cut -f6 -d:)
 
-BS_OK_DIR=${ORIG_HOME}/app/var
-BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok_worker
+BS_OK_DIR=/var/run
+BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok
 
 # Fix UID & GID for user '${CONTAINER_USER}'
 

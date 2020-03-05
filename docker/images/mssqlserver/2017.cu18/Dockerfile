@@ -32,4 +32,5 @@ RUN chmod 755 /root/bootstrap.sh
 
 EXPOSE 1433
 
-#ENTRYPOINT ["/root/bootstrap.sh", "mysqld"]
+ENTRYPOINT ["/root/bootstrap.sh"]
+CMD ["/opt/mssql/bin/sqlservr"]

@@ -12,7 +12,7 @@ clean_up() {
     exit
 }
 
-BS_OK_DIR=/var
+BS_OK_DIR=/var/run
 BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok
 
 # Allow any process to see if bootstrap finished by looking up this file

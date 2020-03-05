@@ -34,4 +34,5 @@ RUN chmod 755 /root/bootstrap.sh
 
 EXPOSE 5432
 
-ENTRYPOINT ["/root/bootstrap.sh", "postgres", "-c listen_addresses=*"]
+ENTRYPOINT ["/root/bootstrap.sh"]
+CMD ["postgres", "-c listen_addresses=*"]
