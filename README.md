@@ -18,7 +18,7 @@ Broad advancement status:
 
 See the [TODO](./doc/TODO.md) and [CHANGELOG](./doc/WHATSNEW.md) files for more details on recent improvements and future plans.
 
-In the meantime, you can try out http://sqlfiddle.com/
+In the meantime, you can try out http://sqlfiddle.com/, https://www.db-fiddle.com/ or https://dbfiddle.uk/
 
 
 ## Supported Databases:
