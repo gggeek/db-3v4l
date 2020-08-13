@@ -271,7 +271,7 @@ services:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
         hostname: mariadb_10_5
-        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_5"
         #ports:
         #    - "3315:3306"
         volumes:
