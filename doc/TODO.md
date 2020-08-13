@@ -84,7 +84,7 @@
 
 ## Improvements
 
-- add to dbtack actions 'status', 'restart' so that it easy to use it as 'service' script
+- add to dbstack actions 'status', 'restart' so that it easy to use it as 'service' script
 
 - move to usage of docker volumes instead of mounted host dirs for storing data, iff this enables us to skip all the
   'chown' calls (to be seen: would we be able to keep config and log files readable on the host with good user id?)
@@ -121,6 +121,7 @@
     (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
 - admin(er):
+  + make it easier to log in: provide transparently root user/pwd in links to it
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
