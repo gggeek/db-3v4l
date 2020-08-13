@@ -9,7 +9,7 @@
   + sqllite not working in pre-filled list of databases (miss filename for root db)
 
 - improve handling of character sets:
-  + should we we always create utf8 databases by default ? what about mssql 2017 ?
+  + should we always create utf8 databases by default ? what about mssql 2017 ?
   + make sure we always get back by default utf8 data from the clients ?
 
 

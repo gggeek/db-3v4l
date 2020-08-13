@@ -10,10 +10,13 @@ Version 0.14 (unreleased)
 - Improved: `dbstack cleanup databases` tries harder to scrub local data which might prevent the databases from
   being recreated successfully on next start
 
-- Improved: bumped the application dependencies to Symfony 4.4.5
+- Improved: bumped the application dependencies to Symfony 4.4.11; Adminer 4.7.7
 
 - Improved: `dbstack build` and `dbstack start` now wait for the bootstrap process of every container to finish,
   instead of waiting only for the web/admin/worker ones
+
+- Improved: simplified the number of config files used by the `dbstack` command and taught it the `-e` option to allow
+  easy usage of alternative config files
 
 
 Version 0.13
