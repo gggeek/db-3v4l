@@ -182,6 +182,10 @@ abstract class SQLExecutingCommand extends BaseCommand
                     $results[$instanceName] = call_user_func($callable);
                     $succeeded++;
                 } catch (\Throwable $t) {
+                    $results[$instanceName] = [
+                        'exitcode' => $t->getCode(),
+                        'stderr' => $t->getMessage(),
+                    ];
                     $failed++;
                     $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
                 }
@@ -201,8 +205,11 @@ abstract class SQLExecutingCommand extends BaseCommand
                             try {
                                 $output = call_user_func_array($outputFilters[$instanceName], [$output, $executors[$instanceName]]);
                             } catch (\Throwable $t) {
-                                /// @todo shall we reset $result to null or not?
-                                //$result = null;
+                                $output = [
+                                    // q: shall we add to the results the sql output ?
+                                    'exitcode' => $t->getCode(),
+                                    'stderr' => $t->getMessage(),
+                                ];
                                 $failed++;
                                 $succeeded--;
                                 $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $t->getMessage() . "</error>\n", OutputInterface::VERBOSITY_NORMAL);
@@ -212,14 +219,14 @@ abstract class SQLExecutingCommand extends BaseCommand
                         $succeeded++;
                     } else {
                         $err = trim($process->getErrorOutput());
+                        // some command-line database tools mix up stdout and stderr - we go out of our way to accommodate them...
+                        if ($err === '') {
+                            $err = trim($process->getOutput());
+                        }
                         $results[$instanceName] = [
                             'exitcode' => $process->getExitCode(),
                             'stderr' => $err,
                         ];
-                        // some command-line database tools mix up stdout and stderr - we go out of our way to accommodate them...
-                        if ($err === '') {
-                            $results[$instanceName]['stdout'] = $err = trim($process->getOutput());
-                        }
 
                         $failed++;
                         $this->writeErrorln("\n<error>$actionName in instance '$instanceName' failed! Reason: " . $err . "</error>\n", OutputInterface::VERBOSITY_NORMAL);

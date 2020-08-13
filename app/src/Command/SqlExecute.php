@@ -146,6 +146,11 @@ class SqlExecute extends DatabaseManagingCommand
 
                 foreach($instanceList as $instanceName  => $instanceSpecs) {
                     if (!isset($dbConnectionSpecs[$instanceName])) {
+                        /// @todo retrieve the actual temp db creation error instead of doing this...
+                        $results['data'][$instanceName] = [
+                            'exitcode' => '1',
+                            'stderr' => 'Error in creation of temporary database'
+                        ];
                         unset($instanceList[$instanceName]);
                     }
                 }

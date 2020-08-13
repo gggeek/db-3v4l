@@ -11,6 +11,8 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
      * @param array[] $dbSpecList key: db name (as used to identify configured databases), value: array('user': mandatory, 'dbname': mandatory, 'password': mandatory)
      * @return array 'succeeded': int, 'failed': int, 'results': same format as dbConfigurationManager::getInstanceConfiguration
      * @throws \Exception
+     *
+     * @todo make it easier to report back to the caller the errors that prevented creation of any DB
      */
     protected function createDatabases($instanceList, $dbSpecList)
     {
@@ -37,6 +39,11 @@ abstract class DatabaseManagingCommand extends SQLExecutingCommand
         ///       (this could be achieved by copying the 'dbname' member over the 'servicename' one, or unsetting 'servicename'...)
         $finalData = [];
         foreach($results['data'] as $instanceName => $data) {
+            // check for failure in creation of temp db
+            // @todo how can we tell apart correctly errors that actually prevented the db from being created from other errors?
+            if (is_array($data) && isset($data['exitcode']) && $data['exitcode'] != 0) {
+                continue;
+            }
             $dbConnectionSpec = $dbSpecList[$instanceName];
             $finalData[$instanceName] = $instanceList[$instanceName];
             $finalData[$instanceName]['dbname'] = $dbConnectionSpec['dbname'];

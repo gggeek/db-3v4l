@@ -23,6 +23,8 @@ Version 0.14 (unreleased)
   or the env var COMPOSE_LOCAL_ENV_FILE to allow easy usage of alternative config files. The latter is also
   understood by the `dbconsole` command
 
+- Improved: better error reporting when execution of SQL fails because of temporary db creation errors
+
 
 Version 0.13
 ------------
