@@ -84,6 +84,8 @@
 
 ## Improvements
 
+- rename pgsql versions 10.11, 11.6 and 12.11 to 10, 11, 12, as after v9 versioning changed (see https://www.postgresql.org/support/versioning/)
+
 - add to dbstack actions 'status', 'restart' so that it easy to use it as 'service' script
 
 - move to usage of docker volumes instead of mounted host dirs for storing data, iff this enables us to skip all the

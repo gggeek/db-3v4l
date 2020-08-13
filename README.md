@@ -28,7 +28,7 @@ In the meantime, you can try out http://sqlfiddle.com/, https://www.db-fiddle.co
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * Percona Server for MySQL: 5.6, 5.7, 8.0
 * Oracle: 18c (18.4.0) Express Edition
-* PostgreSQL: 9.4, 9.5, 9.6, 10.11, 11.6, 12.1
+* PostgreSQL: 9.4, 9.5, 9.6, 10, 11, 12
 * SQLite: 3.27
 
 
