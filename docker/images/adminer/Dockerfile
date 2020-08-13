@@ -13,6 +13,7 @@ LABEL \
 ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true
+# @todo do we need this argument ?
 ARG container_user=user
 
 # Set up debian mirror

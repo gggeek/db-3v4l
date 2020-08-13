@@ -135,7 +135,7 @@
                 In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `dbstack` fails
                 you can run alternative commands, as detailed here:
 
-                    ./bin/dbstack build => cd docker && touch containers.env.local && docker-compose build
+                    ./bin/dbstack build => cd docker && docker-compose build
                     ./bin/dbstack start => cd docker && docker-compose up -d
                     ./bin/dbstack shell => docker exec -ti db3v4l_worker su - db3v4l
                     ./bin/dbstack stop  => cd docker && docker-compose stop
@@ -144,9 +144,9 @@
                         docker exec -ti db3v4l_worker su - db3v4l
                         php bin/dbconsole ...
 
-                *NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, edit
-                the file  docker/containers.env.local _before_ running the `build` command above, and add in there correct values for
-                the CONTAINER_USER_UID and CONTAINER_USER_GID environment variables. More details in the file docker/containers.env.
+                *NB*: if the user-id and group-id of the account that you are using on the host computer are not 1000:1000, set the
+                CONTAINER_USER_UID and CONTAINER_USER_GID environment variables _before_ running the `build` command above.
+                More details in the file docker/.env.
             {% endapply %}
         {% endblock %}
     {% endembed %}

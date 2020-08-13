@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-# Shortcuts to manage the whole set of containers
+# Manage the whole set of containers without having to learn Docker
 
 # @todo allow end user to enter pwd for root db accounts on build. If not interactive, generate a random one
 # @todo check for ports conflicts before starting the web container
 # @todo if there's no docker-compose onboard but there is curl or wget, download and install docker-compose
 # @todo add a command to remove the built containers and their anon volumes ? eg. `docker-compose rm -s -v`
+# @todo make SETUP_APP_ON_BOOT take effect also on start. Also: make it tri-valued: skip, force and null
 
 # consts
-APP_DEFAULT_CONFIG_FILE=containers.env
-DOCKER_DEFAULT_CONFIG_FILE=.env
+COMPOSE_DEFAULT_CONFIG_FILE=.env
 BOOTSTRAP_OK_FILE=/var/run/bootstrap_ok
 WORKER_SERVICE=worker
 # vars
-APP_LOCAL_CONFIG_FILE=
+COMPOSE_LOCAL_CONFIG_FILE=.env.local
 AS_ROOT=false
 BOOTSTRAP_TIMEOUT=300
 CLEANUP_UNUSED_IMAGES=false
@@ -22,48 +22,50 @@ PARALLEL_BUILD=
 PULL_IMAGES=false
 REBUILD=false
 RECREATE=false
-SETUP_APP_ON_BUILD=true
+SILENT=false
+SETUP_APP_ON_BOOT=true
 SILENT=false
 VERBOSITY=
 WORKER_CONTAINER=
 WORKER_USER=
 
 help() {
-    printf "Usage: dbstack [OPTIONS] COMMAND [OPTARG]
+    printf "Usage: dbstack [OPTIONS] COMMAND [OPTARGS]
 
 Manages the Db3v4l Docker Stack
 
 Commands:
     build               build or rebuild the complete set of containers and set up the app. Leaves the stack running
-    cleanup CATEGORY    remove tmeporary data/logs/caches/etc... CATEGORY can be any of:
+    cleanup CATEGORY    remove temporary data/logs/caches/etc... CATEGORY can be any of:
                         - databases       NB: this removes all your data! Better done when containers are stopped
                         - docker-images   removes only unused images. Can be quite beneficial to free up space
                         - docker-logs     NB: for this to work, you'll need to run this script as root
                         - logs            removes log files from the databases, webservers, symfony
                         - shared-data     removes every file in the ./shared folder
     images              list container images
-    kill                kill containers
-    logs                view output from containers
+    kill [\$svc]         kill containers
+    logs [\$svc]         view output from containers
     monitor             starts an interactive console for monitoring containers, images, volumes
-    pause               pause the containers
-    ps                  show the status of running containers
+    pause [\$svc]        pause the containers
+    ps [\$svc]           show the status of running containers
     setup               set up the app without rebuilding the containers first
     run                 execute a single command in the worker container
     shell               start a shell in the worker container as the application user
     services            list docker-compose services
-    start               start the complete set of containers
-    stop                stop the complete set of containers
-    top                 display the running container processes
-    unpause             unpause the containers
+    start [\$svc]        start the complete set of containers
+    stop [\$svc]         stop the complete set of containers
+    top [\$svc]          display the running container processes
+    unpause [\$svc]      unpause the containers
 
 Options:
     -c              clean up docker images which have become useless - when running 'build'
+    -e ENV_FILE     use an alternative to .env.local as local config file (path relative to the docker folder)
     -h              print help
     -n              do not set up the app - when running 'build'
     -p              build containers in parallel - when running 'build'
-    -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
                     log in as root instead of the app user account - when running 'shell' and 'run'
+    -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
     -u              update containers by pulling the base images - when running 'build'
     -v              verbose mode
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
@@ -72,6 +74,8 @@ Options:
 }
 
 check_requirements() {
+    # @todo do proper min-version checking
+
     which docker >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         printf "\n\e[31mPlease install docker & add it to \$PATH\e[0m\n\n" >&2
@@ -85,42 +89,77 @@ check_requirements() {
     fi
 }
 
-load_default_config() {
-    COMPOSEPROJECT=$(grep -F COMPOSE_PROJECT_NAME ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_PROJECT_NAME=//')
-    if [ -z "${COMPOSEPROJECT}" ]; then
-        printf "\n\e[31mCan not find the name of the composer project name in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+# @todo have this function looked at by a bash guru to validate it's not a brainf**k
+load_config_value() {
+    local VALUE=
+    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+        VALUE=$(grep "^${1}=" ${COMPOSE_LOCAL_CONFIG_FILE})
+    fi
+    if [ -z "${VALUE}" ]; then
+        VALUE=$(grep "^${1}=" ${COMPOSE_DEFAULT_CONFIG_FILE})
+    fi
+    VALUE=${VALUE/${1}=/}
+}
+
+load_config() {
+    source ${COMPOSE_DEFAULT_CONFIG_FILE}
+
+    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+        # these vars we have to export as otherwise they are not taken into account by docker-compose
+        set -a
+        source ${COMPOSE_LOCAL_CONFIG_FILE}
+        set +a
+    fi
+
+    # @todo run `docker-compose ps` to retrieve the WORKER_CONTAINER id instead of parsing the config
+    if [ -z "${COMPOSE_PROJECT_NAME}" ]; then
+        printf "\n\e[31mCan not find the name of the composer project name in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
     fi
-    WORKER_CONTAINER="${COMPOSEPROJECT}_${WORKER_SERVICE}"
-    WORKER_USER=$(grep -F CONTAINER_USER ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER=//')
-    if [ -z "${WORKER_USER}" ]; then
-        printf "\n\e[31mCan not find the name of the container user account in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+    # @todo the value for WORKER_USER could be hardcoded instead of being variable...
+    if [ -z "${CONTAINER_USER}" ]; then
+        printf "\n\e[31mCan not find the name of the container user account in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
     fi
-    APP_LOCAL_CONFIG_FILE=$(grep -F COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE=//')
-    if [ -z "${APP_LOCAL_CONFIG_FILE}" ]; then
-        printf "\n\e[31mCan not find the name of the container local config file in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
-        exit 1
-    fi
+
+    WORKER_CONTAINER="${COMPOSE_PROJECT_NAME}_${WORKER_SERVICE}"
+    WORKER_USER=${CONTAINER_USER}
 }
 
 setup_local_config() {
-    echo "[`date`] Setting up the configuration file..."
 
     CURRENT_USER_UID=$(id -u)
     CURRENT_USER_GID=$(id -g)
 
-    CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_UID=//')
-    CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${APP_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_GID=//')
+    if [ "${CONTAINER_USER_UID}" = "${CURRENT_USER_UID}" -a "${CONTAINER_USER_GID}" = "${CURRENT_USER_GID}" ]; then
+        return
+    fi
 
-    touch ${APP_LOCAL_CONFIG_FILE}
+    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+        # @todo in case the file already exists and has incorrect values for these vars, replace them instead of skipping...
+        printf "\n\e[31mWARNING: current user id and/or group id do not match the ones in config files\e[0m\n\n" >&2
+        # Q: why not just use the current values ?
+        #export CONTAINER_USER_UID=${CURRENT_USER_UID}
+        #export CONTAINER_USER_GID=${CURRENT_USER_GID}
+        return
+    fi
 
-    # @todo in case the file already has these vars, replace them instead of appending!
+    echo "[`date`] Setting up the configuration file '${COMPOSE_LOCAL_CONFIG_FILE}'..."
+
+    #CURRENT_USER_UID=$(id -u)
+    #CURRENT_USER_GID=$(id -g)
+    #CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${COMPOSE_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_UID=//')
+    #CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${COMPOSE_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_GID=//')
+
+    touch ${COMPOSE_LOCAL_CONFIG_FILE}
+
     if [ "${CONTAINER_USER_UID}" != "${CURRENT_USER_UID}" ]; then
-        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${APP_LOCAL_CONFIG_FILE}
+        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${COMPOSE_LOCAL_CONFIG_FILE}
+        export CONTAINER_USER_UID=${CURRENT_USER_UID}
     fi
     if [ "${CONTAINER_USER_GID}" != "${CURRENT_USER_GID}" ]; then
-        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${APP_LOCAL_CONFIG_FILE}
+        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${COMPOSE_LOCAL_CONFIG_FILE}
+        export CONTAINER_USER_GID=${CURRENT_USER_GID}
     fi
 
     # @todo allow setting up: custom db root account pwd, sf env, etc...
@@ -150,7 +189,7 @@ build() {
 
     docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
 
-    if [ ${SETUP_APP_ON_BUILD} = 'false' ]; then
+    if [ ${SETUP_APP_ON_BOOT} = 'false' ]; then
         export COMPOSE_SETUP_APP_ON_BOOT=false
     fi
 
@@ -171,6 +210,67 @@ build() {
     echo "[`date`] Build finished"
 
     exit ${RETCODE}
+}
+
+
+# @todo loop over all args
+cleanup() {
+    case "${1}" in
+        databases)
+            if [ ${SILENT} != true ]; then
+                echo "Do you really want to delete all database data?"
+                select yn in "Yes" "No"; do
+                    case $yn in
+                        Yes ) break ;;
+                        No ) exit 1 ;;
+                    esac
+                done
+            fi
+
+            find ./data/ -type f ! -name .gitkeep -delete
+            # leftover sockets happen...
+            find ./data/ -type s -delete
+            find ./data/ -type d -empty -delete
+        ;;
+        docker-images)
+            # @todo this gives a warning when no images are found to delete
+            docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
+        ;;
+        docker-logs)
+            for CONTAINER in $(docker-compose ps -q)
+            do
+                LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
+                if [ -n "${LOGFILE}" ]; then
+                    echo "" > ${LOGFILE}
+                fi
+            done
+        ;;
+        logs)
+            find ./logs/ -type f ! -name .gitkeep -delete
+            find ../app/var/log/ -type f ! -name .gitkeep -delete
+        ;;
+        shared-data)
+            if [ ${SILENT} != true ]; then
+                echo "Do you really want to delete all data in the 'shared' folder?"
+                select yn in "Yes" "No"; do
+                    case $yn in
+                        Yes ) break ;;
+                        No ) exit 1 ;;
+                    esac
+                done
+            fi
+
+            find ../shared/ -type f ! -name .gitkeep -delete
+        ;;
+        symfony-cache)
+            find ../app/var/cache/ -type f ! -name .gitkeep -delete
+        ;;
+        *)
+            printf "\n\e[31mERROR: unknown cleanup target: ${1}\e[0m\n\n" >&2
+            help
+            exit 1
+        ;;
+    esac
 }
 
 setup_app() {
@@ -264,77 +364,24 @@ wait_for_bootstrap() {
     return 0
 }
 
-cleanup() {
-    case "${1}" in
-        databases)
-            if [ ${SILENT} != true ]; then
-                echo "Do you really want to delete all database data?"
-                select yn in "Yes" "No"; do
-                    case $yn in
-                        Yes ) break ;;
-                        No ) exit 1 ;;
-                    esac
-                done
-            fi
-
-            find ./data/ -type f ! -name .gitkeep -delete
-            # leftover sockets happen...
-            find ./data/ -type s -delete
-            find ./data/ -type d -empty -delete
-        ;;
-        docker-images)
-            docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
-        ;;
-        docker-logs)
-            for CONTAINER in $(docker-compose ps -q)
-            do
-                LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
-                if [ -n "${LOGFILE}" ]; then
-                    echo "" > ${LOGFILE}
-                fi
-            done
-        ;;
-        logs)
-            find ./logs/ -type f ! -name .gitkeep -delete
-            find ../app/var/log/ -type f ! -name .gitkeep -delete
-        ;;
-        shared-data)
-            if [ ${SILENT} != true ]; then
-                echo "Do you really want to delete all data in the 'shared' folder?"
-                select yn in "Yes" "No"; do
-                    case $yn in
-                        Yes ) break ;;
-                        No ) exit 1 ;;
-                    esac
-                done
-            fi
-
-            find ../shared/ -type f ! -name .gitkeep -delete
-        ;;
-        symfony-cache)
-            find ../app/var/cache/ -type f ! -name .gitkeep -delete
-        ;;
-        *)
-            printf "\n\e[31mERROR: unknown cleanup target: ${1}\e[0m\n\n" >&2
-            help
-            exit 1
-        ;;
-    esac
-}
+### Begin live code
 
 # @todo move to a function
-while getopts ":chnprsuvw:z" opt
+while getopts ":ce:hnprsuvw:z" opt
 do
     case $opt in
         c)
             CLEANUP_UNUSED_IMAGES=true
+        ;;
+        e)
+            COMPOSE_LOCAL_CONFIG_FILE=${OPTARG}
         ;;
         h)
             help
             exit 0
         ;;
         n)
-            SETUP_APP_ON_BUILD=false
+            SETUP_APP_ON_BOOT=false
         ;;
         p)
             PARALLEL_BUILD=--parallel
@@ -373,11 +420,9 @@ check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/../docker
 
-load_default_config
+load_config
 
-if [ ! -f ${APP_LOCAL_CONFIG_FILE} ]; then
-    setup_local_config
-fi
+setup_local_config
 
 case "${COMMAND}" in
     build)
@@ -385,6 +430,7 @@ case "${COMMAND}" in
     ;;
 
     cleanup)
+        # @todo allow to pass many cleanup targets in one go
         cleanup "${2}"
     ;;
 
@@ -415,12 +461,12 @@ case "${COMMAND}" in
         docker exec -ti db3v4l_lazydocker lazydocker
     ;;
 
-    ps)
-        docker-compose ${VERBOSITY} ps ${2}
-    ;;
-
     pause)
         docker-compose ${VERBOSITY} pause ${2}
+    ;;
+
+    ps)
+        docker-compose ${VERBOSITY} ps ${2}
     ;;
 
     run)
@@ -439,6 +485,10 @@ case "${COMMAND}" in
         setup_app
     ;;
 
+    services)
+        docker-compose config --services | sort
+    ;;
+
     shell)
         if [ ${AS_ROOT} = true ]; then
             docker exec -ti ${WORKER_CONTAINER} bash
@@ -450,6 +500,10 @@ case "${COMMAND}" in
 
     start)
         docker-compose ${VERBOSITY} up -d ${2}
+        RETCODE=$?
+        if [ ${RETCODE} -ne 0 ]; then
+            exit ${RETCODE}
+        fi
         if [ -z "${2}" ]; then
             wait_for_bootstrap all
             exit $?
@@ -457,10 +511,6 @@ case "${COMMAND}" in
             wait_for_bootstrap ${2}
             exit $?
         fi
-    ;;
-
-    services)
-        docker-compose config --services | sort
     ;;
 
     stop)

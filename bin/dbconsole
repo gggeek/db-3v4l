@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+# Shortcut to run the dbconsole command in the Worker Container from the Host
+
 # consts
-DOCKER_DEFAULT_CONFIG_FILE=.env
+COMPOSE_DEFAULT_CONFIG_FILE=.env
 WORKER_SERVICE=worker
 # vars
+COMPOSE_LOCAL_CONFIG_FILE=.env.local
 WORKER_CONTAINER=
 WORKER_USER=
 
@@ -15,25 +18,38 @@ check_requirements() {
     fi
 }
 
-load_default_config() {
-    COMPOSEPROJECT=$(grep -F COMPOSE_PROJECT_NAME ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/COMPOSE_PROJECT_NAME=//')
-    if [ -z "${COMPOSEPROJECT}" ]; then
-        printf "\n\e[31mCan not find the name of the composer project name in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+load_config() {
+    source ${COMPOSE_DEFAULT_CONFIG_FILE}
+
+    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+        # these vars we have to export as otherwise they are not taken into account by docker-compose
+        set -a
+        source ${COMPOSE_LOCAL_CONFIG_FILE}
+        set +a
+    fi
+
+    # @todo run `docker-compose ps` to retrieve the WORKER_CONTAINER id instead of parsing the config
+    if [ -z "${COMPOSE_PROJECT_NAME}" ]; then
+        printf "\n\e[31mCan not find the name of the composer project name in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
     fi
-    WORKER_CONTAINER="${COMPOSEPROJECT}_${WORKER_SERVICE}"
-    WORKER_USER=$(grep -F CONTAINER_USER ${DOCKER_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER=//')
-    if [ -z "${WORKER_USER}" ]; then
-        printf "\n\e[31mCan not find the name of the container user account in ${DOCKER_DEFAULT_CONFIG_FILE}\e[0m\n\n" >&2
+    # @todo the value for WORKER_USER could be hardcoded instead of being variable...
+    if [ -z "${CONTAINER_USER}" ]; then
+        printf "\n\e[31mCan not find the name of the container user account in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
         exit 1
     fi
+
+    WORKER_CONTAINER="${COMPOSE_PROJECT_NAME}_${WORKER_SERVICE}"
+    WORKER_USER=${CONTAINER_USER}
 }
+
+### Begin live code
 
 check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/../docker
 
-load_default_config
+load_config
 
 # @todo check that stack has been built, and that worker bootstrap is done
 
