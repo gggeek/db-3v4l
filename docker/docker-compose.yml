@@ -26,10 +26,12 @@ services:
             - ./logs/admin/nginx:/var/log/nginx
             - ./logs/admin/php:/var/log/php
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - ORACLE_PWD
+            - POSTGRES_PASSWORD
+            - SA_PASSWORD
 
     lazydocker:
         build:
@@ -45,9 +47,6 @@ services:
             # @todo could we get away with mounting something that does not include data and logs?
             #       Maybe it would be enough to copy the composer files into the container ?
             - ./:/var/db3v4l
-        #env_file:
-        #    - ./containers.env
-        #    - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
     redis:
         build:
@@ -61,9 +60,6 @@ services:
         volumes:
             - ./data/redis:/var/redis
             - ./logs/redis:/var/log/redis
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
 
     web:
         build:
@@ -83,10 +79,10 @@ services:
             - ./logs/web/nginx:/var/log/nginx
             - ./logs/web/php:/var/log/php
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - APP_ENV
+            - APP_DEBUG
 
     worker:
         build:
@@ -106,10 +102,15 @@ services:
             - "./data/sqlite/:/home/${CONTAINER_USER}/data/sqlite"
         environment:
             - CONTAINER_USER
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - APP_ENV
+            - APP_DEBUG
             - COMPOSE_SETUP_APP_ON_BOOT
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - MYSQL_ROOT_PASSWORD
+            - ORACLE_PWD
+            - POSTGRES_PASSWORD
+            - SA_PASSWORD
 
 ### Databases
 
@@ -131,10 +132,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mariadb_10_0:
         build:
@@ -154,10 +157,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mariadb_10_1:
         build:
@@ -177,10 +182,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mariadb_10_2:
         build:
@@ -200,10 +207,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mariadb_10_3:
         build:
@@ -223,10 +232,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mariadb_10_4:
         build:
@@ -246,10 +257,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mysql_5_5:
         build:
@@ -269,10 +282,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mysql_5_6:
         build:
@@ -292,10 +307,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mysql_5_7:
         build:
@@ -315,10 +332,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     mysql_8_0:
         build:
@@ -338,10 +357,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
 #    There's not yet a click-free oracle-11g-xe installation available for download yet...
 #    oracle_11_2:
@@ -359,10 +380,8 @@ services:
 #            - ./data/oracle/11.2:/opt/oracle/oradata
 #            #- ./logs/oracle/11.2:...
 #        environment:
-#            - CONTAINER_USER
-#        env_file:
-#            - ./containers.env
-#            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+#            - CONTAINER_USER_UID
+#            - CONTAINER_USER_GID
 
     oracle_18_4:
         build:
@@ -384,10 +403,9 @@ services:
             #- ./logs/oracle/18.4/rdbms:/opt/oracle/product/18c/dbhomeXE/rdbms/log/
             #- ./logs/oracle/18.4/client:/opt/oracle/product/18c/dbhomeXE/log/oracle_18_4/client/
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - ORACLE_PWD
 
     percona_5_6:
         build:
@@ -407,10 +425,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     percona_5_7:
         build:
@@ -430,10 +450,12 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
 
     percona_8_0:
         build:
@@ -453,10 +475,126 @@ services:
             # used for mysql temp tables
             - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    postgresql_9_4:
+        build:
+            context: images/postgresql/9.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_9_4
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_4"
+        #ports:
+        #    - "5432:5432"
+        volumes:
+            - ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.4:/var/lib/postgresql
+            - ./logs/postgresql/9.4:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_9_5:
+        build:
+            context: images/postgresql/9.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_9_5
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_5"
+        #ports:
+        #    - "5433:5432"
+        volumes:
+            - ./config/postgresql/9.5/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.5:/var/lib/postgresql
+            - ./logs/postgresql/9.5:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_9_6:
+        build:
+            context: images/postgresql/9.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_9_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_6"
+        #ports:
+        #    - "5434:5432"
+        volumes:
+            - ./config/postgresql/9.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.6:/var/lib/postgresql
+            - ./logs/postgresql/9.6:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_10_11:
+        build:
+            context: images/postgresql/10.11
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_10_11
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10_11"
+        #ports:
+        #    - "5435:5432"
+        volumes:
+            - ./config/postgresql/10.11/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/10.11:/var/lib/postgresql
+            - ./logs/postgresql/10.11:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_11_6:
+        build:
+            context: images/postgresql/11.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_11_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11_6"
+        #ports:
+        #    - "5436:5432"
+        volumes:
+            - ./config/postgresql/11.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/11.6:/var/lib/postgresql
+            - ./logs/postgresql/11.6:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_12_1:
+        build:
+            context: images/postgresql/12.1
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: postgresql_12_1
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12_1"
+        #ports:
+        #    - "5437:5432"
+        volumes:
+            - ./config/postgresql/12.1/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/12.1:/var/lib/postgresql
+            - ./logs/postgresql/12.1:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
 
     mssqlserver_2017_cu18:
         build:
@@ -476,10 +614,10 @@ services:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - ACCEPT_EULA
+            - SA_PASSWORD
 
     mssqlserver_2019_ga:
         build:
@@ -499,129 +637,7 @@ services:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g
         environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    # oracle...
-
-    postgresql_9_4:
-        build:
-            context: images/postgresql/9.4
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_9_4
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_4"
-        #ports:
-        #    - "5432:5432"
-        volumes:
-            - ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/9.4:/var/lib/postgresql
-            - ./logs/postgresql/9.4:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    postgresql_9_5:
-        build:
-            context: images/postgresql/9.5
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_9_5
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_5"
-        #ports:
-        #    - "5433:5432"
-        volumes:
-            - ./config/postgresql/9.5/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/9.5:/var/lib/postgresql
-            - ./logs/postgresql/9.5:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    postgresql_9_6:
-        build:
-            context: images/postgresql/9.6
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_9_6
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_6"
-        #ports:
-        #    - "5434:5432"
-        volumes:
-            - ./config/postgresql/9.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/9.6:/var/lib/postgresql
-            - ./logs/postgresql/9.6:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    postgresql_10_11:
-        build:
-            context: images/postgresql/10.11
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_10_11
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10_11"
-        #ports:
-        #    - "5435:5432"
-        volumes:
-            - ./config/postgresql/10.11/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/10.11:/var/lib/postgresql
-            - ./logs/postgresql/10.11:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    postgresql_11_6:
-        build:
-            context: images/postgresql/11.6
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_11_6
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11_6"
-        #ports:
-        #    - "5436:5432"
-        volumes:
-            - ./config/postgresql/11.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/11.6:/var/lib/postgresql
-            - ./logs/postgresql/11.6:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
-
-    postgresql_12_1:
-        build:
-            context: images/postgresql/12.1
-            args:
-                timezone: "${COMPOSE_TZ}"
-                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_12_1
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12_1"
-        #ports:
-        #    - "5437:5432"
-        volumes:
-            - ./config/postgresql/12.1/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/12.1:/var/lib/postgresql
-            - ./logs/postgresql/12.1:/var/log/postgresql
-        environment:
-            - CONTAINER_USER
-        env_file:
-            - ./containers.env
-            - "${COMPOSE_CONTAINERS_ENV_OVERRIDE_FILE}"
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - ACCEPT_EULA
+            - SA_PASSWORD
