@@ -9,11 +9,11 @@
 # @todo make SETUP_APP_ON_BOOT take effect also on start. Also: make it tri-valued: skip, force and null
 
 # consts
-COMPOSE_DEFAULT_CONFIG_FILE=.env
 BOOTSTRAP_OK_FILE=/var/run/bootstrap_ok
+COMPOSE_DEFAULT_ENV_FILE=.env
 WORKER_SERVICE=worker
 # vars
-COMPOSE_LOCAL_CONFIG_FILE=.env.local
+COMPOSE_LOCAL_ENV_FILE=${COMPOSE_LOCAL_ENV_FILE:-.env.local}
 AS_ROOT=false
 BOOTSTRAP_TIMEOUT=300
 CLEANUP_UNUSED_IMAGES=false
@@ -59,7 +59,8 @@ Commands:
 
 Options:
     -c              clean up docker images which have become useless - when running 'build'
-    -e ENV_FILE     use an alternative to .env.local as local config file (path relative to the docker folder)
+    -e ENV_FILE     use an alternative to .env.local as local config file (path relative to the docker folder).
+                    You can also use the env var COMPOSE_LOCAL_ENV_FILE for the same purpose.
     -h              print help
     -n              do not set up the app - when running 'build'
     -p              build containers in parallel - when running 'build'
@@ -92,33 +93,33 @@ check_requirements() {
 # @todo have this function looked at by a bash guru to validate it's not a brainf**k
 load_config_value() {
     local VALUE=
-    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
-        VALUE=$(grep "^${1}=" ${COMPOSE_LOCAL_CONFIG_FILE})
+    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
+        VALUE=$(grep "^${1}=" ${COMPOSE_LOCAL_ENV_FILE})
     fi
     if [ -z "${VALUE}" ]; then
-        VALUE=$(grep "^${1}=" ${COMPOSE_DEFAULT_CONFIG_FILE})
+        VALUE=$(grep "^${1}=" ${COMPOSE_DEFAULT_ENV_FILE})
     fi
     VALUE=${VALUE/${1}=/}
 }
 
 load_config() {
-    source ${COMPOSE_DEFAULT_CONFIG_FILE}
+    source ${COMPOSE_DEFAULT_ENV_FILE}
 
-    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
         # these vars we have to export as otherwise they are not taken into account by docker-compose
         set -a
-        source ${COMPOSE_LOCAL_CONFIG_FILE}
+        source ${COMPOSE_LOCAL_ENV_FILE}
         set +a
     fi
 
     # @todo run `docker-compose ps` to retrieve the WORKER_CONTAINER id instead of parsing the config
     if [ -z "${COMPOSE_PROJECT_NAME}" ]; then
-        printf "\n\e[31mCan not find the name of the composer project name in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
+        printf "\n\e[31mCan not find the name of the composer project name in ${COMPOSE_DEFAULT_ENV_FILE} / ${COMPOSE_LOCAL_ENV_FILE}\e[0m\n\n" >&2
         exit 1
     fi
     # @todo the value for WORKER_USER could be hardcoded instead of being variable...
     if [ -z "${CONTAINER_USER}" ]; then
-        printf "\n\e[31mCan not find the name of the container user account in ${COMPOSE_DEFAULT_CONFIG_FILE} / ${COMPOSE_LOCAL_CONFIG_FILE}\e[0m\n\n" >&2
+        printf "\n\e[31mCan not find the name of the container user account in ${COMPOSE_DEFAULT_ENV_FILE} / ${COMPOSE_LOCAL_ENV_FILE}\e[0m\n\n" >&2
         exit 1
     fi
 
@@ -135,7 +136,7 @@ setup_local_config() {
         return
     fi
 
-    if [ -f ${COMPOSE_LOCAL_CONFIG_FILE} ]; then
+    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
         # @todo in case the file already exists and has incorrect values for these vars, replace them instead of skipping...
         printf "\n\e[31mWARNING: current user id and/or group id do not match the ones in config files\e[0m\n\n" >&2
         # Q: why not just use the current values ?
@@ -144,21 +145,21 @@ setup_local_config() {
         return
     fi
 
-    echo "[`date`] Setting up the configuration file '${COMPOSE_LOCAL_CONFIG_FILE}'..."
+    echo "[`date`] Setting up the configuration file '${COMPOSE_LOCAL_ENV_FILE}'..."
 
     #CURRENT_USER_UID=$(id -u)
     #CURRENT_USER_GID=$(id -g)
-    #CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${COMPOSE_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_UID=//')
-    #CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${COMPOSE_DEFAULT_CONFIG_FILE} | sed 's/CONTAINER_USER_GID=//')
+    #CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${COMPOSE_DEFAULT_ENV_FILE} | sed 's/CONTAINER_USER_UID=//')
+    #CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${COMPOSE_DEFAULT_ENV_FILE} | sed 's/CONTAINER_USER_GID=//')
 
-    touch ${COMPOSE_LOCAL_CONFIG_FILE}
+    touch ${COMPOSE_LOCAL_ENV_FILE}
 
     if [ "${CONTAINER_USER_UID}" != "${CURRENT_USER_UID}" ]; then
-        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${COMPOSE_LOCAL_CONFIG_FILE}
+        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${COMPOSE_LOCAL_ENV_FILE}
         export CONTAINER_USER_UID=${CURRENT_USER_UID}
     fi
     if [ "${CONTAINER_USER_GID}" != "${CURRENT_USER_GID}" ]; then
-        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${COMPOSE_LOCAL_CONFIG_FILE}
+        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${COMPOSE_LOCAL_ENV_FILE}
         export CONTAINER_USER_GID=${CURRENT_USER_GID}
     fi
 
@@ -374,7 +375,7 @@ do
             CLEANUP_UNUSED_IMAGES=true
         ;;
         e)
-            COMPOSE_LOCAL_CONFIG_FILE=${OPTARG}
+            COMPOSE_LOCAL_ENV_FILE=${OPTARG}
         ;;
         h)
             help

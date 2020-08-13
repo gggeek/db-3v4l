@@ -17,8 +17,9 @@ Version 0.14 (unreleased)
 - Improved: `dbstack build` and `dbstack start` now wait for the bootstrap process of every container to finish,
   instead of waiting only for the web/admin/worker ones
 
-- Improved: simplified the number of config files used by the `dbstack` command and taught it the `-e` option to allow
-  easy usage of alternative config files
+- Improved: simplified the number of config files used by the `dbstack` command and taught it to accept the `-e` option
+  or the env var COMPOSE_LOCAL_ENV_FILE to allow easy usage of alternative config files. The latter is also
+  understood by the `dbconsole` command
 
 
 Version 0.13
