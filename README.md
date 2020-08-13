@@ -106,7 +106,7 @@ If you want to connect to the databases using all the cli options available to t
 
     ./bin/dbstack run mysql -h mysql_5_5 -u 3v4l -p -e 'select current_date'
     ./bin/dbstack run psql -h postgresql_9_4 -U postgres -c 'select current_date'
-    ./bin/dbstack run sqlcmd -S mssqlserver_2019_ga -U sa -Q "select GETDATE() as 'current_date'"
+    ./bin/dbstack run sqlcmd -S mssqlserver_2019 -U sa -Q "select GETDATE() as 'current_date'"
     ./bin/dbstack run sqlite3 /home/db3v4l/data/sqlite/3.27/3v4l.sqlite 'select current_date'
     ./bin/dbstack run sqlplus system@oracle_18_4/xe
 

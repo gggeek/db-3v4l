@@ -621,14 +621,14 @@ services:
             - CONTAINER_USER_GID
             - POSTGRES_PASSWORD
 
-    mssqlserver_2017_cu18:
+    mssqlserver_2017:
         build:
             context: images/mssqlserver/2017
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname:  mssqlserver_2017_cu18
-        container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2017_cu18"
+        hostname:  mssqlserver_2017
+        container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2017"
         #ports:
         #    - "1433:1433"
         volumes:
@@ -644,14 +644,14 @@ services:
             - ACCEPT_EULA
             - SA_PASSWORD
 
-    mssqlserver_2019_ga:
+    mssqlserver_2019:
         build:
             context: images/mssqlserver/2019
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname:  mssqlserver_2019_ga
-        container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2019_ga"
+        hostname:  mssqlserver_2019
+        container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2019"
         #ports:
         #    - "1434:1433"
         volumes:

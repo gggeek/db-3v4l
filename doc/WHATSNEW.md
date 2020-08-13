@@ -5,6 +5,8 @@ Version 0.14 (unreleased)
 
 - New: added MariaDB 10.5 to the available databases
 
+- Improved: install the latest minor release available for Microsoft SQL Server 2017 and 2019 by default
+
 - New: taught `dbstack` a new command: `services`, to list all defined docker-compose 'services'
 
 - Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)

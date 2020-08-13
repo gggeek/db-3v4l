@@ -84,7 +84,7 @@
 
 ## Improvements
 
-- add to sbtack actions 'status', 'restart' so that it easy to use it as 'service' script
+- add to dbtack actions 'status', 'restart' so that it easy to use it as 'service' script
 
 - move to usage of docker volumes instead of mounted host dirs for storing data, iff this enables us to skip all the
   'chown' calls (to be seen: would we be able to keep config and log files readable on the host with good user id?)
@@ -147,7 +147,6 @@
   + remove more unused stuff from containers, such as fdisk?, etc...
   + check out if we could use `docker app` to package the application
   + check out if adopting naming convention from https://github.blog/2015-06-30-scripts-to-rule-them-all/ makes sense
-  + allow overriding vars found in .env file - see how this can be done at https://stackoverflow.com/questions/19331497/set-environment-variables-from-file-of-key-value-pairs/19331521
 
 - host: improve cli scripts:
   + allow 'cleanup' command to remove all anonymous docker volumes - or at least the ones belonging to this app
