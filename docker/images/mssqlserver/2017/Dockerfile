@@ -1,6 +1,6 @@
 # For available tags: see https://hub.docker.com/_/microsoft-mssql-server
-FROM mcr.microsoft.com/mssql/server:2017-CU18-ubuntu-16.04
-LABEL mssqlserver.version=2017.cu18
+FROM mcr.microsoft.com/mssql/server:2017-latest
+LABEL mssqlserver.version=2017
 
 ARG timezone=none
 ARG do_update_os=true

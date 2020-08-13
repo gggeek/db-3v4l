@@ -70,6 +70,16 @@ parameters:
             #server_version: mariadb-10.4
             vendor: mariadb
             version: '10.4'
+        mariadb_10_5:
+            host: mariadb_10_5
+            port: 3306
+            user: root
+            password: 3v4l
+            charset: UTF8
+            #driver: pdo_mysql
+            #server_version: mariadb-10.4
+            vendor: mariadb
+            version: '10.5'
         mssql_2017_cu18:
             host: mssqlserver_2017_cu18
             port: 1433
@@ -79,7 +89,7 @@ parameters:
             #driver: pdo_sqlsrv
             #server_version: ''
             vendor: mssql
-            version: '2017.cu18'
+            version: '2017'
         mssql_2019_ga:
             host: mssqlserver_2019_ga
             port: 1433
@@ -89,7 +99,7 @@ parameters:
             #driver: pdo_sqlsrv
             #server_version: ''
             vendor: mssql
-            version: '2019.ga'
+            version: '2019'
         mysql_5_5:
             host: mysql_5_5
             port: 3306

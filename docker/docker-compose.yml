@@ -264,6 +264,31 @@ services:
             - MYSQL_PASSWORD
             - MYSQL_DATABASE
 
+    mariadb_10_5:
+        build:
+            context: images/mariadb/10.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+        hostname: mariadb_10_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_5
+        #ports:
+        #    - "3315:3306"
+        volumes:
+            - ./config/mariadb/10.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.5:/var/lib/mysql
+            - ./logs/mariadb/10.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
     mysql_5_5:
         build:
             context: images/mysql/5.5
@@ -598,7 +623,7 @@ services:
 
     mssqlserver_2017_cu18:
         build:
-            context: images/mssqlserver/2017.cu18
+            context: images/mssqlserver/2017
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
@@ -607,9 +632,9 @@ services:
         #ports:
         #    - "1433:1433"
         volumes:
-            - ./config/mssqlserver/2017.cu18/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
-            - ./data/mssqlserver/2017.cu18:/var/opt/mssql/data
-            - ./logs/mssqlserver/2017.cu18:/var/opt/mssql/log
+            - ./config/mssqlserver/2017/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
+            - ./data/mssqlserver/2017:/var/opt/mssql/data
+            - ./logs/mssqlserver/2017:/var/opt/mssql/log
         #tmpfs:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g
@@ -621,7 +646,7 @@ services:
 
     mssqlserver_2019_ga:
         build:
-            context: images/mssqlserver/2019.ga
+            context: images/mssqlserver/2019
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
@@ -630,9 +655,9 @@ services:
         #ports:
         #    - "1434:1433"
         volumes:
-            - ./config/mssqlserver/2019.ga/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
-            - ./data/mssqlserver/2019.ga:/var/opt/mssql/data
-            - ./logs/mssqlserver/2019.ga:/var/opt/mssql/log
+            - ./config/mssqlserver/2019/${COMPOSE_DB_SIZE}.conf:/var/opt/mssql/mssql.conf
+            - ./data/mssqlserver/2019:/var/opt/mssql/data
+            - ./logs/mssqlserver/2019:/var/opt/mssql/log
         #tmpfs:
         #    # used for mysql temp tables
         #    - /tmpfs:mode=777,size=1g

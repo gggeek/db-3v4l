@@ -3,6 +3,8 @@ Version 0.14 (unreleased)
 
 - New: added Oracle Database 18c (XE) to the available databases
 
+- New: added MariaDB 10.5 to the available databases
+
 - New: taught `dbstack` a new command: `services`, to list all defined docker-compose 'services'
 
 - Improved: allow Adminer to execute long queries without timing out (currently set to 10 minutes)

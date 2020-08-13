@@ -23,8 +23,8 @@ In the meantime, you can try out http://sqlfiddle.com/, https://www.db-fiddle.co
 
 ## Supported Databases:
 
-* MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10,4
-* Microsoft SQL Server: 2017.cu18, 2019.ga (on Linux)
+* MariaDB: 5.5, 10.0, 10.1, 10.2, 10.3, 10.4, 10.5
+* Microsoft SQL Server: 2017, 2019 (on Linux)
 * Mysql: 5.5, 5.6, 5.7, 8.0
 * Percona Server for MySQL: 5.6, 5.7, 8.0
 * Oracle: 18c (18.4.0) Express Edition

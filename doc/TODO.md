@@ -94,9 +94,6 @@
   we could f.e. add an extra init.ora and have it appended to the oracle-provided one via bootstrap.sh...
   also, there are values which could be overridden in /etc/sysconfig/oracle-xe-18c.conf)
 
-- ms sql server: 'cuXX' should be treated as a point release is for other databases - there is no 'minor version' for it.
-  Ie. rename 2017.cu18 to 2017 and 2019.ga to 2019
-
 - add TOC to readme.md (see how it's done at fe. https://raw.githubusercontent.com/phpredis/phpredis/develop/README.markdown)
 
 - improve handling output of 'select' queries
