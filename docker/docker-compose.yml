@@ -564,58 +564,58 @@ services:
             - CONTAINER_USER_GID
             - POSTGRES_PASSWORD
 
-    postgresql_10_11:
+    postgresql_10:
         build:
-            context: images/postgresql/10.11
+            context: images/postgresql/10
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_10_11
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10_11"
+        hostname: postgresql_10
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10"
         #ports:
         #    - "5435:5432"
         volumes:
-            - ./config/postgresql/10.11/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/10.11:/var/lib/postgresql
-            - ./logs/postgresql/10.11:/var/log/postgresql
+            - ./config/postgresql/10/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/10:/var/lib/postgresql
+            - ./logs/postgresql/10:/var/log/postgresql
         environment:
             - CONTAINER_USER_UID
             - CONTAINER_USER_GID
             - POSTGRES_PASSWORD
 
-    postgresql_11_6:
+    postgresql_11:
         build:
-            context: images/postgresql/11.6
+            context: images/postgresql/11
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_11_6
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11_6"
+        hostname: postgresql_11
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11"
         #ports:
         #    - "5436:5432"
         volumes:
-            - ./config/postgresql/11.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/11.6:/var/lib/postgresql
-            - ./logs/postgresql/11.6:/var/log/postgresql
+            - ./config/postgresql/11/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/11:/var/lib/postgresql
+            - ./logs/postgresql/11:/var/log/postgresql
         environment:
             - CONTAINER_USER_UID
             - CONTAINER_USER_GID
             - POSTGRES_PASSWORD
 
-    postgresql_12_1:
+    postgresql_12:
         build:
-            context: images/postgresql/12.1
+            context: images/postgresql/12
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-        hostname: postgresql_12_1
-        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12_1"
+        hostname: postgresql_12
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12"
         #ports:
         #    - "5437:5432"
         volumes:
-            - ./config/postgresql/12.1/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
-            - ./data/postgresql/12.1:/var/lib/postgresql
-            - ./logs/postgresql/12.1:/var/log/postgresql
+            - ./config/postgresql/12/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/12:/var/lib/postgresql
+            - ./logs/postgresql/12:/var/log/postgresql
         environment:
             - CONTAINER_USER_UID
             - CONTAINER_USER_GID

@@ -212,36 +212,36 @@ parameters:
             #server_version: '9.6'
             vendor: postgresql
             version: '9.6'
-        postgresql_10_11:
-            host: postgresql_10_11
+        postgresql_10:
+            host: postgresql_10
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
             #charset: UTF8
             #driver: pdo_pgsql
-            #server_version: '10.11'
+            #server_version: '10'
             vendor: postgresql
-            version: '10.11'
-        postgresql_11_6:
-            host: postgresql_11_6
+            version: '10'
+        postgresql_11:
+            host: postgresql_11
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
             #charset: UTF8
             #driver: pdo_pgsql
-            #server_version: '11.6'
+            #server_version: '11'
             vendor: postgresql
-            version: '11.6'
-        postgresql_12_1:
-            host: postgresql_12_1
+            version: '11'
+        postgresql_12:
+            host: postgresql_12
             port: 5432
             user: postgres
             password: '%env(POSTGRES_PASSWORD)%'
             #charset: UTF8
             #driver: pdo_pgsql
-            #server_version: '12.1'
+            #server_version: '12'
             vendor: postgresql
-            version: '12.1'
+            version: '12'
         sqlite_3_27:
             driver: pdo_sqlite
             path: /home/db3v4l/data/sqlite/3.27/3v4l.sqlite

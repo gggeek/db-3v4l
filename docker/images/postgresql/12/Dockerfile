@@ -1,5 +1,5 @@
-FROM postgres:12.1
-LABEL postgresql.version=12.1
+FROM postgres:12
+LABEL postgresql.version=12
 
 ARG timezone=none
 ARG do_update_os=true
