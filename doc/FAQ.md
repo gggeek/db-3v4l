@@ -10,9 +10,9 @@
   build the stack, you might thus get a different minor version, eg. mysql 8.0.14 or mysql 8.0.19.
   The best way to know the exact version of the installed databases is to run the command `./bin/dbconsole instance:list`
 
-- Q: can I customize the versions of the installed databases? A: Yes, this is possible, even though not made easy.
+- Q: can I pick the exact minor versions of the installed databases? A: Yes, this is possible.
   In order to specify a specific version for, say, mysql 8.0, you will have to edit the file
-  `docker/images/mysql/8.0/Dockerfile` and replace the line `FROM mysql:8.0` with, f.e. `FROM mysql:8.0.18`.
+  `docker/.env.local` and add the line `MYSQL_8_0_VERSION=8.0.18`.
   If you had already built the stack before making this change, you will need to rebuild it.
 
 - Q: can I upgrade the versions of the installed databases to the latest available minor release? A: in order to do so,
