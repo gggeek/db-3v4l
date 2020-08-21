@@ -36,7 +36,7 @@ In the meantime, you can try out http://sqlfiddle.com/, https://www.db-fiddle.co
 
 * Docker: 17.09 or later. Overlay2 storage driver recommended
 
-* Docker-compose: version 1.10.0 or later (version 1.23.0 or later recommended)
+* Docker-compose: version 1.19.0 or later (version 1.23.0 or later recommended)
 
 * Recommended: bash shell and commands: awk, date, dirname, find, grep, id, printf, sed, sort, xargs
 

@@ -6,7 +6,7 @@ env:
     # Test (in parallel):
     # - with oldest supported docker & docker-compose
     # - with most recent docker & docker-compose
-    - DOCKER_COMPOSE_VERSION=1.10.0 DOCKER_VERSION=native
+    - DOCKER_COMPOSE_VERSION=1.19.0 DOCKER_VERSION=native COMPOSE_DO_UPDATE_OS=false
     - DOCKER_COMPOSE_VERSION=1.26.1 DOCKER_VERSION=latest
 
 #before_install:
