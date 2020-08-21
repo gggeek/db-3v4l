@@ -2,7 +2,7 @@
 
 - when running selects that return an empty dataset, at least with mysql, nothing is returned in the output json/yml (ie. not even NULL or an empty array)
 
-- script `./bin/dbconsole sql:shell` not working from host - it only works from worker
+- script `./bin/dbconsole sql:shell` not working from host - it only works from worker. If we can't fix it, make it display a nice error...
 
 - adminer:
   + can not connect to mariadb 5.5
@@ -14,9 +14,6 @@
 
 
 ## Major features
-
-- allow to easily pick specific minor-versions for each db
-  see: https://www.docker.com/blog/advanced-dockerfiles-faster-builds-and-smaller-images-using-buildkit-and-multistage-builds/
 
 - host: allow building/starting partial docker stack for speed and resources (eg. no oracle, no sqlserver,
   no 'admin' tools such as lazydocker and adminer, etc...)

@@ -1,12 +1,12 @@
-Version 0.15 (unreleased)
--------------------------
+Version 0.15
+------------
 
 - Improved: renamed PostgreSQL versions 10, 11 and 12 and made their 'minor' version floating instead of locking it down.
   This is in line with the unlocking of minor versions for MSSQLServer in db3v4l 0.14 and with PostgreSQL version numbering
   policies - see https://www.postgresql.org/support/versioning/
 
 - Improved: it is now possible to specify a specific minor version for each installed db sy simply editing the local
-  docker-compose env file (.env.local).
+  docker-compose env file `.env.local`
   This allows f.e. to pick mysql 8.0.19 instead of 8.0.*, which at the time of writing would get you 8.0.21
 
 
