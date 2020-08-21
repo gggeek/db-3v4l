@@ -1,4 +1,6 @@
-FROM percona:8.0
+ARG base_image_version=8.0
+
+FROM percona:${base_image_version}
 LABEL percona.version=8.0
 
 ARG timezone=none

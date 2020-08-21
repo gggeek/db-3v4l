@@ -1,4 +1,6 @@
-FROM mysql:8.0
+ARG base_image_version=8.0
+
+FROM mysql:${base_image_version}
 LABEL mysql.version=8.0
 
 ARG timezone=none

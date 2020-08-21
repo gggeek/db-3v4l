@@ -1,5 +1,13 @@
-Version 0.14 (unreleased)
+Version 0.15 (unreleased)
 -------------------------
+
+- Improved: renamed PostgreSQL versions 10, 11 and 12 and made their 'minor' version floating instead of locking it down.
+  This is in line with the unlocking of minor versions for MSSQLServer in db3v4l 0.14 and with PostgreSQL version numbering
+  policies - see https://www.postgresql.org/support/versioning/
+
+
+Version 0.14
+------------
 
 - New: added Oracle Database 18c (XE) to the available databases
 

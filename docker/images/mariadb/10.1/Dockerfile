@@ -1,4 +1,6 @@
-FROM mariadb:10.1
+ARG base_image_version=10.1
+
+FROM mariadb:${base_image_version}
 LABEL mysql.version=10.1
 
 ARG timezone=none

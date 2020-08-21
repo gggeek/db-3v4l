@@ -1,5 +1,7 @@
 # For available tags: see https://hub.docker.com/_/microsoft-mssql-server
-FROM mcr.microsoft.com/mssql/server:2017-latest
+ARG base_image_version=2017-latest
+
+FROM mcr.microsoft.com/mssql/server:${base_image_version}
 LABEL mssqlserver.version=2017
 
 ARG timezone=none

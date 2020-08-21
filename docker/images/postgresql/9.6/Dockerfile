@@ -1,4 +1,6 @@
-FROM postgres:9.6
+ARG base_image_version=9.6
+
+FROM postgres:${base_image_version}
 LABEL postgresql.version=9.6
 
 ARG timezone=none
