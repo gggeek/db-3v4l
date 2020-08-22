@@ -9,8 +9,7 @@ env:
     - DOCKER_COMPOSE_VERSION=1.23.0 DOCKER_VERSION=native
     - DOCKER_COMPOSE_VERSION=latest DOCKER_VERSION=latest COMPOSE_LOCAL_ENV_FILE=../tests/environment/.env.01.local
 
-before_install:
-    - df -m
+#before_install:
 
 install:
     # install docker-compose
@@ -40,5 +39,4 @@ after_failure:
     #-  if [ -f test04.log ]; then cat test04.log; fi
     - cd docker; for svc in $(../bin/dbstack services); do docker-compose logs $svc; done
 
-after_script:
-    - df -m
+#after_script:
