@@ -132,11 +132,11 @@
     (see examples at https://docs.docker.com/compose/startup-order/)
   + check if we can change ownership of sqlserver data files to plain user instead of root
   + while setting up symfony, have the web site show up a courtesy page
-  + allow dbstack to download and install docker-compose if it is not found
+  + allow dbstack to download and install docker-compose if it is not found (there is a script in tests/environment/setup for that)
   + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
     or at least checks it - see how we install the latest available lazydocker
   + run security-checker as part of composer post-install and post-upgrade?
-  + dbstack: force usage of a random (or user-provided) pwd for db root account on startup
+  + dbstack: allow usage of a random (or user-provided) pwd for db root account on startup
   + dbstack: check for ports conflict (80 and 443) on startup
     + try to make the output of post-(update/install) composer scripts more visible by default
   + dbstack: add 'upgrade' command ? (note: it has to upgrade the whole stack, not just composer stuff)
@@ -153,7 +153,9 @@
     use `docker-compose config --volumes` to list them? see https://github.com/docker/docker.github.io/issues/8366
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
+    + check if we can use a linux container to generate the shell commands used by dbstack / dbconsole...
   + add shell completion for commands of dbstack
+  + make dbstack build & start faster by waiting in parallel for bootstrap.sh
 
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands

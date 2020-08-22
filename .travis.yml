@@ -24,7 +24,8 @@ before_script:
     - if [ -n "$COMPOSE_LOCAL_ENV_FILE" ]; then echo "CONTAINER_USER_GID=$(id -g)" >> ${COMPOSE_LOCAL_ENV_FILE/../.}; fi
 
 script:
-    - ./tests/01_smoketest.sh -w 900
+    - ./tests/00_build.sh -w 900
+    - ./tests/01_dbstack.sh -w 300
     - ./tests/02_dbconsole.sh -w 300
     - ./tests/03_web.sh -w 300
     - ./tests/04_admin.sh -w 300
