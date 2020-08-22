@@ -1,6 +1,12 @@
 Version 0.16 (unreleased)
 -------------------------
 
+- Improved: bumped minimum required docker-compose version to 1.19 in docs and tests, as that was effectively necessary
+
+- Improved: taught docker-compose to support a new config env var: `COMPOSE_DO_SHRINK_CONTAINERS`
+
+- Improved: tests on Travis exercise a wider set of configuration options
+
 
 Version 0.15
 ------------

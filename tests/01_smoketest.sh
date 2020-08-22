@@ -26,6 +26,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # Build the stack
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...
+# q: use an env var to drive parallel build rather than always forcing it if possible ?
 PARALLEL_BUILD=
 HELP=$(docker-compose help build)
 if [ grep -q "parallel" <<< "${HELP}"; ]; then
