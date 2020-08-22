@@ -29,7 +29,7 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 # q: use an env var to drive parallel build rather than always forcing it if possible ?
 PARALLEL_BUILD=
 HELP=$(docker-compose help build)
-if [ grep -q "parallel" <<< "${HELP}"; ]; then
+if grep -q "parallel" <<< "${HELP}"; then
     PARALLEL_BUILD=-p
 fi
 ./bin/dbstack -n ${PARALLEL_BUILD} -w ${BOOTSTRAP_TIMEOUT} build
