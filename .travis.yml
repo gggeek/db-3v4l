@@ -20,8 +20,8 @@ install:
 
 before_script:
     # @todo this could be moved to native functionality of `dbstack`: patch local env file even if it exists
-    - echo "CONTAINER_USER_UID=$(id -u)" >> tests/.env.01.local
-    - echo "CONTAINER_USER_GID=$(id -g)" >> tests/.env.01.local
+    - echo "CONTAINER_USER_UID=$(id -u)" >> tests/environment/.env.01.local
+    - echo "CONTAINER_USER_GID=$(id -g)" >> tests/environment/.env.01.local
 
 script:
     - ./tests/01_smoketest.sh -w 900
