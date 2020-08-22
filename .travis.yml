@@ -16,7 +16,7 @@ install:
     - if [ $DOCKER_COMPOSE_VERSION != native ]; then ./tests/environment/setup/install_docker-compose.sh; fi
 
     # update to latest docker if required (currently we have 18.06 on the Bionic vm)
-    - if [ $DOCKER_VERSION != native ]; then ./tests/environment/setup/install_docker.sh fi
+    - if [ $DOCKER_VERSION != native ]; then ./tests/environment/setup/install_docker.sh; fi
 
 before_script:
     # @todo this could be moved to native functionality of `dbstack`: patch local env file even if it exists
