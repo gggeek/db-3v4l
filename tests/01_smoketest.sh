@@ -27,9 +27,8 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...
 PARALLEL_BUILD=
-docker-compose help build | grep parallel > /dev/null
-OK=$?
-if [ "${OK}" = "0" ]; then
+HELP=$(docker-compose help build)
+if [ grep -q "parallel" <<< "${HELP}"; ]; then
     PARALLEL_BUILD=-p
 fi
 ./bin/dbstack -n ${PARALLEL_BUILD} -w ${BOOTSTRAP_TIMEOUT} build

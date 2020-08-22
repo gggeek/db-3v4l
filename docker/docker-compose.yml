@@ -423,7 +423,7 @@ services:
 #            args:
 #                timezone: "${COMPOSE_TZ}"
 #                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
-                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+#                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
 #        hostname: oracle_11_2
 #        container_name: "${COMPOSE_PROJECT_NAME}_oracle_11_2"
 #        #ports:
