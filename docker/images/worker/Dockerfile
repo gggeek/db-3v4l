@@ -13,6 +13,7 @@ LABEL \
 ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 ARG container_user=user
 
 # Set up debian mirror
@@ -167,7 +168,7 @@ RUN apt-get -y install yarn
 
 # Clear archives in apt cache folder
 # ------------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 RUN  rm -rf /tmp/*
 
 # Set up entrypoint

@@ -5,6 +5,7 @@ LABEL postgresql.version=9.6
 
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -27,7 +28,7 @@ RUN chmod 755 /docker-entrypoint-initdb.d/initdb.sh
 
 # Clear archives in apt cache folder to slim down the image
 # -----------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------

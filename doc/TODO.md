@@ -124,6 +124,8 @@
   + add schema dump capabilities
 
 - build/docker:
+  + make container build faster (helps Travis):
+    + save pre-built oracle image in own dockerhub account
   + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
     at the moment, only the oracle container waits for the db to be rebuild

@@ -5,6 +5,7 @@ LABEL percona.version=5.7
 
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 
 USER root
 

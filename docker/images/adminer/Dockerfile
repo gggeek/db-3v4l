@@ -13,6 +13,7 @@ LABEL \
 ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 # @todo do we need this argument ?
 ARG container_user=user
 
@@ -109,7 +110,7 @@ RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/fpm/conf.d/90-oci8.i
 
 # Clear archives in apt cache folder
 # ------------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 RUN  rm -rf /tmp/*
 
 # Set up entrypoint

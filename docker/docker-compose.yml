@@ -15,6 +15,7 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
         hostname: adminer
         container_name: "${COMPOSE_PROJECT_NAME}_adminer"
         # No ports exposed by default: we use the 'web' container as reverse proxy
@@ -40,6 +41,7 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
         hostname: lazydocker
         container_name: "${COMPOSE_PROJECT_NAME}_lazydocker"
         volumes:
@@ -55,6 +57,7 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
         hostname: redis
         container_name: "${COMPOSE_PROJECT_NAME}_redis"
         volumes:
@@ -68,6 +71,7 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
         hostname: web
         container_name: "${COMPOSE_PROJECT_NAME}_web"
         ports:
@@ -91,6 +95,7 @@ services:
                 debian_mirror: "${COMPOSE_DEBIAN_MIRROR}"
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 container_user: "${CONTAINER_USER}"
         hostname: worker
         container_name: "${COMPOSE_PROJECT_NAME}_worker"
@@ -120,6 +125,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_5_5_VERSION}"
         hostname: mariadb_5_5
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_5_5"
@@ -146,6 +152,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_0_VERSION}"
         hostname: mariadb_10_0
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_0"
@@ -172,6 +179,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_1_VERSION}"
         hostname: mariadb_10_1
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_1"
@@ -198,6 +206,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_2_VERSION}"
         hostname: mariadb_10_2
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_2"
@@ -224,6 +233,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_3_VERSION}"
         hostname: mariadb_10_3
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_3"
@@ -250,6 +260,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_4_VERSION}"
         hostname: mariadb_10_4
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_4"
@@ -276,6 +287,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MARIADB_10_5_VERSION}"
         hostname: mariadb_10_5
         container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_5"
@@ -302,6 +314,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MYSQL_5_5_VERSION}"
         hostname: mysql_5_5
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_5"
@@ -328,6 +341,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MYSQL_5_6_VERSION}"
         hostname: mysql_5_6
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_6"
@@ -354,6 +368,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MYSQL_5_7_VERSION}"
         hostname: mysql_5_7
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_5_7"
@@ -380,6 +395,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MYSQL_8_0_VERSION}"
         hostname: mysql_8_0
         container_name: "${COMPOSE_PROJECT_NAME}_mysql_8_0"
@@ -407,6 +423,7 @@ services:
 #            args:
 #                timezone: "${COMPOSE_TZ}"
 #                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
 #        hostname: oracle_11_2
 #        container_name: "${COMPOSE_PROJECT_NAME}_oracle_11_2"
 #        #ports:
@@ -425,6 +442,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
         hostname: oracle_18_4
         container_name: "${COMPOSE_PROJECT_NAME}_oracle_18_4"
         #ports:
@@ -449,6 +467,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${PERCONA_5_6_VERSION}"
         hostname: percona_5_6
         container_name: "${COMPOSE_PROJECT_NAME}_percona_5_6"
@@ -475,6 +494,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${PERCONA_5_7_VERSION}"
         hostname: percona_5_7
         container_name: "${COMPOSE_PROJECT_NAME}_percona_5_7"
@@ -501,6 +521,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${PERCONA_8_0_VERSION}"
         hostname: percona_8_0
         container_name: "${COMPOSE_PROJECT_NAME}_percona_8_0"
@@ -527,6 +548,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_9_4_VERSION}"
         hostname: postgresql_9_4
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_4"
@@ -547,6 +569,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_9_5_VERSION}"
         hostname: postgresql_9_5
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_5"
@@ -567,6 +590,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_9_6_VERSION}"
         hostname: postgresql_9_6
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_6"
@@ -587,6 +611,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_10_VERSION}"
         hostname: postgresql_10
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10"
@@ -607,6 +632,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_11_VERSION}"
         hostname: postgresql_11
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11"
@@ -627,6 +653,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${POSTGRESQL_12_VERSION}"
         hostname: postgresql_12
         container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12"
@@ -647,6 +674,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MSSQLSERVER_2017_VERSION}"
         hostname:  mssqlserver_2017
         container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2017"
@@ -671,6 +699,7 @@ services:
             args:
                 timezone: "${COMPOSE_TZ}"
                 do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
                 base_image_version: "${MSSQLSERVER_2019_VERSION}"
         hostname:  mssqlserver_2019
         container_name: "${COMPOSE_PROJECT_NAME}_mssqlserver_2019"

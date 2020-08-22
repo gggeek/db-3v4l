@@ -11,6 +11,7 @@ LABEL \
 ARG debian_mirror=none
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
@@ -52,7 +53,7 @@ COPY lazydocker/config.yml /root/.config/jesseduffield/lazydocker/config.yml
 
 # Clear archives in apt cache folder
 # -----------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------

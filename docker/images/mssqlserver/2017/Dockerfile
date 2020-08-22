@@ -6,6 +6,7 @@ LABEL mssqlserver.version=2017
 
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 
 ENV ACCEPT_EULA=Y
 
@@ -25,7 +26,7 @@ RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=
 
 # Clear archives in apt cache folder to slim down the image
 # -----------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------

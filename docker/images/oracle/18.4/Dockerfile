@@ -3,6 +3,7 @@ LABEL oracle.version=18c.xe
 
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
 
 # Configure timezone - base OS here is Oracle Linux 7, so we can use systemd
 # @todo check if tz name is compatible with the one used by debian/ubuntu. Also: can we run timedatectl in a container?

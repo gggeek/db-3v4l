@@ -5,6 +5,9 @@ LABEL mysql.version=5.5
 
 ARG timezone=none
 ARG do_update_os=true
+ARG do_shrink_container=true
+
+RUN echo "Timezone: ${timezone}, Do_U_O: ${do_update_os}"
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -21,7 +24,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 
 # Clear archives in apt cache folder to slim down the image
 # -----------------------------------------------------------------------------
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------
