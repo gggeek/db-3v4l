@@ -6,27 +6,22 @@ env:
     # Test (in parallel):
     # - with oldest supported docker & docker-compose
     # - with most recent docker & docker-compose
-    - DOCKER_COMPOSE_VERSION=1.19.0 DOCKER_VERSION=native COMPOSE_DO_UPDATE_OS=false
-    - DOCKER_COMPOSE_VERSION=1.26.1 DOCKER_VERSION=latest
+    - DOCKER_COMPOSE_VERSION=1.19.0 DOCKER_VERSION=native
+    - DOCKER_COMPOSE_VERSION=1.26.1 DOCKER_VERSION=latest COMPOSE_LOCAL_ENV_FILE=../tests/environment/.env.01.local
 
 #before_install:
 
 install:
     # install docker-compose
-    - sudo rm /usr/local/bin/docker-compose
-    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    - chmod +x docker-compose
-    - sudo mv docker-compose /usr/local/bin
-    - docker-compose --version
+    - if [ $DOCKER_COMPOSE_VERSION != native ]; then ./tests/environment/setup/install_docker-compose.sh; fi
 
     # update to latest docker if required (currently we have 18.06 on the Bionic vm)
-    - if [ $DOCKER_VERSION = latest ]; then curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; fi
-    - if [ $DOCKER_VERSION = latest ]; then sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"; fi
-    - if [ $DOCKER_VERSION = latest ]; then sudo apt-get update; fi
-    - if [ $DOCKER_VERSION = latest ]; then sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce; fi
-    - if [ $DOCKER_VERSION = latest ]; then docker --version; fi
+    - if [ $DOCKER_VERSION != native ]; then ./tests/environment/setup/install_docker.sh fi
 
-#before_script:
+before_script:
+    # @todo this could be moved to native functionality of `dbstack`: patch local env file even if it exists
+    - echo "CONTAINER_USER_UID=$(id -u)" >> tests/.env.01.local
+    - echo "CONTAINER_USER_GID=$(id -g)" >> tests/.env.01.local
 
 script:
     - ./tests/01_smoketest.sh -w 900

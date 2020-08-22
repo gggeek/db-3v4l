@@ -23,13 +23,16 @@ shift $((OPTIND-1))
 
 cd $(dirname ${BASH_SOURCE[0]})/..
 
-#DC_VERSION=$(docker-compose -v | sed 's/docker-compose version //')
-
 # Build the stack
 
 # q: shall we force a rebuild every time? Useful if running the test outside of Travis...
-# @todo enable parallel builds for docker-compose >= 1.23.0
-./bin/dbstack -n -w ${BOOTSTRAP_TIMEOUT} build
+PARALLEL_BUILD=
+docker-compose help build | grep parallel > /dev/null
+OK=$?
+if [ "${OK}" = "0" ]; then
+    PARALLEL_BUILD=-p
+fi
+./bin/dbstack -n ${PARALLEL_BUILD} -w ${BOOTSTRAP_TIMEOUT} build
 
 ./bin/dbstack setup
 
@@ -37,14 +40,12 @@ cd $(dirname ${BASH_SOURCE[0]})/..
 
 ./bin/dbstack services
 
-# @todo enable this for docker-compose >= 1.12.0
-#./bin/dbstack images
+./bin/dbstack images
 
 # @todo check that all images are up and running by parsing the output of this
 ./bin/dbstack ps
 
-# @todo enable this for docker-compose >= 1.11.0
-#./bin/dbstack top
+./bin/dbstack top
 
 ./bin/dbstack logs
 
