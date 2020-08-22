@@ -2,6 +2,8 @@
 
 # To be run from host, not from within the web container
 
+# @todo add support for -v option
+
 # Fail on any error
 set -ev
 

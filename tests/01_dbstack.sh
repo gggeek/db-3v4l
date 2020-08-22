@@ -2,6 +2,8 @@
 
 # To be run from host, not from within the worker
 
+# @todo add support for -v option
+
 # Fail on any error
 set -ev
 
