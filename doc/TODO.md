@@ -119,7 +119,7 @@
     (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
 - adminer:
-  + make it easier to log in: provide transparently root user/pwd in links to it
+  + make it easier to log in: provide transparently root user/pwd in links to it and/or in server list
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
@@ -128,6 +128,7 @@
 - build/docker:
   + make container build faster (helps Travis):
     + save pre-built oracle image in own dockerhub account
+  + try to reduce disk size by decreasing the number of docker build steps (eg. for oracle, sqlserver)
   + add composer HEALTHCHECK to containers, at least our own ones (see https://docs.docker.com/engine/reference/builder/#healthcheck)
   + when there are no db data files at start, dbstack & dbconsole should wait for the db instances to be fully ready...
     at the moment, only the oracle container waits for the db to be rebuild
@@ -155,13 +156,14 @@
   + hide the docker-compose warning about orphan containers when setting COMPOSE_ONLY_VENDORS or COMPOSE_EXCEPT_VENDORS
 
 - host: improve cli scripts:
+  + make dbstack build & start faster by waiting in parallel for bootstrap.sh
   + allow 'cleanup' command to remove all anonymous docker volumes - or at least the ones belonging to this app
     use `docker-compose config --volumes` to list them? see https://github.com/docker/docker.github.io/issues/8366
   + add removal of docker images and containers (eg. docker-compose down)
   + move from bash to sh ? also, reduce the number of cli commands we use (listed in readme)
     + check if we can use a linux container to generate the shell commands used by dbstack / dbconsole...
+  + move to getopt for better arg parsing ? see https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f, https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
   + add shell completion for commands of dbstack
-  + make dbstack build & start faster by waiting in parallel for bootstrap.sh
 
 - worker: improve cli scripts
   + allow to drop many dbs, users in single commands
@@ -186,6 +188,7 @@
 
 - app refactor:
   + allow to register via sf config execution of a cli tool against all dbs, with mapped username, pwd, etc... (eg: mysqltuner)
+  + allow to register new db instances (and drivers) via bundles (how to set up custom php db exts in worker ?)
   + allow the Command object to specify many sql queries, where 2nd one depends on result of 1st (with callable in between)
   + finish & test execution of select/nonselect queries via pdo; doctrine
   + allow to plug Schema Managers via tagged services instead of registering class names
@@ -214,7 +217,7 @@
 - worker: bring back oracle-mysql client via dedicated installation (can it be in parallel to mariadb client ?)
   + what about the percona-mysql client ?
 
-- db: mariadb/mysql: allow to define in docker parameters the size of the ramdisk used for /tmpfs;
+- db: mariadb/mysql: allow to define in docker parameters (env var) the size of the ramdisk used for /tmpfs;
   also in default configs, do use /tmpfs for temp tables? At least add it commented out
 
 - db: postgresql: move stats_temp_directory to /tmpfs

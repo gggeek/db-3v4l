@@ -224,8 +224,13 @@ build() {
 
     if [ ${RECREATE} = 'true' ]; then
         ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d --force-recreate
+        RETCODE=$?
     else
         ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d
+        RETCODE=$?
+    fi
+    if [ ${RETCODE} -ne 0 ]; then
+        exit ${RETCODE}
     fi
 
     wait_for_bootstrap all
@@ -309,6 +314,10 @@ setup_app() {
     export COMPOSE_SETUP_APP_ON_BOOT=false
 
     ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d ${WORKER_SERVICE}
+    RETCODE=$?
+    if [ ${RETCODE} -ne 0 ]; then
+        exit ${RETCODE}
+    fi
 
     wait_for_bootstrap worker
     RETCODE=$?
