@@ -6,8 +6,8 @@ env:
     # Test (in parallel):
     # - with oldest supported docker & docker-compose (which supports parallel builds)
     # - with most recent docker & docker-compose
-    - DOCKER_COMPOSE_VERSION=1.23.0 DOCKER_VERSION=native
-    - DOCKER_COMPOSE_VERSION=latest DOCKER_VERSION=latest COMPOSE_LOCAL_ENV_FILE=../tests/environment/.env.01.local
+    - DOCKER_COMPOSE_VERSION=1.23.0 DOCKER_VERSION=native COMPOSE_EXCEPT_VENDORS=mssqls,oracle,percona
+    - DOCKER_COMPOSE_VERSION=latest DOCKER_VERSION=latest COMPOSE_ONLY_VENDORS=mssql,oracle,percona COMPOSE_LOCAL_ENV_FILE=../tests/environment/.env.01.local
 
 #before_install:
 
@@ -33,10 +33,9 @@ script:
 #after_success:
 
 after_failure:
-    #-  if [ -f test01.log ]; then cat test01.log; fi
-    #-  if [ -f test02.log ]; then cat test02.log; fi
-    #-  if [ -f test03.log ]; then cat test03.log; fi
-    #-  if [ -f test04.log ]; then cat test04.log; fi
     - cd docker; for svc in $(../bin/dbstack services); do docker-compose logs $svc; done
 
 #after_script:
+
+git:
+    depth: 5

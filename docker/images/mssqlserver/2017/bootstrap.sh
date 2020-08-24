@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping MS SQL Server..."
+echo "[$(date)] Bootstrapping MS SQL Server..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the service..."
+    echo "[$(date)] Stopping the service..."
     pkill --signal term sqlservr
     if [ -f /var/run/bootstrap_ok ]; then
         rm /var/run/bootstrap_ok
@@ -23,13 +23,13 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo "[`date`] Handing over control to $@..."
+echo "[$(date)] Handing over control to $@..."
 
 trap clean_up TERM
 
 $@ &
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
+echo "[$(date)] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &
 child=$!

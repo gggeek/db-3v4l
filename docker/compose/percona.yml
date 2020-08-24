@@ -1,0 +1,98 @@
+version: '3'
+
+services:
+
+    worker:
+        volumes:
+            - ./config/app/percona.yml:/home/${CONTAINER_USER}/vendors/percona.yml
+        environment:
+            - MYSQL_ROOT_PASSWORD
+    web:
+        volumes:
+            - ./config/app/percona.yml:/home/${CONTAINER_USER}/vendors/percona.yml
+    adminer:
+        volumes:
+            - ./config/app/percona.yml:/var/www/vendors/percona.yml
+        environment:
+            - MYSQL_ROOT_PASSWORD
+
+    percona_5_6:
+        build:
+            context: images/percona/5.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${PERCONA_5_6_VERSION}"
+        hostname: percona_5_6
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_5_6"
+        #ports:
+        #    - "3310:3306"
+        volumes:
+            - ./config/percona/5.6/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/5.6:/var/lib/mysql
+            - ./logs/percona/5.6:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    percona_5_7:
+        build:
+            context: images/percona/5.7
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${PERCONA_5_7_VERSION}"
+        hostname: percona_5_7
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_5_7"
+        #ports:
+        #    - "3311:3306"
+        volumes:
+            - ./config/percona/5.7/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/5.7:/var/lib/mysql
+            - ./logs/percona/5.7:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    percona_8_0:
+        build:
+            context: images/percona/8.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${PERCONA_8_0_VERSION}"
+        hostname: percona_8_0
+        container_name: "${COMPOSE_PROJECT_NAME}_percona_8_0"
+        #ports:
+        #    - "3312:3306"
+        volumes:
+            - ./config/percona/8.0/${COMPOSE_DB_SIZE}.cnf:/etc/my.cnf.d/percona.cnf
+            - ./data/percona/8.0:/var/lib/mysql
+            - ./logs/percona/8.0:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE

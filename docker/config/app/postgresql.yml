@@ -1,0 +1,66 @@
+db3v4l:
+    database_instances:
+        # Same format as the connection options used by doctrine for the most part
+        # @see https://www.doctrine-project.org/projects/doctrine-dbal/en/2.10/reference/configuration.html#configuration
+        # @see \Doctrine\Bundle\DoctrineBundle\DependencyInjection\Configuration::configureDbalDriverNode
+        # 'user' = root account for the database instance, should have permissions to create other accounts as well as databases
+        postgresql_9_4:
+            host: postgresql_9_4
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '9.4'
+            vendor: postgresql
+            version: '9.4'
+        postgresql_9_5:
+            host: postgresql_9_5
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '9.5'
+            vendor: postgresql
+            version: '9.5'
+        postgresql_9_6:
+            host: postgresql_9_6
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '9.6'
+            vendor: postgresql
+            version: '9.6'
+        postgresql_10:
+            host: postgresql_10
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '10'
+            vendor: postgresql
+            version: '10'
+        postgresql_11:
+            host: postgresql_11
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '11'
+            vendor: postgresql
+            version: '11'
+        postgresql_12:
+            host: postgresql_12
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '12'
+            vendor: postgresql
+            version: '12'

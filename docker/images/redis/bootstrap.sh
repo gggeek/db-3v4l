@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping the Redis server..."
+echo "[$(date)] Bootstrapping the Redis server..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the services..."
+    echo "[$(date)] Stopping the services..."
     service redis-server stop
     if [ -f "${BS_OK_FILE}" ]; then
         rm "${BS_OK_FILE}"
@@ -22,7 +22,7 @@ fi
 
 # Fix UID & GID for user redis
 
-echo "[`date`] Fixing filesystem permissions..."
+echo "[$(date)] Fixing filesystem permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep redis)
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
@@ -42,15 +42,15 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "/var/redis"
 fi
 
-#echo "[`date`] Modifying Redis configuration..."
+#echo "[$(date)] Modifying Redis configuration..."
 
-echo "[`date`] Starting the services..."
+echo "[$(date)] Starting the services..."
 
 trap clean_up TERM
 
 service redis-server start
 
-echo "[`date`] Bootstrap finished" | tee ${BS_OK_FILE}
+echo "[$(date)] Bootstrap finished" | tee ${BS_OK_FILE}
 
 tail -f /dev/null &
 child=$!

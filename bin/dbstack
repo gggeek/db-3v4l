@@ -17,6 +17,7 @@ COMPOSE_LOCAL_ENV_FILE=${COMPOSE_LOCAL_ENV_FILE:-.env.local}
 AS_ROOT=false
 BOOTSTRAP_TIMEOUT=300
 CLEANUP_UNUSED_IMAGES=false
+DOCKER_COMPOSE_CMD=
 DOCKER_NO_CACHE=
 PARALLEL_BUILD=
 PULL_IMAGES=false
@@ -52,6 +53,7 @@ Commands:
     run                 execute a single command in the worker container
     shell               start a shell in the worker container as the application user
     services            list docker-compose services
+    restart [\$svc]      restart the complete set of containers
     start [\$svc]        start the complete set of containers
     stop [\$svc]         stop the complete set of containers
     top [\$svc]          display the running container processes
@@ -90,7 +92,27 @@ check_requirements() {
     fi
 }
 
-# @todo have this function looked at by a bash guru to validate it's not a brainf**k
+create_compose_command() {
+    local VENDORS
+    DOCKER_COMPOSE_CMD='docker-compose -f docker-compose.yml'
+    if [ -n "${COMPOSE_ONLY_VENDORS}" ]; then
+        VENDORS=${COMPOSE_ONLY_VENDORS//,/ }
+    else
+        VENDORS=$(cd compose && ls -- *.yml | tr '\n' ' ')
+        VENDORS=${VENDORS//.yml/}
+    fi
+    if [ -n "${COMPOSE_EXCEPT_VENDORS}" ]; then
+        for COMPOSE_EXCEPT_VENDOR in ${COMPOSE_EXCEPT_VENDORS//,/ }; do
+            # @bug what if a COMPOSE_EXCEPT_VENDOR is a substring of a VENDOR ?
+            VENDORS=${VENDORS/$COMPOSE_EXCEPT_VENDOR/}
+        done
+    fi
+    for DC_CONF_FILE in ${VENDORS}; do
+        DOCKER_COMPOSE_CMD="${DOCKER_COMPOSE_CMD} -f compose/${DC_CONF_FILE}.yml"
+    done
+}
+
+# @todo have this function looked at by a bash guru to validate it's not a brainf**t
 #load_config_value() {
 #    local VALUE=
 #    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
@@ -103,12 +125,13 @@ check_requirements() {
 #}
 
 load_config() {
-    source ${COMPOSE_DEFAULT_ENV_FILE}
+    source "${COMPOSE_DEFAULT_ENV_FILE}"
 
-    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
+    # @todo check that COMPOSE_LOCAL_ENV_FILE does not override env vars that it should not, eg. COMPOSE_LOCAL_ENV_FILE, BOOTSTRAP_OK_FILE, ...
+    if [ -f "${COMPOSE_LOCAL_ENV_FILE}" ]; then
         # these vars we have to export as otherwise they are not taken into account by docker-compose
         set -a
-        source ${COMPOSE_LOCAL_ENV_FILE}
+        source "${COMPOSE_LOCAL_ENV_FILE}"
         set +a
     fi
 
@@ -128,6 +151,8 @@ load_config() {
 }
 
 setup_local_config() {
+    local CURRENT_USER_UID
+    local CURRENT_USER_GID
 
     CURRENT_USER_UID=$(id -u)
     CURRENT_USER_GID=$(id -g)
@@ -136,7 +161,7 @@ setup_local_config() {
         return
     fi
 
-    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
+    if [ -f "${COMPOSE_LOCAL_ENV_FILE}" ]; then
         # @todo in case the file already exists and has incorrect values for these vars, replace them instead of skipping...
         printf "\n\e[31mWARNING: current user id and/or group id do not match the ones in config files\e[0m\n\n" >&2
         # Q: why not just use the current values ?
@@ -145,21 +170,21 @@ setup_local_config() {
         return
     fi
 
-    echo "[`date`] Setting up the configuration file '${COMPOSE_LOCAL_ENV_FILE}'..."
+    echo "[$(date)] Setting up the configuration file '${COMPOSE_LOCAL_ENV_FILE}'..."
 
     #CURRENT_USER_UID=$(id -u)
     #CURRENT_USER_GID=$(id -g)
     #CONTAINER_USER_UID=$(grep -F CONTAINER_USER_UID ${COMPOSE_DEFAULT_ENV_FILE} | sed 's/CONTAINER_USER_UID=//')
     #CONTAINER_USER_GID=$(grep -F CONTAINER_USER_GID ${COMPOSE_DEFAULT_ENV_FILE} | sed 's/CONTAINER_USER_GID=//')
 
-    touch ${COMPOSE_LOCAL_ENV_FILE}
+    touch "${COMPOSE_LOCAL_ENV_FILE}"
 
     if [ "${CONTAINER_USER_UID}" != "${CURRENT_USER_UID}" ]; then
-        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${COMPOSE_LOCAL_ENV_FILE}
+        echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> "${COMPOSE_LOCAL_ENV_FILE}"
         export CONTAINER_USER_UID=${CURRENT_USER_UID}
     fi
     if [ "${CONTAINER_USER_GID}" != "${CURRENT_USER_GID}" ]; then
-        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${COMPOSE_LOCAL_ENV_FILE}
+        echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> "${COMPOSE_LOCAL_ENV_FILE}"
         export CONTAINER_USER_GID=${CURRENT_USER_GID}
     fi
 
@@ -167,21 +192,23 @@ setup_local_config() {
 }
 
 build() {
+    local IMAGES
+
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
         # for good measure, do a bit of hdd disk cleanup ;-)
-        echo "[`date`] Removing unused Docker images from disk..."
+        echo "[$(date)] Removing unused Docker images from disk..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
     fi
 
-    echo "[`date`] Building and Starting all Containers..."
+    echo "[$(date)] Building and Starting all Containers..."
 
-    docker-compose ${VERBOSITY} stop
+    ${DOCKER_COMPOSE_CMD} ${VERBOSITY} stop
     if [ ${REBUILD} = 'true' ]; then
-        docker-compose ${VERBOSITY} rm -f
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} rm -f
     fi
 
     if [ ${PULL_IMAGES} = 'true' ]; then
-        echo "[`date`] Pulling base Docker images..."
+        echo "[$(date)] Pulling base Docker images..."
         # @todo fix this: it won't work any more since we moved to using env vars
         IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
         for IMAGE in $IMAGES; do
@@ -189,27 +216,27 @@ build() {
         done
     fi
 
-    docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
+    ${DOCKER_COMPOSE_CMD} ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
 
     if [ ${SETUP_APP_ON_BOOT} = 'false' ]; then
         export COMPOSE_SETUP_APP_ON_BOOT=false
     fi
 
     if [ ${RECREATE} = 'true' ]; then
-        docker-compose ${VERBOSITY} up -d --force-recreate
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d --force-recreate
     else
-        docker-compose ${VERBOSITY} up -d
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d
     fi
 
     wait_for_bootstrap all
     RETCODE=$?
 
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
-        echo "[`date`] Removing unused Docker images from disk, again..."
+        echo "[$(date)] Removing unused Docker images from disk, again..."
         docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
     fi
 
-    echo "[`date`] Build finished"
+    echo "[$(date)] Build finished"
 
     exit ${RETCODE}
 }
@@ -239,11 +266,11 @@ cleanup() {
             docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
         ;;
         docker-logs)
-            for CONTAINER in $(docker-compose ps -q)
+            for CONTAINER in $(${DOCKER_COMPOSE_CMD} ps -q)
             do
                 LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
                 if [ -n "${LOGFILE}" ]; then
-                    echo "" > ${LOGFILE}
+                    echo "" > "${LOGFILE}"
                 fi
             done
         ;;
@@ -276,12 +303,12 @@ cleanup() {
 }
 
 setup_app() {
-    echo "[`date`] Starting the Worker container..."
+    echo "[$(date)] Starting the Worker container..."
 
     # avoid automatic app setup being triggered here
     export COMPOSE_SETUP_APP_ON_BOOT=false
 
-    docker-compose ${VERBOSITY} up -d ${WORKER_SERVICE}
+    ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d ${WORKER_SERVICE}
 
     wait_for_bootstrap worker
     RETCODE=$?
@@ -289,9 +316,9 @@ setup_app() {
         exit ${RETCODE}
     fi
 
-    echo "[`date`] Setting up the app (from inside the Worker container)..."
-    docker exec ${WORKER_CONTAINER} su - ${WORKER_USER} -c "cd /home/${WORKER_USER}/app && composer install"
-    echo "[`date`] Setup finished"
+    echo "[$(date)] Setting up the app (from inside the Worker container)..."
+    docker exec ${WORKER_CONTAINER} su - "${WORKER_USER}" -c "cd /home/${WORKER_USER}/app && composer install"
+    echo "[$(date)] Setup finished"
 }
 
 # Wait until containers have fully booted
@@ -307,8 +334,8 @@ wait_for_bootstrap() {
         ;;
         all)
             # q: check all services or only the running ones?
-            #BOOTSTRAP_CONTAINERS=$(docker-compose config --services)
-            BOOTSTRAP_CONTAINERS=$(docker-compose ps --services | tr '\n' ' ')
+            #BOOTSTRAP_CONTAINERS=$(${DOCKER_COMPOSE_CMD} config --services)
+            BOOTSTRAP_CONTAINERS=$(${DOCKER_COMPOSE_CMD} ps --services | sort | tr '\n' ' ')
         ;;
         app)
             BOOTSTRAP_CONTAINERS='worker web adminer'
@@ -328,20 +355,21 @@ wait_for_bootstrap() {
         ;;
     esac
 
-    echo "[`date`] Waiting for containers bootstrap to finish..."
+    echo "[$(date)] Waiting for containers bootstrap to finish..."
 
-     # @todo speed this up...
-     #       - maybe go back to generating and checking files mounted on the host?
-     #       - find a way to run commands in parallel while collecting their output/exit-code?
-     #         see eg. https://www.golinuxcloud.com/run-shell-scripts-in-parallel-collect-exit-status-process/
-     #         or https://gist.github.com/mjambon/79adfc5cf6b11252e78b75df50793f24
-     i=0
-     while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
+    # @todo speed this up...
+    #       - maybe go back to generating and checking files mounted on the host?
+    #       - find a way to run commands in parallel while collecting their output/exit-code?
+    #         see eg. https://www.golinuxcloud.com/run-shell-scripts-in-parallel-collect-exit-status-process/
+    #         or https://gist.github.com/mjambon/79adfc5cf6b11252e78b75df50793f24
+    local BOOTSTRAP_OK
+    i=0
+    while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
         sleep 1
         BOOTSTRAP_OK=''
         for BS_CONTAINER in ${BOOTSTRAP_CONTAINERS}; do
             printf "Waiting for ${BS_CONTAINER} ... "
-            docker-compose exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
+            ${DOCKER_COMPOSE_CMD} exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
             RETCODE=$?
             if [ ${RETCODE} -eq 0 ]; then
                 printf "\e[32mdone\e[0m\n"
@@ -424,11 +452,13 @@ COMMAND=$1
 
 check_requirements
 
-cd $(dirname -- ${BASH_SOURCE[0]})/../docker
+cd "$(dirname -- ${BASH_SOURCE[0]})/../docker"
 
 load_config
 
 setup_local_config
+
+create_compose_command
 
 case "${COMMAND}" in
     build)
@@ -441,26 +471,26 @@ case "${COMMAND}" in
     ;;
 
     config)
-        docker-compose ${VERBOSITY} config ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} config ${2}
     ;;
 
     dbconsole)
         # @deprecated - left in for courtesy
         shift
         # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
-        docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"
+        docker exec -ti "${WORKER_CONTAINER}" su - "${WORKER_USER}" -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"
     ;;
 
     images)
-        docker-compose ${VERBOSITY} images ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} images ${2}
     ;;
 
     kill)
-        docker-compose ${VERBOSITY} kill ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} kill ${2}
     ;;
 
     logs)
-        docker-compose ${VERBOSITY} logs ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} logs ${2}
     ;;
 
     monitor)
@@ -468,22 +498,38 @@ case "${COMMAND}" in
     ;;
 
     pause)
-        docker-compose ${VERBOSITY} pause ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} pause ${2}
     ;;
 
     ps)
-        docker-compose ${VERBOSITY} ps ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} ps ${2}
+    ;;
+
+    restart)
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} stop ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d ${2}
+        RETCODE=$?
+        if [ ${RETCODE} -ne 0 ]; then
+            exit ${RETCODE}
+        fi
+        if [ -z "${2}" ]; then
+            wait_for_bootstrap all
+            exit $?
+        else
+            wait_for_bootstrap ${2}
+            exit $?
+        fi
     ;;
 
     run)
         shift
         if [ ${AS_ROOT} = true ]; then
-            docker exec -ti ${WORKER_CONTAINER} "$@"
+            docker exec -ti "${WORKER_CONTAINER}" "$@"
         else
             # @todo should we try to start from the 'app' dir ?
             # q: which one is better? test with a command with spaces in options values, and with a composite command such as cd here && do that
-            docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER} -- "$@"
-            #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "$@"
+            docker exec -ti "${WORKER_CONTAINER}" sudo -iu "${WORKER_USER}" -- "$@"
+            #docker exec -ti "${WORKER_CONTAINER}" su - "${WORKER_USER}" -c '"$0" "$@"' -- "$@"
         fi
     ;;
 
@@ -492,20 +538,20 @@ case "${COMMAND}" in
     ;;
 
     services)
-        docker-compose config --services | sort
+        ${DOCKER_COMPOSE_CMD} config --services | sort
     ;;
 
     shell)
         if [ ${AS_ROOT} = true ]; then
-            docker exec -ti ${WORKER_CONTAINER} bash
+            docker exec -ti "${WORKER_CONTAINER}" bash
         else
-            docker exec -ti ${WORKER_CONTAINER} sudo -iu ${WORKER_USER}
-            #docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER}
+            docker exec -ti "${WORKER_CONTAINER}" sudo -iu "${WORKER_USER}"
+            #docker exec -ti "${WORKER_CONTAINER}" su - "${WORKER_USER}"
         fi
     ;;
 
     start)
-        docker-compose ${VERBOSITY} up -d ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} up -d ${2}
         RETCODE=$?
         if [ ${RETCODE} -ne 0 ]; then
             exit ${RETCODE}
@@ -520,15 +566,15 @@ case "${COMMAND}" in
     ;;
 
     stop)
-        docker-compose ${VERBOSITY} stop ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} stop ${2}
     ;;
 
     top)
-        docker-compose ${VERBOSITY} top ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} top ${2}
     ;;
 
     unpause)
-        docker-compose ${VERBOSITY} unpause ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} unpause ${2}
     ;;
 
     # achieved by running `build -u`... could be expanded to also do a git pull?

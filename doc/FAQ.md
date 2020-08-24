@@ -1,5 +1,16 @@
 ## FAQ
 
+- Q: when I start the stack, can I make it run just a subset of the available databases? I am not interested in technology
+  xxx and running db3v4l takes up too much cpu/ram/disk! A: sure. The simplest way to do it is to either start only
+  the databases from a given set of vendors, or exclude the databases from a given set of vendors.
+  Example usages:
+
+      export COMPOSE_ONLY_VENDORS=mysql,mariadb,percona
+      ./bin/dbstack start
+
+      export COMPOSE_EXCEPT_VENDORS=oracle,mssql
+      ./bin/dbstack start
+
 - Q: can I customize the configuration of the databases? A: Yes, there is one config file for each db that you can edit,
   in `docker/config`. If you change them, you need to restart the docker containers for the settings to take effect, but
   there is no need to rebuild them
@@ -10,7 +21,7 @@
   build the stack, you might thus get a different minor version, eg. mysql 8.0.14 or mysql 8.0.19.
   The best way to know the exact version of the installed databases is to run the command `./bin/dbconsole instance:list`
 
-- Q: can I pick the exact minor versions of the installed databases? A: Yes, this is possible.
+- Q: I dont't like that! Can I pick the exact minor versions of the installed databases? A: Yes, this is possible.
   In order to specify a specific version for, say, mysql 8.0, you will have to edit the file
   `docker/.env.local` and add the line `MYSQL_8_0_VERSION=8.0.18`.
   If you had already built the stack before making this change, you will need to rebuild it.
@@ -22,18 +33,19 @@
 - Q: can I make the db3v4l application use an existing database available in my infrastructure besides the self-contained ones?
   A: yes, as long as the type of database is already supported by the application.
   In order to add a new database, it is enough to:
-  - edit `app/config/services.yml` and add the definition of the extra remote database in key `db3v4l.database_instances`
+  - add a new file `docker/config/app/mydb.yml` with the definition of the extra remote database in key `db3v4l / database_instances`
+  - add a new file `docker/compose/app/mydb.yml` where you map the above file to a volume for the `worker` container
   - test that the worker container can connect to the remote database on the desired port (besides firewalls, the
     dns resolution might be problematic. If in doubt, test first using IP addresses)
 
 - Q: can I access the db3v4l databases from other applications running outside the provided Docker containers? I want
   to do mass data import / export from them.
-  A: it is possible, but not enabled by default. In order to allow it, stop the Docker Compose stack, edit the
-  `docker-compose.yml` file, set port mapping for any database that you want to expose to the 'outside world' and restart
+  A: it is possible, but not enabled by default. In order to allow it, stop the Docker Compose stack, edit the files in
+  `docker/compose`, set port mapping for any database that you want to expose to the 'outside world' and restart
   the stack.
   *Note* that some of the databases included in the db3v4l, such as Microsoft SQL Server, have licensing conditions
   which restrict what you are legally allowed to use them for. We assume no responsibility for any abuse of such conditions.
-  *Note also* that there has be no hardening or tuning done of the containers running the database - the database root
+  *Note also* that there has been no hardening or tuning done of the containers running the database - the database root
   account password is not even randomized... Opening them up for access from external tools might result in
   security-related issues
 

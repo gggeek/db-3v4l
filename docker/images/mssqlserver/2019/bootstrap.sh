@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping MS SQL Server..."
+echo "[$(date)] Bootstrapping MS SQL Server..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the service..."
+    echo "[$(date)] Stopping the service..."
     pkill --signal term sqlservr
     if [ -f /var/run/bootstrap_ok ]; then
         rm /var/run/bootstrap_ok
@@ -18,7 +18,7 @@ if [ -f /var/run/bootstrap_ok ]; then
 fi
 
 # @todo mssql currently runs as root, so we skip fixing fs permissions...
-#echo "[`date`] Fixing mssql user permissions..."
+#echo "[$(date)] Fixing mssql user permissions..."
 #
 #ORIGPASSWD=$(cat /etc/passwd | grep mssql)
 #ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
@@ -42,13 +42,13 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo "[`date`] Handing over control to $@..."
+echo "[$(date)] Handing over control to $@..."
 
 trap clean_up TERM
 
 $@ &
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
+echo "[$(date)] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &
 child=$!

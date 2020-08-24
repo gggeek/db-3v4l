@@ -23,7 +23,7 @@ do
 done
 shift $((OPTIND-1))
 
-cd $(dirname ${BASH_SOURCE[0]})/..
+cd "$(dirname -- ${BASH_SOURCE[0]})/.."
 
 # Start the stack
 

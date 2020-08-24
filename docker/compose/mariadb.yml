@@ -1,0 +1,206 @@
+version: '3'
+
+services:
+
+    worker:
+        volumes:
+            - ./config/app/mariadb.yml:/home/${CONTAINER_USER}/vendors/mariadb.yml
+        environment:
+            - MYSQL_ROOT_PASSWORD
+    web:
+        volumes:
+            - ./config/app/mariadb.yml:/home/${CONTAINER_USER}/vendors/mariadb.yml
+    adminer:
+        volumes:
+            - ./config/app/mariadb.yml:/var/www/vendors/mariadb.yml
+        environment:
+            - MYSQL_ROOT_PASSWORD
+
+    mariadb_5_5:
+        build:
+            context: images/mariadb/5.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_5_5_VERSION}"
+        hostname: mariadb_5_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_5_5"
+        #ports:
+        #    - "3310:3306"
+        volumes:
+            - ./config/mariadb/5.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/5.5:/var/lib/mysql
+            - ./logs/mariadb/5.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_0:
+        build:
+            context: images/mariadb/10.0
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_0_VERSION}"
+        hostname: mariadb_10_0
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_0"
+        #ports:
+        #    - "3311:3306"
+        volumes:
+            - ./config/mariadb/10.0/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.0:/var/lib/mysql
+            - ./logs/mariadb/10.0:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_1:
+        build:
+            context: images/mariadb/10.1
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_1_VERSION}"
+        hostname: mariadb_10_1
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_1"
+        #ports:
+        #    - "3312:3306"
+        volumes:
+            - ./config/mariadb/10.1/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.1:/var/lib/mysql
+            - ./logs/mariadb/10.1:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_2:
+        build:
+            context: images/mariadb/10.2
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_2_VERSION}"
+        hostname: mariadb_10_2
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_2"
+        #ports:
+        #    - "3313:3306"
+        volumes:
+            - ./config/mariadb/10.2/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.2:/var/lib/mysql
+            - ./logs/mariadb/10.2:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_3:
+        build:
+            context: images/mariadb/10.3
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_3_VERSION}"
+        hostname: mariadb_10_3
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_3"
+        #ports:
+        #    - "3314:3306"
+        volumes:
+            - ./config/mariadb/10.3/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.3:/var/lib/mysql
+            - ./logs/mariadb/10.3:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_4:
+        build:
+            context: images/mariadb/10.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_4_VERSION}"
+        hostname: mariadb_10_4
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_4"
+        #ports:
+        #    - "3315:3306"
+        volumes:
+            - ./config/mariadb/10.4/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.4:/var/lib/mysql
+            - ./logs/mariadb/10.4:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE
+
+    mariadb_10_5:
+        build:
+            context: images/mariadb/10.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${MARIADB_10_5_VERSION}"
+        hostname: mariadb_10_5
+        container_name: "${COMPOSE_PROJECT_NAME}_mariadb_10_5"
+        #ports:
+        #    - "3315:3306"
+        volumes:
+            - ./config/mariadb/10.5/${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mariadb/10.5:/var/lib/mysql
+            - ./logs/mariadb/10.5:/var/log/mysql
+        tmpfs:
+            # used for mysql temp tables
+            - /tmpfs:mode=777,size=1g
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+            - MYSQL_PASSWORD
+            - MYSQL_DATABASE

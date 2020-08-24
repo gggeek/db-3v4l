@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping the Worker..."
+echo "[$(date)] Bootstrapping the Worker..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the container..."
+    echo "[$(date)] Stopping the container..."
     if [ -f "${BS_OK_FILE}" ]; then
         rm "${BS_OK_FILE}"
     fi
@@ -21,7 +21,7 @@ BS_OK_FILE=${BS_OK_DIR}/bootstrap_ok
 
 # Fix UID & GID for user '${CONTAINER_USER}'
 
-echo "[`date`] Fixing filesystem permissions..."
+echo "[$(date)] Fixing filesystem permissions..."
 
 CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
 CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
@@ -57,28 +57,45 @@ chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/*
 
 # Set up the application
 
-echo "[`date`] Setting up the application: config file .env.local..."
+echo "[$(date)] Setting up the application: config files .env.local and secrets.php..."
 
 # If current values for env vars different from the ones stored in app/.env.local:
 # overwrite the file and clear symfony caches
 
 echo "APP_ENV=${APP_ENV}" > /tmp/.env.local
 echo "APP_DEBUG=${APP_DEBUG}" >> /tmp/.env.local
-echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> /tmp/.env.local
-echo "ORACLE_PWD=${ORACLE_PWD}" >> /tmp/.env.local
-echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> /tmp/.env.local
-echo "SA_PASSWORD=${SA_PASSWORD}" >> /tmp/.env.local
 
-CLEAR_CACHE=true
+cd ${ORIG_HOME}/app && php bin/console secrets:generate-keys
+cd ${ORIG_HOME}/app && echo -n "${MYSQL_ROOT_PASSWORD}" | php bin/console secrets:set "MYSQL_ROOT_PASSWORD" -
+cd ${ORIG_HOME}/app && echo -n "${ORACLE_PWD}" | php bin/console secrets:set "ORACLE_PWD" -
+cd ${ORIG_HOME}/app && echo -n "${POSTGRES_PASSWORD}" | php bin/console secrets:set "POSTGRES_PASSWORD" -
+cd ${ORIG_HOME}/app && echo -n "${SA_PASSWORD}" | php bin/console secrets:set "SA_PASSWORD" -
+#echo "<?php" > /tmp/secrets.php
+#echo "\$_ENV['MYSQL_ROOT_PASSWORD'] = '$(echo "${MYSQL_ROOT_PASSWORD}" | sed "s/'/\\\'/g")';" >> /tmp/secrets.php
+#echo "\$_ENV['ORACLE_PWD'] = '$(echo "${ORACLE_PWD}" | sed "s/'/\\\'/g")';" >> /tmp/secrets.php
+#echo "\$_ENV['POSTGRES_PASSWORD'] = '$(echo "${POSTGRES_PASSWORD}" | sed "s/'/\\\'/g")';" >> /tmp/secrets.php
+#echo "\$_ENV['SA_PASSWORD'] = '$(echo "${SA_PASSWORD}" | sed "s/'/\\\'/g")';" >> /tmp/secrets.php
+
+CLEAR_CACHE_ENV=true
 if [ -f "${ORIG_HOME}/app/.env.local" ]; then
     diff -q "${ORIG_HOME}/app/.env.local" /tmp/.env.local >/dev/null
     if [ $? -eq 0 ]; then
-        CLEAR_CACHE=false
+        CLEAR_CACHE_ENV=false
     fi
 fi
+#CLEAR_CACHE_SECRETS=true
+#if [ -f "${ORIG_HOME}/vendors/secrets.php" ]; then
+#    diff -q "${ORIG_HOME}/vendors/secrets.php" /tmp/secrets.php >/dev/null
+#    if [ $? -eq 0 ]; then
+#        CLEAR_CACHE_SECRETS=false
+#    fi
+#fi
 
 mv /tmp/.env.local ${ORIG_HOME}/app/.env.local
 chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.local
+
+#mv /tmp/secrets.php ${ORIG_HOME}/vendors/secrets.php
+#chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/vendors/secrets.php
 
 #ENCORE_CMD=${APP_ENV}
 #if [ "${ENCORE_CMD}" = test ]; then
@@ -86,19 +103,20 @@ chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" ${ORIG_HOME}/app/.env.loca
 #fi
 
 if [ -f "${ORIG_HOME}/app/vendor/autoload.php" ]; then
-    if [ ${CLEAR_CACHE} = true ]; then
-        echo "[`date`] Setting up the application: clearing caches..."
+    #if [ ${CLEAR_CACHE_ENV} = true -o ${CLEAR_CACHE_SECRETS} = true ]; then
+    if [ ${CLEAR_CACHE_ENV} = true ]; then
+        echo "[$(date)] Setting up the application: clearing caches..."
         # @todo if if APP_ENV changed, we should also regenerate assets
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && php bin/console cache:clear"
     fi
 else
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != false ]; then
-        echo "[`date`] Setting up the application: composer install..."
+        echo "[$(date)] Setting up the application: composer install..."
         su ${CONTAINER_USER} -c "cd ${ORIG_HOME}/app && composer install"
     fi
 fi
 
-echo "[`date`] Bootstrap finished" | tee "${BS_OK_FILE}"
+echo "[$(date)] Bootstrap finished" | tee "${BS_OK_FILE}"
 
 trap clean_up TERM
 

@@ -5,7 +5,18 @@ Version 0.16 (unreleased)
 
 - Improved: taught docker-compose to support a new config env var: `COMPOSE_DO_SHRINK_CONTAINERS`
 
-- Improved: tests on Travis exercise a wider set of configuration options
+- Improved: taught `dbstack` to support two new env vars: `COMPOSE_ONLY_VENDORS` and `COMPOSE_EXCEPT_VENDORS`.
+  These can be used to set up a db3v4l stack which does not run the complete set of (available) databases, but is limited
+  to specific vendors, making it require less cpu/ram/disk resources.
+  Example usages:
+
+      export COMPOSE_ONLY_VENDORS=mysql,mariadb
+      ./bin/dbstack start
+
+      export COMPOSE_EXCEPT_VENDORS=oracle,mssql
+      ./bin/dbstack start
+
+- Improved: tests on Travis exercise a wider set of configuration options and execute faster
 
 
 Version 0.15

@@ -1,0 +1,8 @@
+{
+    "type": "project",
+    "license": "GPL-2.0-only",
+    "require": {
+        "symfony/dotenv": "4.4.*",
+        "symfony/yaml": "4.4.*"
+    }
+}

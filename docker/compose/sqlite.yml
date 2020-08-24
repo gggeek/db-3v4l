@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+    worker:
+        volumes:
+            - ./config/app/sqlite.yml:/home/${CONTAINER_USER}/vendors/sqlite.yml
+    web:
+        volumes:
+            - ./config/app/sqlite.yml:/home/${CONTAINER_USER}/vendors/sqlite.yml
+    adminer:
+        volumes:
+            - ./config/app/sqlite.yml:/var/www/vendors/sqlite.yml

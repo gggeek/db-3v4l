@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+
+    worker:
+        volumes:
+            - ./config/app/oracle.yml:/home/${CONTAINER_USER}/vendors/oracle.yml
+        environment:
+            - ORACLE_PWD
+    web:
+        volumes:
+            - ./config/app/oracle.yml:/home/${CONTAINER_USER}/vendors/oracle.yml
+    adminer:
+        volumes:
+            - ./config/app/oracle.yml:/var/www/vendors/oracle.yml
+        environment:
+            - ORACLE_PWD
+
+    #    There's not yet a click-free oracle-11g-xe installation available for download yet...
+    #    oracle_11_2:
+    #        build:
+    #            context: images/oracle/11.2
+    #            args:
+    #                timezone: "${COMPOSE_TZ}"
+    #                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+    #                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+    #        hostname: oracle_11_2
+    #        container_name: "${COMPOSE_PROJECT_NAME}_oracle_11_2"
+    #        #ports:
+    #        #    - "1522:1521"
+    #        volumes:
+    #            #- ./config/oracle/11.2/${COMPOSE_DB_SIZE}.cnf:/opt/oracle/...
+    #            - ./data/oracle/11.2:/opt/oracle/oradata
+    #            #- ./logs/oracle/11.2:...
+    #        environment:
+    #            - CONTAINER_USER_UID
+    #            - CONTAINER_USER_GID
+
+    oracle_18_4:
+        build:
+            context: images/oracle/18.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+        hostname: oracle_18_4
+        container_name: "${COMPOSE_PROJECT_NAME}_oracle_18_4"
+        #ports:
+        #    - "1522:1521"
+        volumes:
+            # @todo add in boostrap.sh support for appending this to the existing init.ora...
+            #- ./config/oracle/18.4/${COMPOSE_DB_SIZE}.init.ora:/etc/sysconfig/oracle-xe-18c.init.ora.extra
+            - ./data/oracle/18.4:/opt/oracle/oradata
+            # @todo which of the many oracle log folder to map to the host? see `find /opt/oracle/ -name '*.log'`...
+            #       Idea: we could mount many container folders to subdirs of ./logs/oracle/18.4
+            #- ./logs/oracle/18.4/alert_XE.log:/opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
+            #- ./logs/oracle/18.4/rdbms:/opt/oracle/product/18c/dbhomeXE/rdbms/log/
+            #- ./logs/oracle/18.4/client:/opt/oracle/product/18c/dbhomeXE/log/oracle_18_4/client/
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - ORACLE_PWD

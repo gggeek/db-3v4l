@@ -110,6 +110,7 @@
   + use 'bats' for shell-driven tests?
   + check if there is anything that we can cache between test runs on travis to speed up the execution
   + add xdebug and enable code coverage while running tests
+  + move from ubuntu 18 to 20 as base OS ?
 
 - improve handling of character sets:
   + allow to use utf16, utf16le, utf16ber as encodings for sqlite
@@ -117,11 +118,12 @@
   + test execution of a sql command which creates a table with a few cols, inserts a couple of lines
     (ascii chars, utf8 basic plane, utf8 multilingual plane) and then selects data from it
 
-- admin(er):
+- adminer:
   + make it easier to log in: provide transparently root user/pwd in links to it
   + add sql log file
   + add data dump capabilities
   + add schema dump capabilities
+  + make it possible to run a stack with the adminer container off (this currently poses problem with adminer config in vendors yamls)
 
 - build/docker:
   + make container build faster (helps Travis):
@@ -134,7 +136,7 @@
   + while setting up symfony, have the web site show up a courtesy page
   + allow dbstack to download and install docker-compose if it is not found (there is a script in tests/environment/setup for that)
   + add a composer post-upgrade script (or dbstack command) that downloads automatically the latest version of adminer
-    or at least checks it - see how we install the latest available lazydocker
+    or at least checks it - see fe. how we install the latest available lazydocker
   + run security-checker as part of composer post-install and post-upgrade?
   + dbstack: allow usage of a random (or user-provided) pwd for db root account on startup
   + dbstack: check for ports conflict (80 and 443) on startup
@@ -147,6 +149,10 @@
   + remove more unused stuff from containers, such as fdisk?, etc...
   + check out if we could use `docker app` to package the application
   + check out if adopting naming convention from https://github.blog/2015-06-30-scripts-to-rule-them-all/ makes sense
+  + adminer build: use nginx conf to hold db pwds instead of a custom php file
+  + adminer/worker: move db-instances config to be a php file, so that adminer can run without composer install
+  + web/worker: make web container config closer to worker one: mount .../vendors/*.yml to /var/ rather than /var/www or /home/$user?
+  + hide the docker-compose warning about orphan containers when setting COMPOSE_ONLY_VENDORS or COMPOSE_EXCEPT_VENDORS
 
 - host: improve cli scripts:
   + allow 'cleanup' command to remove all anonymous docker volumes - or at least the ones belonging to this app

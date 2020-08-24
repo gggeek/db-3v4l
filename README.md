@@ -40,7 +40,9 @@ In the meantime, you can try out http://sqlfiddle.com/, https://www.db-fiddle.co
 
 * Recommended: bash shell and commands: awk, date, dirname, find, grep, id, printf, sed, sort, xargs
 
-* minimum RAM, CPU, Disk space: these have not been measured, but you probably want something better than a raspberry pi...
+* minimum RAM, CPU, Disk space: these have not been measured at length, but you probably want something better than
+  a raspberry pi... The VMs used to run the testsuite seem to be (barely) able to do their job with 2 CPUs, 8GB RAM
+  and 32GB of Disk space
 
 
 ## Quick Start
@@ -191,10 +193,10 @@ The `dbstack` and `dbconsole` commands require a working bash shell interpreter 
 In case those are not available on your platform (eg. if you are running DB-3v4l on Windows), or if `dbstack` fails
 you can run alternative commands, as detailed here:
 
-    ./bin/dbstack build => cd docker && && docker-compose build
-    ./bin/dbstack start => cd docker && docker-compose up -d
+    ./bin/dbstack build => cd docker && docker-compose -f docker-compose.yml -f compose/mariadb.yml -f compose/mssql.yml -f compose/mysql.yml -f compose/oracle.yml -f compose/percona.yml -f compose/postgresql.yml -f compose/sqlite.yml build
+    ./bin/dbstack start => cd docker && docker-compose -f docker-compose.yml -f compose/mariadb.yml -f compose/mssql.yml -f compose/mysql.yml -f compose/oracle.yml -f compose/percona.yml -f compose/postgresql.yml -f compose/sqlite.yml up -d
     ./bin/dbstack shell => docker exec -ti db3v4l_worker su - db3v4l
-    ./bin/dbstack stop  => cd docker && docker-compose stop
+    ./bin/dbstack stop  => cd docker && docker-compose -f docker-compose.yml -f compose/mariadb.yml -f compose/mssql.yml -f compose/mysql.yml -f compose/oracle.yml -f compose/percona.yml -f compose/postgresql.yml -f compose/sqlite.yml stop
 
     ./bin/dbconsole ... =>
         docker exec -ti db3v4l_worker su - db3v4l

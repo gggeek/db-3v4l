@@ -1,0 +1,143 @@
+version: '3'
+
+services:
+
+    worker:
+        volumes:
+            - ./config/app/postgresql.yml:/home/${CONTAINER_USER}/vendors/postgresql.yml
+        environment:
+            - POSTGRES_PASSWORD
+    web:
+        volumes:
+            - ./config/app/postgresql.yml:/home/${CONTAINER_USER}/vendors/postgresql.yml
+    adminer:
+        volumes:
+            - ./config/app/postgresql.yml:/var/www/vendors/postgresql.yml
+        environment:
+            - POSTGRES_PASSWORD
+
+    postgresql_9_4:
+        build:
+            context: images/postgresql/9.4
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_9_4_VERSION}"
+        hostname: postgresql_9_4
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_4"
+        #ports:
+        #    - "5432:5432"
+        volumes:
+            - ./config/postgresql/9.4/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.4:/var/lib/postgresql
+            - ./logs/postgresql/9.4:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_9_5:
+        build:
+            context: images/postgresql/9.5
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_9_5_VERSION}"
+        hostname: postgresql_9_5
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_5"
+        #ports:
+        #    - "5433:5432"
+        volumes:
+            - ./config/postgresql/9.5/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.5:/var/lib/postgresql
+            - ./logs/postgresql/9.5:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_9_6:
+        build:
+            context: images/postgresql/9.6
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_9_6_VERSION}"
+        hostname: postgresql_9_6
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_9_6"
+        #ports:
+        #    - "5434:5432"
+        volumes:
+            - ./config/postgresql/9.6/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/9.6:/var/lib/postgresql
+            - ./logs/postgresql/9.6:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_10:
+        build:
+            context: images/postgresql/10
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_10_VERSION}"
+        hostname: postgresql_10
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_10"
+        #ports:
+        #    - "5435:5432"
+        volumes:
+            - ./config/postgresql/10/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/10:/var/lib/postgresql
+            - ./logs/postgresql/10:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_11:
+        build:
+            context: images/postgresql/11
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_11_VERSION}"
+        hostname: postgresql_11
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_11"
+        #ports:
+        #    - "5436:5432"
+        volumes:
+            - ./config/postgresql/11/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/11:/var/lib/postgresql
+            - ./logs/postgresql/11:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
+
+    postgresql_12:
+        build:
+            context: images/postgresql/12
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_12_VERSION}"
+        hostname: postgresql_12
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_12"
+        #ports:
+        #    - "5437:5432"
+        volumes:
+            - ./config/postgresql/12/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/12:/var/lib/postgresql
+            - ./logs/postgresql/12:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD

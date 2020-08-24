@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping the Stack Admin server..."
+echo "[$(date)] Bootstrapping the Stack Admin server..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the services..."
+    echo "[$(date)] Stopping the services..."
     pkill lazydocker
     if [ -f "${BS_OK_FILE}" ]; then
         rm "${BS_OK_FILE}"
@@ -20,15 +20,15 @@ if [ -f ${BS_OK_FILE} ]; then
     rm ${BS_OK_FILE}
 fi
 
-#echo "[`date`] Modifying Nginx configuration..."
+#echo "[$(date)] Modifying Nginx configuration..."
 
-echo "[`date`] Starting the services..."
+echo "[$(date)] Starting the services..."
 
 trap clean_up TERM
 
 #/usr/local/bin/lazydocker
 
-echo "[`date`] Bootstrap finished" | tee ${BS_OK_FILE}
+echo "[$(date)] Bootstrap finished" | tee ${BS_OK_FILE}
 
 tail -f /dev/null &
 child=$!

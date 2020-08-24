@@ -21,10 +21,10 @@ check_requirements() {
 load_config() {
     source ${COMPOSE_DEFAULT_ENV_FILE}
 
-    if [ -f ${COMPOSE_LOCAL_ENV_FILE} ]; then
+    if [ -f "${COMPOSE_LOCAL_ENV_FILE}" ]; then
         # these vars we have to export as otherwise they are not taken into account by docker-compose
         set -a
-        source ${COMPOSE_LOCAL_ENV_FILE}
+        source "${COMPOSE_LOCAL_ENV_FILE}"
         set +a
     fi
 
@@ -47,10 +47,10 @@ load_config() {
 
 check_requirements
 
-cd $(dirname -- ${BASH_SOURCE[0]})/../docker
+cd "$(dirname -- ${BASH_SOURCE[0]})/../docker"
 
 load_config
 
 # @todo check that stack has been built, and that worker bootstrap is done
 
-docker exec -ti ${WORKER_CONTAINER} su - ${WORKER_USER} -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"
+docker exec -ti "${WORKER_CONTAINER}" su - "${WORKER_USER}" -c '"$0" "$@"' -- "/usr/bin/php" "app/bin/dbconsole" "$@"

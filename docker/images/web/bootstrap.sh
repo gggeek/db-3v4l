@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping the Web server..."
+echo "[$(date)] Bootstrapping the Web server..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the services..."
+    echo "[$(date)] Stopping the services..."
     service nginx stop
     service php7.3-fpm stop
     if [ -f "${BS_OK_FILE}" ]; then
@@ -23,7 +23,7 @@ fi
 
 # Fix UID & GID for user www-data
 
-echo "[`date`] Fixing filesystem permissions..."
+echo "[$(date)] Fixing filesystem permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep www-data)
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
@@ -38,20 +38,20 @@ if [ "${CONTAINER_USER_UID}" != "${ORIG_UID}" -o "${CONTAINER_USER_GID}" != "${O
     usermod -u "${CONTAINER_USER_UID}" -g "${CONTAINER_USER_GID}" www-data
 
     # @todo we should do chown based on current perms of the dirs, not on  ORIG_UID != CONTAINER_USER_GID - or plain remove /var/www/html
-    # note: perms on /var/www/db3v4l and /var/www/doc are managed by the worker container
+    # note: perms on /var/www/db3v4l are managed by the worker container
     chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}/html"
 fi
 
-#echo "[`date`] Modifying Nginx configuration..."
+#echo "[$(date)] Modifying Nginx configuration..."
 
-echo "[`date`] Starting the services..."
+echo "[$(date)] Starting the services..."
 
 trap clean_up TERM
 
 service php7.3-fpm start
 service nginx restart
 
-echo "[`date`] Bootstrap finished" | tee ${BS_OK_FILE}
+echo "[$(date)] Bootstrap finished" | tee ${BS_OK_FILE}
 
 tail -f /dev/null &
 child=$!

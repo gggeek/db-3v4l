@@ -1,13 +1,34 @@
 <?php
 
-require dirname(dirname(__DIR__)).'/vendor/autoload.php';
+require dirname(__DIR__).'/vendor/autoload.php';
 
 function buildServerList()
 {
     // Avoid bootstrapping Symfony for something so trivial...
-    $config = \Symfony\Component\Yaml\Yaml::parseFile(dirname(dirname(__DIR__)).'/config/services.yaml');
+
+    $configDir = dirname(dirname(__DIR__)) . '/vendors';
+
+    include_once($configDir . '/secrets.php');
+
+    $files = glob($configDir . '/*.yml');
+    foreach($files as $fileName) {
+        $vendorConfig = \Symfony\Component\Yaml\Yaml::parseFile($fileName);
+        if (isset($vendorConfig['db3v4l']['database_instances'])) {
+            foreach ($vendorConfig['db3v4l']['database_instances'] as $name => &$instanceConfig) {
+                foreach ($instanceConfig as $key => &$value) {
+                    // poor man's reimplementation of Sf config parser - we only support '%env()' ...
+                    if (preg_match('/^%env\(([^)]+)\)%$/', $value, $matches)) {
+                        $value = @$_ENV[$matches[1]];
+                    }
+                }
+                $config[$name] = $instanceConfig;
+            }
+        }
+    }
+    ksort($config);
+
     $servers = [];
-    foreach($config['parameters']['db3v4l.database_instances'] as $instance => $def) {
+    foreach($config as $instance => $def) {
         $servers[$instance] = new AdminerLoginServerEnhanced(
             (
                 $def['vendor'] == 'oracle' ?

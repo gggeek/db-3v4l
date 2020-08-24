@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping Oracle..."
+echo "[$(date)] Bootstrapping Oracle..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the service..."
+    echo "[$(date)] Stopping the service..."
     /etc/init.d/oracle-xe-18c stop
     if [ -f /var/run/bootstrap_ok ]; then
         rm /var/run/bootstrap_ok
@@ -17,7 +17,7 @@ if [ -f /var/run/bootstrap_ok ]; then
     rm /var/run/bootstrap_ok
 fi
 
-echo "[`date`] Fixing oracle user permissions..."
+echo "[$(date)] Fixing oracle user permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep oracle)
 ORIG_UID=$(echo "${ORIGPASSWD}" | cut -f3 -d:)
@@ -50,13 +50,13 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo "[`date`] Handing over control to runOracle.sh..."
+echo "[$(date)] Handing over control to runOracle.sh..."
 
 trap clean_up TERM
 
 /opt/oracle/runOracle.sh
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
+echo "[$(date)] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &
 child=$!

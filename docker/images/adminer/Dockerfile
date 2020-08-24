@@ -85,10 +85,19 @@ RUN echo 'extension=oci8.so'> /etc/php/7.3/mods-available/oci8.ini
 RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/cli/conf.d/90-oci8.ini
 RUN echo 'export PATH=$PATH:/usr/lib/oracle/19.5/client64/bin' > /etc/profile.d/oracle-instantclient.sh
 
+# Composer global install
+# ------------------------------------------------------------------------------
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
+    mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
+    chmod 755 /usr/local/bin/composer
+
+# RUN mkdir -p /home/${container_user}/.composer && \
+#    chown -R ${container_user}:${container_user} /home/${container_user}/.composer
+
 ### Tools not shared with worker
 
 # Base packages - nginx, php-fpm, ...
-# NB All db interaction is done by the 'admin' and 'worker' images...
+# NB All db interaction is done by the 'adminer' and 'worker' images...
 # -----------------------------------------------------------------------------
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     nginx \
@@ -111,7 +120,7 @@ RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/fpm/conf.d/90-oci8.i
 # Clear archives in apt cache folder
 # ------------------------------------------------------------------------------
 RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
-RUN  rm -rf /tmp/*
+RUN if [ "${do_shrink_container}" != "false" ]; then rm -rf /tmp/*; fi
 
 # Set up entrypoint
 # ------------------------------------------------------------------------------

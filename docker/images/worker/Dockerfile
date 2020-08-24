@@ -84,7 +84,14 @@ RUN echo 'extension=oci8.so'> /etc/php/7.3/mods-available/oci8.ini
 RUN ln -s /etc/php/7.3/mods-available/oci8.ini /etc/php/7.3/cli/conf.d/90-oci8.ini
 RUN echo 'export PATH=$PATH:/usr/lib/oracle/19.5/client64/bin' > /etc/profile.d/oracle-instantclient.sh
 
-### Tools not shared with admin
+# Composer global install
+# @todo a github oauth token should be saved in containers.env...
+# ------------------------------------------------------------------------------
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
+    mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
+    chmod 755 /usr/local/bin/composer
+
+### Tools not shared with adminer
 
 # Make sure that the db clients tools are in the path for non-login, non-interactive shells...
 # Is there a better way than doing it this way ?
@@ -127,6 +134,9 @@ RUN addgroup --gid 1013 ${container_user} && \
 COPY profile/.bashrc_append /tmp/.bashrc_append
 RUN cat /tmp/.bashrc_append >> /home/${container_user}/.bashrc
 
+RUN mkdir -p /home/${container_user}/.composer && \
+    chown -R ${container_user}:${container_user} /home/${container_user}/.composer
+
 # Make shell nice for git usage - No need for running git commands within the container at the moment...
 #RUN curl -L https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o /home/${container_user}/.git-completion.bash; \
 #    curl -L https://github.com/git/git/raw/master/contrib/completion/git-prompt.sh -o /home/${container_user}/.git-prompt.sh;
@@ -145,15 +155,6 @@ RUN mkdir /home/${container_user}/data
 
 RUN chown -R ${container_user}:${container_user} /home/${container_user}
 
-# Composer global install
-# @todo a github oauth token should be saved in containers.env...
-# ------------------------------------------------------------------------------
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && \
-    mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
-    chmod 755 /usr/local/bin/composer; \
-    mkdir -p /home/${container_user}/.composer && \
-    chown -R ${container_user}:${container_user} /home/${container_user}/.composer
-
 # NodeJS recent version + yarn for building the web app frontend
 # @todo if those are only needed for developers of the app itself and not users, compile this in conditionally
 # ------------------------------------------------------------------------------
@@ -169,7 +170,7 @@ RUN apt-get -y install yarn
 # Clear archives in apt cache folder
 # ------------------------------------------------------------------------------
 RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
-RUN  rm -rf /tmp/*
+RUN if [ "${do_shrink_container}" != "false" ]; then rm -rf /tmp/*; fi
 
 # Set up entrypoint
 # ------------------------------------------------------------------------------
