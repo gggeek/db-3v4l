@@ -209,10 +209,18 @@ build() {
 
     if [ ${PULL_IMAGES} = 'true' ]; then
         echo "[$(date)] Pulling base Docker images..."
-        # @todo fix this: it won't work any more since we moved to using env vars
-        IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
-        for IMAGE in $IMAGES; do
-            docker pull $IMAGE
+
+        for DOCKERFILE in $(find . -name Dockerfile); do
+            IMAGE=$(fgrep -h 'FROM' "${DOCKERFILE}" | sed 's/FROM //g')
+            if [[ "${IMAGE}" == *'${base_image_version}'* ]]; then
+                # @todo resolve the `base_image_version` dockerfile arg by resolving the source env var - run eg. docker-compose config
+                DEFAULT_BASE_IMAGE=$(fgrep -h 'ARG base_image_version=' "${DOCKERFILE}" | sed 's/ARG base_image_version=//g')
+                IMAGE=${IMAGE/\$\{base_image_version\}/$DEFAULT_BASE_IMAGE}
+
+                printf "\e[31mWARNING: pulling base image ${IMAGE} for container ${DOCKERFILE} which might have been overwritten via env var...\e[0m\n" >&2
+            fi
+
+            docker pull "${IMAGE}"
         done
     fi
 
@@ -480,7 +488,7 @@ case "${COMMAND}" in
     ;;
 
     config)
-        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} config ${2}
+        ${DOCKER_COMPOSE_CMD} ${VERBOSITY} config
     ;;
 
     dbconsole)
