@@ -1,5 +1,5 @@
-Version 0.16 (unreleased)
--------------------------
+Version 0.16
+------------
 
 - Improved: bumped minimum required docker-compose version to 1.19 in docs and tests, as that was effectively necessary
 
@@ -10,13 +10,13 @@ Version 0.16 (unreleased)
   to specific vendors, making it require less cpu/ram/disk resources.
   Example usages:
 
-      export COMPOSE_ONLY_VENDORS=mysql,mariadb
+      export COMPOSE_ONLY_VENDORS=mysql,mariadb,percona
       ./bin/dbstack start
 
       export COMPOSE_EXCEPT_VENDORS=oracle,mssql
       ./bin/dbstack start
 
-- Improved: tests on Travis exercise a wider set of configuration options and execute faster
+- Improved: tests on Travis exercise a wider set of configuration options and execute somewhat faster
 
 
 Version 0.15

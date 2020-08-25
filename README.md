@@ -207,6 +207,25 @@ CONTAINER_USER_UID and CONTAINER_USER_GID environment variables _before_ running
 More details in the file docker/.env.
 
 
+## Contributing to development
+
+Bug reports are welcome, as well as Pull requests. The project is managed on GitHub.
+
+### Running tests
+
+Once you have built the db3v4l stack once, running the test suite is a breeze:
+
+    ./tests/01_dbstack.sh
+    ./tests/02_dbconsole.sh
+    ./tests/03_web.sh
+    ./tests/04_admin.sh
+
+None of those shell scripts should fail (exit with non-zero exit code).
+
+NB: when running the test suite, custom databases and database users are created then destroyed within each available
+database instance. It is not recommended to run the test suite if your databases already contain (important) data.
+
+
 ## Thanks
 
 Many thanks to

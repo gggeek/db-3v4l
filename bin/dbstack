@@ -92,26 +92,6 @@ check_requirements() {
     fi
 }
 
-create_compose_command() {
-    local VENDORS
-    DOCKER_COMPOSE_CMD='docker-compose -f docker-compose.yml'
-    if [ -n "${COMPOSE_ONLY_VENDORS}" ]; then
-        VENDORS=${COMPOSE_ONLY_VENDORS//,/ }
-    else
-        VENDORS=$(cd compose && ls -- *.yml | tr '\n' ' ')
-        VENDORS=${VENDORS//.yml/}
-    fi
-    if [ -n "${COMPOSE_EXCEPT_VENDORS}" ]; then
-        for COMPOSE_EXCEPT_VENDOR in ${COMPOSE_EXCEPT_VENDORS//,/ }; do
-            # @bug what if a COMPOSE_EXCEPT_VENDOR is a substring of a VENDOR ?
-            VENDORS=${VENDORS/$COMPOSE_EXCEPT_VENDOR/}
-        done
-    fi
-    for DC_CONF_FILE in ${VENDORS}; do
-        DOCKER_COMPOSE_CMD="${DOCKER_COMPOSE_CMD} -f compose/${DC_CONF_FILE}.yml"
-    done
-}
-
 # @todo have this function looked at by a bash guru to validate it's not a brainf**t
 #load_config_value() {
 #    local VALUE=
@@ -189,6 +169,26 @@ setup_local_config() {
     fi
 
     # @todo allow setting up: custom db root account pwd, sf env, etc...
+}
+
+create_compose_command() {
+    local VENDORS
+    DOCKER_COMPOSE_CMD='docker-compose -f docker-compose.yml'
+    if [ -n "${COMPOSE_ONLY_VENDORS}" ]; then
+        VENDORS=${COMPOSE_ONLY_VENDORS//,/ }
+    else
+        VENDORS=$(cd compose && ls -- *.yml | tr '\n' ' ')
+        VENDORS=${VENDORS//.yml/}
+    fi
+    if [ -n "${COMPOSE_EXCEPT_VENDORS}" ]; then
+        for COMPOSE_EXCEPT_VENDOR in ${COMPOSE_EXCEPT_VENDORS//,/ }; do
+            # @bug what if a COMPOSE_EXCEPT_VENDOR is a substring of a VENDOR ?
+            VENDORS=${VENDORS/$COMPOSE_EXCEPT_VENDOR/}
+        done
+    fi
+    for DC_CONF_FILE in ${VENDORS}; do
+        DOCKER_COMPOSE_CMD="${DOCKER_COMPOSE_CMD} -f compose/${DC_CONF_FILE}.yml"
+    done
 }
 
 build() {
