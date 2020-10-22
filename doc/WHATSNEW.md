@@ -1,3 +1,11 @@
+Version 0.17
+------------
+
+- New: added PostgreSQL 13 to the available databases
+
+- Improved: bumped the application dependencies to Symfony 4.4.16
+
+
 Version 0.16
 ------------
 

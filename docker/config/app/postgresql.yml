@@ -64,3 +64,13 @@ db3v4l:
             #server_version: '12'
             vendor: postgresql
             version: '12'
+        postgresql_13:
+            host: postgresql_13
+            port: 5432
+            user: postgres
+            password: '%env(POSTGRES_PASSWORD)%'
+            #charset: UTF8
+            #driver: pdo_pgsql
+            #server_version: '13'
+            vendor: postgresql
+            version: '13'

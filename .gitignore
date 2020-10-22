@@ -36,6 +36,7 @@
 /docker/data/postgresql/10/*
 /docker/data/postgresql/11/*
 /docker/data/postgresql/12/*
+/docker/data/postgresql/13/*
 /docker/data/redis/*
 /docker/data/sqlite/3.27/*
 !/docker/data/composer_cache/.gitkeep
@@ -63,6 +64,7 @@
 !/docker/data/postgresql/10/.gitkeep
 !/docker/data/postgresql/11/.gitkeep
 !/docker/data/postgresql/12/.gitkeep
+!/docker/data/postgresql/13/.gitkeep
 !docker/data/redis/.gitkeep
 !docker/data/sqlite/3.27/.gitkeep
 
@@ -94,6 +96,7 @@
 /docker/logs/postgresql/10/*
 /docker/logs/postgresql/11/*
 /docker/logs/postgresql/12/*
+/docker/logs/postgresql/13/*
 /docker/logs/redis/*
 /docker/logs/web/redis/*
 /docker/logs/web/nginx/*
@@ -125,6 +128,7 @@
 !/docker/logs/postgresql/10/.gitkeep
 !/docker/logs/postgresql/11/.gitkeep
 !/docker/logs/postgresql/12/.gitkeep
+!/docker/logs/postgresql/13/.gitkeep
 !/docker/logs/redis/.gitkeep
 !/docker/logs/web/nginx/.gitkeep
 !/docker/logs/web/php/.gitkeep

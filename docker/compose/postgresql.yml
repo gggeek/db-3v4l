@@ -141,3 +141,24 @@ services:
             - CONTAINER_USER_UID
             - CONTAINER_USER_GID
             - POSTGRES_PASSWORD
+
+    postgresql_13:
+        build:
+            context: images/postgresql/13
+            args:
+                timezone: "${COMPOSE_TZ}"
+                do_update_os: "${COMPOSE_DO_UPDATE_OS}"
+                do_shrink_container: "${COMPOSE_DO_SHRINK_CONTAINERS}"
+                base_image_version: "${POSTGRESQL_13_VERSION}"
+        hostname: postgresql_13
+        container_name: "${COMPOSE_PROJECT_NAME}_postgresql_13"
+        #ports:
+        #    - "5437:5432"
+        volumes:
+            - ./config/postgresql/13/${COMPOSE_DB_SIZE}.conf:/etc/postgresql/conf.d/postgresql.conf
+            - ./data/postgresql/13:/var/lib/postgresql
+            - ./logs/postgresql/13:/var/log/postgresql
+        environment:
+            - CONTAINER_USER_UID
+            - CONTAINER_USER_GID
+            - POSTGRES_PASSWORD
