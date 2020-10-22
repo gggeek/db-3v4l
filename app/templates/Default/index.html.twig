@@ -70,9 +70,9 @@
 
                 Last but not least, you have access to other command-line tools which can be useful in troubleshooting SQL queries:
 
-                    ./bin/dbstack run ./app/vendor/bin/highlight-query 'and now'
-                    ./bin/dbstack run ./app/vendor/bin/lint-query 'for something'
-                    ./bin/dbstack run ./app/vendor/bin/tokenize-query 'completely different'
+                    ./bin/dbstack run ./app/vendor/bin/highlight-query --query 'and now'
+                    ./bin/dbstack run ./app/vendor/bin/lint-query --query 'for something'
+                    ./bin/dbstack run ./app/vendor/bin/tokenize-query --query 'completely different'
 
                 Or you can just log in to the container where all the command-line tools are, and execute any command you like from there
 
